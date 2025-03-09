@@ -1,13 +1,13 @@
 1. **Clone the repository:**
     ```bash
-    git clone 
+    git clone https://github.com/PhucNgo5903/SoiDayGanKet.git
     cd SoiDayGanKet
     ```
 
 2. **Create and activate a virtual environment:**
     ```bash
     python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    venv\Scripts\activate
     ```
 
 3. **Install the required packages:**
