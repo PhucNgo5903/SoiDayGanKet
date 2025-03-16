@@ -3,13 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donation & Volunteer System</title>
     <link rel="icon" type="image/x-icon" href="{% static 'images/helping-hand.png' %}" />
-    <!-- Font Awesome icons (free version)-->
+   
     <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
-    <!-- Google fonts-->  
+
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;100;300;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
@@ -43,6 +42,7 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                           <li><a class="dropdown-item" href="{% url 'login_donor' %}">Donor</a></li>
                           <li><a class="dropdown-item" href="{% url 'login_volunteer' %}">Volunteer</a></li>
+                          <li><a class="dropdown-item" href="{% url 'login_beneficiary' %}">Beneficiary</a></li>
                           <li><hr class="dropdown-divider"></li>
                           <li><a class="dropdown-item" href="{% url 'login_admin' %}">Admin</a></li>
                         </ul>
