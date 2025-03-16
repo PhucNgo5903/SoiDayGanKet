@@ -22,9 +22,15 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("gallery/", views.gallery, name="gallery"),
     path("login-admin/", views.login_admin, name="login_admin"),
-    path("login-donor/", views.login_donor, name="login_donor"),
+    path("login-donor/", views.login_donor.as_view(), name="login_donor"),
+    path("login-beneficiary/", views.login_beneficiary, name="login_beneficiary"),
     path("login-volunteer/", views.login_volunteer, name="login_volunteer"),
-    path("signup-donor/", views.signup_donor, name="signup_donor"),
+    path("signup-donor/", views.signup_donor.as_view(), name="signup_donor"),
     path("signup-volunteer/", views.signup_volunteer, name="signup_volunteer"),
+
+
+    path("index-donor/", views.index_donor, name="index_donor"),
+    path("index-volunteer/", views.index_volunteer, name="index_volunteer"),
+    path("index-beneficiary/", views.index_beneficiary, name="index_beneficiary"),
     
 ]
