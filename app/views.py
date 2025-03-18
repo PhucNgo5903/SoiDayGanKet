@@ -243,10 +243,6 @@ def index_volunteer(request):
 
 @login_required(login_url='login_beneficiary')
 def index_beneficiary(request):
-    if request.user.is_authenticated:
-        print(f"User {request.user.username} is logged in")
-    else:
-        print("User is not logged in")
     try:
         beneficiary = Beneficiary.objects.get(user=request.user)
         return render(request, "index-beneficiary.html", {"beneficiary": beneficiary})
