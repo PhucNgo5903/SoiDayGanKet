@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
-from .models import Donor, Volunteer
+from .models import Beneficiary, Donor, Volunteer
 
 
 class LoginForm(AuthenticationForm):
@@ -53,3 +53,12 @@ class VolunteerSignupForm(forms.ModelForm):
         }
 
 
+class BeneficiarySignupForm(forms.ModelForm):
+    userpic = forms.ImageField(widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+
+    class Meta:
+        model = Beneficiary
+        fields = ["contact", "userpic"]
+        widgets = {
+            "contact": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Contact Number"}),
+        }
