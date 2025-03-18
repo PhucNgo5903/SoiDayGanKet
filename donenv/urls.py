@@ -23,11 +23,11 @@ urlpatterns = [
     path("gallery/", views.gallery, name="gallery"),
     path("login-admin/", views.login_admin, name="login_admin"),
     path("login-donor/", views.login_donor.as_view(), name="login_donor"),
-    path("login-beneficiary/", views.login_beneficiary, name="login_beneficiary"),
-    path("login-volunteer/", views.login_volunteer, name="login_volunteer"),
+    path("login-beneficiary/", views.login_beneficiary.as_view(), name="login_beneficiary"),
+    path("login-volunteer/", views.login_volunteer.as_view(), name="login_volunteer"),
     path("signup-donor/", views.signup_donor.as_view(), name="signup_donor"),
-    path("signup-volunteer/", views.signup_volunteer, name="signup_volunteer"),
-
+    path("signup-volunteer/", views.signup_volunteer.as_view(), name="signup_volunteer"),
+    path("signup-beneficiary/", views.signup_beneficiary.as_view(), name="signup_beneficiary"),
 
     path("index-donor/", views.index_donor, name="index_donor"),
     path("index-volunteer/", views.index_volunteer, name="index_volunteer"),

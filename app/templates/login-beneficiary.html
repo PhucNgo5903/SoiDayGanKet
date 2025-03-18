@@ -10,8 +10,9 @@
 
             <div class="mb-md-5 mt-md-4 pb-5">
 
-              <h2 class="fw-bold mb-2 text-uppercase">Volunteer Login</h2>
+              <h2 class="fw-bold mb-2 text-uppercase">Beneficiary Login</h2>
               <p class="text-white-50 mb-5">Please enter your login and password!</p>
+
               <form action="" method="post" novalidate>
                 {% csrf_token %}
                 {% for fm in form %}
@@ -28,25 +29,24 @@
             </div>
 
             <div>
-              <p class="mb-0">Don't have an account? <a href="{% url 'signup_volunteer' %}"
+              <p class="mb-0">Don't have an account? <a href="{% url 'signup_beneficiary' %}"
                   class="text-white-50 fw-bold">Sign Up</a></p>
             </div>
 
           </div>
         </div>
         {% if form.non_field_errors%}
-        {% for error in form.non_field_errors %}
-        <p class="alert alert-danger my-3">{{error}}</p>
-        {% endfor %}
+          {% for error in form.non_field_errors %}
+          <p class="alert alert-danger my-3">{{error}}</p>
+          {% endfor %}
         {% endif %}
-
+       
 
         {% if messages %}
-        {% for message in messages %}
-        <p {% if message.tags %} class="alert alert-{{ message.tags }} my-5" {% endif %}>{{ message }}</p>
-        {% endfor %}
+          {% for message in messages %}
+          <p {% if message.tags %} class="alert alert-{{ message.tags }} my-5" {% endif %}>{{ message }}</p>
+          {% endfor %}
         {% endif %}
-
       </div>
     </div>
   </div>
