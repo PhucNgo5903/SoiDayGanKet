@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạng thái hỗ trợ</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .timeline div {
+            text-align: center;
+            width: 20%;
+        }
+        .timeline .active {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .support-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .support-box {
+            width: 48%;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .support-box img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+        }
+        .support-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .notes {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fffbcc;
+            border-left: 5px solid #ff9800;
+        }
+        .volunteer-info {
+            margin-top: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .support-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+        }
+        
+        .support-table th, .support-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .support-table th {
+            background: #007bff;
+            color: white;
+        }
+        
+        .support-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .support-table tr:hover {
+            background: #f1f1f1;
+        }
+        
+    </style>
+</head>
+<body>
+
+    {% include 'navbar-beneficiary.html' %}
+
+    <div class="container">
+        <div class="header">
+            <h2>Yêu cầu #180804</h2>
+            <div class="status">🚚 On the way</div>
+        </div>
+
+        <p><strong>Loại hỗ trợ:</strong> Lương thực</p>
+
+        <div class="timeline">
+            <div>📌 Xem xét <br> <small>10:34 AM</small></div>
+            <div class="active">📦 Chuẩn bị <br> <small>10:37 AM</small></div>
+            <div>✅ Chấp nhận <br> <small>10:36 AM</small></div>
+            <div>🚚 Thực hiện <br> <small>10:50 AM</small></div>
+            <div>🎯 Hoàn thành</div>
+        </div>
+
+        <h3>Thông tin chi tiết về hỗ trợ</h3>
+<table class="support-table">
+    <thead>
+        <tr>
+            <th>Tên mặt hàng</th>
+            <th>Loại</th>
+            <th>Khối lượng</th>
+            <th>Số lượng</th>
+            <th>Đơn vị</th>
+            <th>Ghi chú</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Gạo</td>
+            <td>ST25</td>
+            <td>10 kg</td>
+            <td>20</td>
+            <td>bao</td>
+            <td>Gạo chất lượng cao</td>
+        </tr>
+        <tr>
+            <td>Sữa cho trẻ em</td>
+            <td>Vinamilk</td>
+            <td>1 lít</td>
+            <td>10</td>
+            <td>thùng</td>
+            <td>Dành cho trẻ từ 1-5 tuổi</td>
+        </tr>
+        <tr>
+            <td>Mỳ tôm Hảo Hảo</td>
+            <td>Tôm chua cay</td>
+            <td>75g</td>
+            <td>10</td>
+            <td>thùng</td>
+            <td>Tiện lợi, dễ chế biến</td>
+        </tr>
+        <tr>
+            <td>Dầu ăn</td>
+            <td>Tường An</td>
+            <td>1 lít</td>
+            <td>5</td>
+            <td>chai</td>
+            <td>Dùng để nấu ăn</td>
+        </tr>
+    </tbody>
+</table>
+
+        <div class="notes">
+            <p>📌 <strong>Ghi chú:</strong> Số lượng có thể thay đổi tùy điều kiện thực tế.</p>
+            <p>💡 Hỗ trợ sẽ được phân phối bởi tình nguyện viên.</p>
+            <p>☎ Liên hệ hotline: 0123-456-789 nếu có vấn đề.</p>
+        </div>
+
+        <h3>Thông tin Hội thiện nguyện</h3>
+        <div class="volunteer-info">
+            <p><strong>Hội Bot Gym Dam</strong></p>
+            <p>Email: <a href="mailto:chelseijohnson@bindirigu.com">chelseijohnson@bindirigu.com</a></p>
+            <p>📞 Số điện thoại: +88 01600-009770</p>
+            <p>📍 Địa điểm hoạt động: Asafoatse Nettey Road, Accra...</p>
+        </div>
+
+        <h3>Người phụ trách hỗ trợ</h3>
+        <div class="volunteer-info">
+            <p><strong>Ralph Edwards</strong></p>
+            <p>📞 +880 12345 6789</p>
+            <p>📍 Địa chỉ: G.P.O, Asafoatse Nettey Road, Accra, Ghana</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

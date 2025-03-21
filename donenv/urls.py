@@ -32,5 +32,7 @@ urlpatterns = [
     path("index-donor/", views.index_donor, name="index_donor"),
     path("index-volunteer/", views.index_volunteer, name="index_volunteer"),
     path("index-beneficiary/", views.index_beneficiary, name="index_beneficiary"),
+    path("send-request/", views.send_request, name="send-request"),
+    path("support-status/", views.support_status, name="support-status"),
     
 ]

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Yêu Cầu Trợ Giúp</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        textarea, input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .upload-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .upload-box:hover {
+            border-color: #007bff;
+        }
+        .image-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .image-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .priority-container {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'navbar-beneficiary.html' %}
+
+    <div class="container">
+        <h1>Gửi Yêu Cầu Trợ Giúp</h1>
+
+        <form action="#" method="POST" enctype="multipart/form-data">
+            <label for="support_reason">Lý do cần hỗ trợ:</label>
+            <textarea id="support_reason" name="support_reason" rows="4"></textarea>
+
+            <label>Thêm ảnh:</label>
+            <div class="upload-box" onclick="document.getElementById('image_upload').click();">
+                + Thêm ảnh
+            </div>
+            <input type="file" id="image_upload" name="image_upload" accept="image/*" multiple style="display: none;">
+            <div class="image-preview" id="imagePreview"></div>
+
+            <label for="support_type">Loại hình hỗ trợ:</label>
+            <select id="support_type" name="support_type">
+                <option value="food">Thực phẩm</option>
+                <option value="medical">Y tế</option>
+                <option value="education">Giáo dục</option>
+            </select>
+
+            <label>Mức độ ưu tiên của yêu cầu:</label>
+            <div class="priority-container">
+                <select id="priority_level" name="priority_level">
+                    <option value="low">Thấp</option>
+                    <option value="medium">Trung bình</option>
+                    <option value="high">Cao</option>
+                </select>
+            </div>
+
+            <label for="phone">Số điện thoại:</label>
+            <input type="text" id="phone" name="phone">
+
+            <label for="document">Tài liệu chứng minh:</label>
+            <input type="file" id="document" name="document">
+
+            <label for="time_request">Thời gian mong muốn nhận trợ giúp:</label>
+            <input type="text" id="time_request" name="time_request" placeholder="DD/MM/YYYY - DD/MM/YYYY">
+
+            <label for="address">Địa điểm:</label>
+            <input type="text" id="address" name="address">
+
+            <label for="details">Mô tả chi tiết vấn đề:</label>
+            <textarea id="details" name="details" rows="4"></textarea>
+
+            <button type="submit">Gửi yêu cầu</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("image_upload").addEventListener("change", function(event) {
+            let imagePreview = document.getElementById("imagePreview");
+            imagePreview.innerHTML = ""; // Clear previous previews
+            for (let file of event.target.files) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = document.createElement("img");
+                    img.src = e.target.result;
+                    imagePreview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+</body>
+</html>

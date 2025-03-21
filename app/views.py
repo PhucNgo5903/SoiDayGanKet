@@ -250,3 +250,10 @@ def index_beneficiary(request):
         messages.error(request, "You don't have a beneficiary profile yet.")
         return redirect('login_beneficiary')  
 
+@login_required(login_url='login_beneficiary')
+def send_request(request):
+    return render(request, "send-request.html")
+
+@login_required(login_url='login_beneficiary')
+def support_status(request):
+    return render(request, "support-status.html")
