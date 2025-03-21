@@ -257,3 +257,11 @@ def send_request(request):
 @login_required(login_url='login_beneficiary')
 def support_status(request):
     return render(request, "support-status.html")
+
+@login_required(login_url='login_beneficiary')
+def support_request_list(request):
+    return render(request, "support-request-list.html")
+
+@login_required(login_url='login_beneficiary')
+def request_history(request):
+    return render(request, "request-history.html")

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử trợ giúp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th, .history-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .history-table th {
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .status.completed { color: green; }
+        .status.cancelled { color: red; }
+    </style>
+</head>
+<body>
+    {% include 'navbar-beneficiary.html' %}
+    <div class="container">
+        <h2>Lịch sử trợ giúp</h2>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ngày nhận</th>
+                    <th>Tổ chức hỗ trợ</th>
+                    <th>Loại hỗ trợ</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>H10001</td>
+                    <td>05 Mar 2025</td>
+                    <td>Hội Chữ Thập Đỏ</td>
+                    <td>Thực phẩm</td>
+                    <td class="status completed">Hoàn thành</td>
+                </tr>
+                <tr>
+                    <td>H10002</td>
+                    <td>01 Mar 2025</td>
+                    <td>Quỹ Hỗ Trợ Trẻ Em</td>
+                    <td>Y tế</td>
+                    <td class="status completed">Hoàn thành</td>
+                </tr>
+                <tr>
+                    <td>H10003</td>
+                    <td>20 Feb 2025</td>
+                    <td>Tổ chức Thiện Nguyện A</td>
+                    <td>Giáo dục</td>
+                    <td class="status completed">Hoàn thành</td>
+                </tr>
+                <tr>
+                    <td>H10004</td>
+                    <td>15 Feb 2025</td>
+                    <td>Nhóm Tình Nguyện B</td>
+                    <td>Quần áo</td>
+                    <td class="status cancelled">Đã hủy</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

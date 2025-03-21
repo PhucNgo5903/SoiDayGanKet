@@ -1,0 +1,150 @@
+<!DOCTYPE html> 
+{%load static%}
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạng thái hỗ trợ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .status-tabs button {
+            padding: 10px 15px;
+            border: none;
+            background: #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .status-tabs button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .support-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .support-table th, .support-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .support-table th {
+            background: #007bff;
+            color: white;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .status.pending { color: orange; }
+        .status.preparing { color: blue; }
+        .status.completed { color: green; }
+        .status.cancelled { color: red; }
+    </style>
+</head>
+<body>
+    {% include 'navbar-beneficiary.html' %}
+    <div class="container">
+        <h2>Trạng thái hỗ trợ</h2>
+        <div class="status-tabs">
+            <button class="active">Tất cả</button>
+            <button>Đang xem xét</button>
+            <button>Chuẩn bị hỗ trợ</button>
+            <button>Thực hiện</button>
+            <button>Hoàn thành</button>
+            <button>Đã hủy</button>
+        </div>
+
+        <table class="support-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ngày gửi</th>
+                    <th>Tổ chức nhận hỗ trợ</th>
+                    <th>Loại hỗ trợ</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>B18001</td>
+                    <td>20 Mar 2025</td>
+                    <td><img src="{% static 'images/org1.jpg' %}" class="avatar"> Hội Chữ Thập Đỏ</td>
+                    <td>Thực phẩm</td>
+                    <td class="status pending">Đang xem xét</td>
+                    <td>...</td>
+                </tr>
+                <tr>
+                    <td>B18002</td>
+                    <td>18 Mar 2025</td>
+                    <td><img src="{% static 'images/org2.jpg' %}" class="avatar"> Quỹ Hỗ Trợ Trẻ Em</td>
+                    <td>Y tế</td>
+                    <td class="status preparing">Chuẩn bị</td>
+                    <td>...</td>
+                </tr>
+                <tr>
+                    <td>B18003</td>
+                    <td>15 Mar 2025</td>
+                    <td><img src="{% static 'images/org3.jpg' %}" class="avatar"> Tổ chức Thiện Nguyện A</td>
+                    <td>Giáo dục</td>
+                    <td class="status completed">Hoàn thành</td>
+                    <td>...</td>
+                </tr>
+                <tr>
+                    <td>B18004</td>
+                    <td>10 Mar 2025</td>
+                    <td><img src="{% static 'images/org4.jpg' %}" class="avatar"> Nhóm Tình Nguyện B</td>
+                    <td>Quần áo</td>
+                    <td class="status cancelled">Đã hủy</td>
+                    <td>...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
