@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDKL - Dashboard</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+
+        /* Thanh sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+
+        .logo h2 {
+            font-size: 20px;
+            color: #007bff;
+        }
+
+
+        /* Danh sách điều hướng */
+        .nav-list {
+            list-style: none;
+        }
+
+
+        .nav-list li {
+            margin: 15px 0;
+        }
+
+
+        .nav-list a {
+            text-decoration: none;
+            font-size: 16px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+
+        .nav-list a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+
+        /* Hiệu ứng hover */
+        .nav-list a:hover {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="sidebar">
+        <!-- Logo và tên hệ thống -->
+        <div class="logo">
+            <img src="{% static 'images/logo1.png' %}" alt="SDKL Logo">
+            <h2>SDKL</h2>
+        </div>
+
+
+        <!-- Danh sách điều hướng -->
+        <ul class="nav-list">
+            <li><a href="#"><i class="fas fa-home"></i> Trang Chủ</a></li>
+            <li><a href="#"><i class="fas fa-plus-circle"></i> Gửi Yêu Cầu Trợ Giúp</a></li>
+            <li><a href="#"><i class="fas fa-history"></i> Lịch Sử Trợ Giúp</a></li>
+            <li><a href="#"><i class="fas fa-cogs"></i> Trạng Thái Hỗ Trợ</a></li>
+        </ul>
+    </div>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
