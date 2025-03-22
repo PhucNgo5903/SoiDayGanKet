@@ -250,3 +250,8 @@ def index_beneficiary(request):
         messages.error(request, "You don't have a beneficiary profile yet.")
         return redirect('login_beneficiary')  
 
+
+
+
+def index_admin(request):
+    return render(request, "index-admin.html")
