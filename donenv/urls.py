@@ -32,5 +32,6 @@ urlpatterns = [
     path("index-donor/", views.index_donor, name="index_donor"),
     path("index-volunteer/", views.index_volunteer, name="index_volunteer"),
     path("index-beneficiary/", views.index_beneficiary, name="index_beneficiary"),
+     path("volunteer_event/", views.index_volunteer, name="volunteer_event"),
     
 ]

@@ -238,7 +238,8 @@ def index_volunteer(request):
         messages.error(request, "You don't have a volunteer profile yet.")
         return redirect('login_volunteer')  
 
-
+def volunteer_event(request):
+    return render(request, "volunteer_event.html")
 # ==================================================Beneficiary=================================================
 
 @login_required(login_url='login_beneficiary')

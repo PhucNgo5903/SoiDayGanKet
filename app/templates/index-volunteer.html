@@ -1,1 +1,208 @@
-<p> Nhi's homepage after login</p>
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<header
+      class="d-flex justify-content-center align-items-center text-center bg-dark text-white" style="background-image: url('https://placehold.co/1920x600/4a90e2/4a90e2'); height: 400px;"
+    >
+      <h1 class="p-5 display-4 fw-bold">
+        We Rise By Lifting Others
+      </h1>
+    </header>
+
+    <section class="container py-5">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col">
+          <div class="text-center">
+            <i class="ti ti-droplet mb-4 display-6 text-primary"></i>
+            <h2 class="h5 mb-2">Clean Water</h2>
+            <p class="text-muted">
+              Cung cấp nước sạch và nhu yếu phẩm cho những người dân có hoàn cảnh khó khăn.
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center">
+            <i class="ti ti-bowl mb-4 display-6 text-primary"></i>
+            <h2 class="h5 mb-2">Eating Well</h2>
+            <p class="text-muted">
+              Cung cấp thức ăn cho những người thiếu thốn để họ có thể duy trì cuộc sống.
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center">
+            <i class="ti ti-heart-plus mb-4 display-6 text-primary"></i>
+            <h2 class="h5 mb-2">Health Care</h2>
+            <p class="text-muted">
+              Cung cấp dịch vụ y tế miễn phí cho những người không có điều kiện.
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center">
+            <i class="ti ti-eye mb-4 display-6 text-primary"></i>
+            <h2 class="h5 mb-2">Caring & Concern</h2>
+            <p class="text-muted">
+              Chăm sóc và quan tâm đến những người có hoàn cảnh khó khăn.
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center">
+            <i class="ti ti-book mb-4 display-6 text-primary"></i>
+            <h2 class="h5 mb-2">Schooling</h2>
+            <p class="text-muted">
+              Cung cấp giáo dục cho trẻ em có hoàn cảnh khó khăn.
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center">
+            <i class="ti ti-home mb-4 display-6 text-primary"></i>
+            <h2 class="h5 mb-2">Traveling</h2>
+            <p class="text-muted">
+              Phát triển du lịch cộng đồng, tạo công ăn việc làm cho người dân địa phương.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5">
+      <h2 class="h3 mb-4 text-center">Sự kiện đã diễn ra</h2>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col">
+          <div class="card">
+            <img
+              src="https://placehold.co/400x300/e6d5c3/e6d5c3"
+              class="card-img-top"
+              alt="Event 1"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Tin tức kiện</h5>
+              <p class="card-text text-muted">
+                Dorem, dapibus mauris id odio cursus tristique tellus in amet.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card">
+            <img
+              src="https://placehold.co/400x300/c4d6e6/c4d6e6"
+              class="card-img-top"
+              alt="Event 2"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Tin tức kiện</h5>
+              <p class="card-text text-muted">
+                Dorem, dapibus mauris id odio cursus tristique tellus in amet.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card">
+            <img
+              src="https://placehold.co/400x300/d5e6c3/d5e6c3"
+              class="card-img-top"
+              alt="Event 3"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Tin tức kiện</h5>
+              <p class="card-text text-muted">
+                Dorem, dapibus mauris id odio cursus tristique tellus in amet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-md-6">
+          <img
+            src="https://placehold.co/600x400/f4f4f4/f4f4f4"
+            class="img-fluid"
+            alt="Volunteer Badge"
+          />
+        </div>
+        <div class="col-md-6 text-md-end text-center">
+          <h2 class="display-4 text-primary">
+            <span>Be The Change You Wish</span>
+            <br />
+            <span>To See In The World.</span>
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5">
+      <h2 class="h3 mb-4 text-center">Tình nguyện viên</h2>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col text-center">
+          <img
+            src="https://placehold.co/200x200/e6e6e6/e6e6e6"
+            class="rounded-circle mb-4"
+            alt="Team Member 1"
+          />
+          <h3 class="h5 mb-1">Bùi Thị A</h3>
+          <p class="text-muted">Tình nguyện viên</p>
+        </div>
+
+        <div class="col text-center">
+          <img
+            src="https://placehold.co/200x200/e6e6e6/e6e6e6"
+            class="rounded-circle mb-4"
+            alt="Team Member 2"
+          />
+          <h3 class="h5 mb-1">Nguyễn Văn B</h3>
+          <p class="text-muted">Teacher</p>
+        </div>
+
+        <div class="col text-center">
+          <img
+            src="https://placehold.co/200x200/e6e6e6/e6e6e6"
+            class="rounded-circle mb-4"
+            alt="Team Member 3"
+          />
+          <h3 class="h5 mb-1">Trần Thị C</h3>
+          <p class="text-muted">Social Worker</p>
+        </div>
+
+        <div class="col text-center">
+          <img
+            src="https://placehold.co/200x200/e6e6e6/e6e6e6"
+            class="rounded-circle mb-4"
+            alt="Team Member 4"
+          />
+          <h3 class="h5 mb-1">Hoàng Văn D</h3>
+          <p class="text-muted">Leader</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5 text-center bg-light">
+      <div class="row">
+        <div class="col-md-3">
+          <p class="h1 text-primary">789</p>
+          <p class="text-muted">Người nhận hỗ trợ</p>
+        </div>
+        <div class="col-md-3">
+          <p class="h1 text-primary">457</p>
+          <p class="text-muted">Tình nguyện viên</p>
+        </div>
+        <div class="col-md-3">
+          <p class="h1 text-primary">632</p>
+          <p class="text-muted">Các tổ chức thiện nguyện</p>
+        </div>
+        <div class="col-md-3">
+          <p class="h1 text-primary">523</p>
+          <p class="text-muted">Sự kiện đã diễn ra</p>
+        </div>
+      </div>
+    </section>
+{% endblock main %}
