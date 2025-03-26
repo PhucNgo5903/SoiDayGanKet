@@ -33,4 +33,14 @@ urlpatterns = [
     path("index-volunteer/", views.index_volunteer, name="index_volunteer"),
     path("index-beneficiary/", views.index_beneficiary, name="index_beneficiary"),
     path("index-admin/", views.index_admin, name="index_admin"),
+
+
+    path("new-assistance-request/", views.new_assistance_request, name="new_assistance_request"),
+    path("assistance-request-detail/", views.assistance_request_detail, name="assistance_request_detail"),
+    path("accepted-assistance-request/", views.accepted_assistance_request, name="accepted_assistance_request"),
+    path("rejected-assistance-request/", views.rejected_assistance_request, name="rejected_assistance_request"),
+    path("status-updated-request-detail/", views.status_updated_request_detail, name="status_updated_request_detail"),
+
+    path("total-volunteer/", views.total_volunteer, name="total_volunteer"),
+    path("admin-volunteer-detail/", views.admin_volunteer_detail, name="admin_volunteer_detail"),
 ]

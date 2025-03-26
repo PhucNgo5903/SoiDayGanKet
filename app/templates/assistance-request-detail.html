@@ -1,0 +1,70 @@
+{% extends 'base-db-admin.html' %}
+
+{% load static %}
+
+{% block main %}
+<style>
+    .scrollable-container {
+        max-height: 100vh; 
+        overflow-y: auto; 
+        overflow-x: hidden; 
+        width: 100%; 
+    }
+</style>
+    
+<div class="container p-4 scrollable-container">
+    <h2 class="text-center font-weight-bold">Assistance Request Detail</h2>
+    <div class="card p-3 mt-3">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{% static 'images/poor kids.jpg' %}" class="img-fluid" alt="Assistance Image">
+            </div>
+            <div class="col-md-4">
+                <img src="{% static 'images/poor kids.jpg' %}" class="img-fluid" alt="Assistance Image">
+            </div>
+            <div class="col-md-4">
+                <img src="{% static 'images/poor kids.jpg' %}" class="img-fluid" alt="Assistance Image">
+            </div>
+            
+        </div>
+        <p><strong>Reason for support:</strong> Em bé 8 tuổi mắc bệnh hiểm, gia đình nghèo</p>
+        <p><strong>Note:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <hr>
+        <div class="row">
+            
+            <div class="col-md-6">
+                <p><strong>Type of support:</strong> Healthcare</p>
+                <p><strong>Priority level:</strong> Normal</p>
+                <p><strong>Location:</strong> G. P. O., Asafoatse Nettey Road, Accra...</p>
+                <p><strong>Desired support time:</strong> May 12, 2020 – June 12, 2020</p>
+                <p><strong>Verification documents:</strong> <a href="#">file1.pdf</a>, <a href="#">file2.pdf</a></p>
+            </div>
+        
+            
+            <div class="col-md-6">
+                <p><strong>Representative:</strong> Phuc Ngo</p>
+                <p><strong>Del:</strong> 0909090909</p>
+                <p><strong>Receiving condition:</strong> Waiting</p>
+                <div class="form-group">
+                    <label for="status"><strong>Status:</strong></label>
+                    <select id="status" class="form-control">
+                        <option>Pending</option>
+                        <option>Accept</option>
+                        <option>Reject</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="admin_remark"><strong>Admin remark:</strong></label>
+            <textarea id="admin_remark" class="form-control" rows="3" placeholder="Enter admin remark..."></textarea>
+        </div>
+        <br>
+        <a href="{% url 'new_assistance_request' %}" class="btn btn-primary">Save</a>
+    </div>
+    <!-- <div class="alert alert-success mt-3" role="alert">
+        Assistance Request Status Updated Successfully
+    </div> -->
+</div>
+{% endblock main %}

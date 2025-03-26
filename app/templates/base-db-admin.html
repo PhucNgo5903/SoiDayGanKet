@@ -8,7 +8,7 @@
     <title>Donation & Volunteer System</title>
     <link rel="icon" type="image/x-icon" href="{% static 'images/helping-hand.png' %}" />
     <!-- Font Awesome icons (free version)-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Google fonts-->  
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;100;300;700&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
     <div class="sidebar">
         <div class="logo_content">
             <div class="logo">
-                <i id="icon-home" class="fa fa-home" aria-hidden="true"></i>
+                <i id="icon-home" class="fa-solid fa-home"></i>
                 <div class="logo_name">Admin</div>
             </div>
             <span id="btn-sidebar"><i class="fa fa-bars"  aria-hidden="true"></i></span>
@@ -100,8 +100,9 @@
                     <i class="down-arrow fa-solid fa-angle-down"></i>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdownarea">
-                    <li><a class="dropdown-item" href="#!">New Assistance Request</a></li>
-                    <li><a class="dropdown-item" href="#!">Accepted Assistance Request</a></li>
+                    <li><a class="dropdown-item" href="{% url 'new_assistance_request' %}">New Assistance Request</a></li>
+                    <li><a class="dropdown-item" href="{% url 'accepted_assistance_request' %}">Accepted Assistance Request</a></li>
+                    <li><a class="dropdown-item" href="{% url 'rejected_assistance_request' %}">Rejected Assistance Request</a></li>
                    </ul>  
             </li>
             {% comment %} <li>

@@ -255,3 +255,25 @@ def index_beneficiary(request):
 
 def index_admin(request):
     return render(request, "index-admin.html")
+
+
+def new_assistance_request(request):
+    return render(request, "new-assistance-request.html")
+
+def assistance_request_detail(request):
+    return render(request, "assistance-request-detail.html")
+
+def accepted_assistance_request(request):
+    return render(request, "accepted-assistance-request.html")
+
+def status_updated_request_detail(request):
+    return render(request, "status-updated-request-detail.html")
+
+def rejected_assistance_request(request):
+    return render(request, "rejected-assistance-request.html")
+
+def total_volunteer(request):
+    return render(request, "total_volunteer.html")
+
+def admin_volunteer_detail(request):
+    return render(request, "admin-volunteer-detail.html")
