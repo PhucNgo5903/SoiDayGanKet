@@ -22,9 +22,25 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("gallery/", views.gallery, name="gallery"),
     path("login-admin/", views.login_admin, name="login_admin"),
-    path("login-donor/", views.login_donor, name="login_donor"),
-    path("login-volunteer/", views.login_volunteer, name="login_volunteer"),
-    path("signup-donor/", views.signup_donor, name="signup_donor"),
-    path("signup-volunteer/", views.signup_volunteer, name="signup_volunteer"),
-    
+    path("login-donor/", views.login_donor.as_view(), name="login_donor"),
+    path("login-beneficiary/", views.login_beneficiary.as_view(), name="login_beneficiary"),
+    path("login-volunteer/", views.login_volunteer.as_view(), name="login_volunteer"),
+    path("signup-donor/", views.signup_donor.as_view(), name="signup_donor"),
+    path("signup-volunteer/", views.signup_volunteer.as_view(), name="signup_volunteer"),
+    path("signup-beneficiary/", views.signup_beneficiary.as_view(), name="signup_beneficiary"),
+
+    path("index-donor/", views.index_donor, name="index_donor"),
+    path("index-volunteer/", views.index_volunteer, name="index_volunteer"),
+    path("index-beneficiary/", views.index_beneficiary, name="index_beneficiary"),
+    path("index-admin/", views.index_admin, name="index_admin"),
+
+
+    path("new-assistance-request/", views.new_assistance_request, name="new_assistance_request"),
+    path("assistance-request-detail/", views.assistance_request_detail, name="assistance_request_detail"),
+    path("accepted-assistance-request/", views.accepted_assistance_request, name="accepted_assistance_request"),
+    path("rejected-assistance-request/", views.rejected_assistance_request, name="rejected_assistance_request"),
+    path("status-updated-request-detail/", views.status_updated_request_detail, name="status_updated_request_detail"),
+
+    path("total-volunteer/", views.total_volunteer, name="total_volunteer"),
+    path("admin-volunteer-detail/", views.admin_volunteer_detail, name="admin_volunteer_detail"),
 ]
