@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-{%load static%}
-<html lang="vi">
+{% load static %}
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDKL - Dashboard</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -14,22 +14,60 @@
             font-family: Arial, sans-serif;
         }
 
-
         body {
             display: flex;
             height: 100vh;
             background-color: #f4f4f4;
         }
 
-
-        /* Thanh sidebar */
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background: white;
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            transition: 0.3s;
         }
 
+        .sidebar.hidden {
+            left: -250px;
+        }
+
+        /* Toggle button */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .toggle-btn:hover {
+            background: #0056b3;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #333;
+        }
+
+        .close-btn:hover {
+            color: red;
+        }
 
         /* Logo */
         .logo {
@@ -38,31 +76,27 @@
             margin-bottom: 20px;
         }
 
-
         .logo img {
             width: 40px;
             height: 40px;
             margin-right: 10px;
         }
 
-
         .logo h2 {
             font-size: 20px;
             color: #007bff;
         }
 
-
-        /* Danh sách điều hướng */
+        /* Navigation list */
         .nav-list {
             list-style: none;
+            padding: 0;
         }
-
-
+        
         .nav-list li {
             margin: 15px 0;
         }
-
-
+        
         .nav-list a {
             text-decoration: none;
             font-size: 16px;
@@ -72,49 +106,48 @@
             padding: 10px;
             border-radius: 5px;
             transition: 0.3s;
+            white-space: nowrap; /* Ngăn chữ xuống dòng */
         }
-
-
+        
         .nav-list a i {
-            margin-right: 10px;
+            width: 25px; /* Đảm bảo icon có kích thước cố định */
+            text-align: center;
             font-size: 18px;
+            margin-right: 15px; /* Giữ khoảng cách giữa icon và chữ */
         }
-
-
+        
         /* Hiệu ứng hover */
         .nav-list a:hover {
             background: #007bff;
             color: white;
         }
+        
     </style>
 </head>
 <body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
-
-    <div class="sidebar">
-        <!-- Logo và tên hệ thống -->
+    <div class="sidebar hidden" id="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+        <!-- Logo and system name -->
         <div class="logo">
             <img src="{% static 'images/logo1.png' %}" alt="SDKL Logo">
             <h2>SDKL</h2>
         </div>
 
-
-        <!-- Danh sách điều hướng -->
+        <!-- Navigation list -->
         <ul class="nav-list">
-            <li><a href="#"><i class="fas fa-home"></i> Trang Chủ</a></li>
-            <li><a href="#"><i class="fas fa-plus-circle"></i> Gửi Yêu Cầu Trợ Giúp</a></li>
-            <li><a href="#"><i class="fas fa-history"></i> Lịch Sử Trợ Giúp</a></li>
-            <li><a href="#"><i class="fas fa-cogs"></i> Trạng Thái Hỗ Trợ</a></li>
-        </ul>
+            <li><a href="{% url 'index_beneficiary' %}"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="{% url 'send_request' %}"><i class="fa-solid fa-file-lines"></i> Submit Help Request</a></li>
+            <li><a href="{% url 'request_history' %}"><i class="fa-solid fa-clock-rotate-left"></i> Help Request History</a></li>
+            <li><a href="{% url 'support_request_list'%}"><i class="fa-solid fa-circle-info"></i> Support Status</a></li>
+        </ul>        
     </div>
 
-
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("hidden");
+        }
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-

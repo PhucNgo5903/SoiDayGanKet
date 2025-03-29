@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gửi Yêu Cầu Trợ Giúp</title>
+    <title>Submit Help Request</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
         body {
@@ -86,51 +86,51 @@
     {% include 'navbar-beneficiary.html' %}
 
     <div class="container">
-        <h1>Gửi Yêu Cầu Trợ Giúp</h1>
+        <h1>Submit Help Request</h1>
 
         <form action="#" method="POST" enctype="multipart/form-data">
-            <label for="support_reason">Lý do cần hỗ trợ:</label>
+            <label for="support_reason">Reason for Support:</label>
             <textarea id="support_reason" name="support_reason" rows="4"></textarea>
 
-            <label>Thêm ảnh:</label>
+            <label>Add Images:</label>
             <div class="upload-box" onclick="document.getElementById('image_upload').click();">
-                + Thêm ảnh
+                + Add Images
             </div>
             <input type="file" id="image_upload" name="image_upload" accept="image/*" multiple style="display: none;">
             <div class="image-preview" id="imagePreview"></div>
 
-            <label for="support_type">Loại hình hỗ trợ:</label>
+            <label for="support_type">Type of Support:</label>
             <select id="support_type" name="support_type">
-                <option value="food">Thực phẩm</option>
-                <option value="medical">Y tế</option>
-                <option value="education">Giáo dục</option>
+                <option value="food">Food</option>
+                <option value="medical">Medical</option>
+                <option value="education">Education</option>
             </select>
 
-            <label>Mức độ ưu tiên của yêu cầu:</label>
+            <label>Priority Level:</label>
             <div class="priority-container">
                 <select id="priority_level" name="priority_level">
-                    <option value="low">Thấp</option>
-                    <option value="medium">Trung bình</option>
-                    <option value="high">Cao</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
                 </select>
             </div>
 
-            <label for="phone">Số điện thoại:</label>
+            <label for="phone">Phone Number:</label>
             <input type="text" id="phone" name="phone">
 
-            <label for="document">Tài liệu chứng minh:</label>
+            <label for="document">Supporting Document:</label>
             <input type="file" id="document" name="document">
 
-            <label for="time_request">Thời gian mong muốn nhận trợ giúp:</label>
+            <label for="time_request">Preferred Time to Receive Support:</label>
             <input type="text" id="time_request" name="time_request" placeholder="DD/MM/YYYY - DD/MM/YYYY">
 
-            <label for="address">Địa điểm:</label>
+            <label for="address">Location:</label>
             <input type="text" id="address" name="address">
 
-            <label for="details">Mô tả chi tiết vấn đề:</label>
+            <label for="details">Detailed Description of Issue:</label>
             <textarea id="details" name="details" rows="4"></textarea>
 
-            <button type="submit">Gửi yêu cầu</button>
+            <button type="submit">Submit Request</button>
         </form>
     </div>
 

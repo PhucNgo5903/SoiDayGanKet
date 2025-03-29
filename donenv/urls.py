@@ -32,8 +32,8 @@ urlpatterns = [
     path("index-donor/", views.index_donor, name="index_donor"),
     path("index-volunteer/", views.index_volunteer, name="index_volunteer"),
     path("index-beneficiary/", views.index_beneficiary, name="index_beneficiary"),
-    path("send-request/", views.send_request, name="send-request"),
-    path("support-status/", views.support_status, name="support-status"),
-    path("support-request-list/", views.support_request_list, name="support-request-list"),
-    path("request-history/", views.request_history, name="request-history"),
+    path("send-request/", views.send_request, name="send_request"),
+    path("support-status/", views.support_status, name="support_status"),
+    path("support-request-list/", views.support_request_list, name="support_request_list"),
+    path("request-history/", views.request_history, name="request_history"),
 ]

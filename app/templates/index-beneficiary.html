@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,87 +42,78 @@
 </head>
 <body>
     {%include 'navbar-beneficiary.html'%}
-        <!-- Main Content -->
         <div class="content">
             <h2 class="mb-4">Dashboard</h2>
-            <!-- Nút Gửi Yêu Cầu Trợ Giúp -->
-<div class="d-flex justify-content-center my-4">
-    <a href="#" class="btn btn-primary btn-lg px-5 py-3 d-flex align-items-center">
-        <span class="fs-3 me-2">➕</span> 
-        <span class="fs-4">Gửi Yêu Cầu Trợ Giúp</span>
-    </a>
-</div>
-            <!-- Cards trạng thái -->
+            <div class="d-flex justify-content-center my-4">
+                <a href="{% url 'send_request' %}" class="btn btn-primary btn-lg px-5 py-3 d-flex align-items-center">
+                    <span class="fs-3 me-2">➕</span> 
+                    <span class="fs-4">Submit Help Request</span>
+                </a>
+            </div>
             <div class="row">
                 <div class="col-md-3">
                     <div class="card bg-warning text-white p-3">
-                        <h5>Yêu cầu đang xử lý</h5>
+                        <h5>Requests in Process</h5>
                         <h3>2</h3>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card bg-primary text-white p-3">
-                        <h5>Yêu cầu chờ duyệt</h5>
+                        <h5>Pending Approval</h5>
                         <h3>0</h3>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card bg-success text-white p-3">
-                        <h5>Yêu cầu hoàn thành</h5>
+                        <h5>Completed Requests</h5>
                         <h3>3</h3>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card bg-danger text-white p-3">
-                        <h5>Yêu cầu bị từ chối</h5>
+                        <h5>Rejected Requests</h5>
                         <h3>0</h3>
                     </div>
                 </div>
             </div>
-
-            <!-- Danh sách yêu cầu -->
             <div class="mt-4">
-                <h4>Danh sách yêu cầu</h4>
+                <h4>Request List</h4>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Loại Hỗ Trợ</th>
-                            <th>Địa Điểm</th>
-                            <th>Trạng Thái</th>
+                            <th>Support Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Hỗ trợ thực phẩm</td>
-                            <td>Quận 1</td>
-                            <td class="text-warning">Đang xử lý</td>
+                            <td>Food Assistance</td>
+                            <td>District 1</td>
+                            <td class="text-warning">In Process</td>
                         </tr>
                         <tr>
-                            <td>Hỗ trợ y tế</td>
-                            <td>Quận 3</td>
-                            <td class="text-success">Hoàn thành</td>
+                            <td>Medical Assistance</td>
+                            <td>District 3</td>
+                            <td class="text-success">Completed</td>
                         </tr>
                         <tr>
-                            <td>Hỗ trợ giáo dục</td>
-                            <td>Quận 7</td>
-                            <td class="text-primary">Chờ duyệt</td>
+                            <td>Educational Support</td>
+                            <td>District 7</td>
+                            <td class="text-primary">Pending Approval</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- Biểu đồ -->
             <div class="mt-4">
-                <h4>Số liệu thực tế</h4>
+                <h4>Actual Data</h4>
                 <canvas id="dataChart" width="400" height="200"></canvas>
             </div>
-
-            <!-- Card số liệu thực tế -->
             <div class="mt-4 row">
                 <div class="col-md-3">
                     <div class="card text-center p-3">
                         <div class="icon">🍽️</div>
-                        <h5>Hỗ trợ thực phẩm</h5>
+                        <h5>Food Assistance</h5>
                         <h3>1,390</h3>
                         <p class="text-success">▲ 2.35%</p>
                     </div>
@@ -130,7 +121,7 @@
                 <div class="col-md-3">
                     <div class="card text-center p-3">
                         <div class="icon">⚕️</div>
-                        <h5>Hỗ trợ y tế</h5>
+                        <h5>Medical Assistance</h5>
                         <h3>1,250</h3>
                         <p class="text-success">▲ 2.35%</p>
                     </div>
@@ -138,7 +129,7 @@
                 <div class="col-md-3">
                     <div class="card text-center p-3">
                         <div class="icon">📚</div>
-                        <h5>Hỗ trợ giáo dục</h5>
+                        <h5>Educational Support</h5>
                         <h3>980</h3>
                         <p class="text-success">▲ 1.80%</p>
                     </div>
@@ -146,24 +137,21 @@
                 <div class="col-md-3">
                     <div class="card text-center p-3">
                         <div class="icon">🤝</div>
-                        <h5>Tình nguyện viên hoạt động</h5>
+                        <h5>Active Volunteers</h5>
                         <h3>11,320</h3>
                         <p class="text-success">▲ 2.35%</p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Chart Script -->
     <script>
         var ctx = document.getElementById('dataChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Thực phẩm', 'Y tế', 'Giáo dục', 'Tình nguyện viên'],
+                labels: ['Food', 'Medical', 'Education', 'Volunteers'],
                 datasets: [{
-                    label: 'Số lượng hỗ trợ',
+                    label: 'Support Quantity',
                     data: [1390, 1250, 980, 11320],
                     backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0']
                 }]
