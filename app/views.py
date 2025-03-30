@@ -277,3 +277,6 @@ def total_volunteer(request):
 
 def admin_volunteer_detail(request):
     return render(request, "admin-volunteer-detail.html")
+
+def new_event_request(request):
+    return render(request, "new-event-request.html")

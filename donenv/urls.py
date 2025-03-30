@@ -43,4 +43,7 @@ urlpatterns = [
 
     path("total-volunteer/", views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/", views.admin_volunteer_detail, name="admin_volunteer_detail"),
+
+    path("new-event-request/", views.new_event_request, name="new_event_request"),
+
 ]
