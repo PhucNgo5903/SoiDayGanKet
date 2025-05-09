@@ -1,10 +1,8 @@
-
-
 {% extends "base.html" %}
 
 {% block main %}
 <div class="container">
-  <h2>Đăng ký tài khoản Tình nguyện viên</h2>
+  <h2>Đăng ký tổ chức từ thiện</h2>
 
   <form method="POST">
     {% csrf_token %}
@@ -35,7 +33,7 @@
     </div>
 
     <div class="form-group">
-      <label for="id_dob">Ngày sinh</label>
+      <label for="id_dob">Ngày thành lập</label>
       {{ form.dob }}
       {{ form.dob.errors }}
     </div>
@@ -53,21 +51,27 @@
     </div>
 
     <div class="form-group">
-      <label for="id_description">Mô tả</label>
+      <label for="id_description">Giới thiệu về tổ chức</label>
       {{ form.description }}
       {{ form.description.errors }}
     </div>
 
     <div class="form-group">
-      <label for="id_gender">Giới tính</label>
-      {{ form.gender }}
-      {{ form.gender.errors }}
+      <label for="id_type">Loại tổ chức</label>
+      {{ form.type }}
+      {{ form.type.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_website">Website</label>
+      {{ form.website }}
+      {{ form.website.errors }}
     </div>
 
     <button type="submit" class="btn btn-primary">Đăng ký</button>
   </form>
 
   <br>
-  <p>Đã có tài khoản? <a href="{% url 'login_volunteer' %}">Đăng nhập tại đây</a></p>
+  <p>Đã có tài khoản? <a href="{% url 'login_charity' %}">Đăng nhập tại đây</a></p>
 </div>
 {% endblock main %}
