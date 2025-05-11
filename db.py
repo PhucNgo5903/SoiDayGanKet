@@ -1,95 +1,141 @@
-import os
-import django
 import sqlite3
 from django.contrib.auth.hashers import make_password
-
+from datetime import datetime
+import os
+import django
 # Cấu hình Django settings
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Gr18_QLTPChungCu.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'donenv.settings')
 django.setup()
 
-# Kết nối hoặc tạo mới file cơ sở dữ liệu
+# Kết nối cơ sở dữ liệu
 con = sqlite3.connect('db.sqlite3')
 cur = con.cursor()
 
-# Chèn dữ liệu vào bảng User (mã hóa mật khẩu)
-password1 = make_password('ABC123')  # Mã hóa mật khẩu
-password2 = make_password('XYZ123')  # Mã hóa mật khẩu
-password3 = make_password('LMN123')  # Mã hóa mật khẩu
+# Tạo mật khẩu mã hóa
+password = make_password('123456')
 
-# Chèn 3 user với các mật khẩu khác nhau
-cur.execute('''
-    INSERT INTO auth_user (password, username, is_superuser, is_staff, is_active, last_name, email, date_joined, first_name) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-''', (password1, 'admin1', 1, 1, 1, 'Huyen', 'admin1@gmail.com', '2025-05-08 14:54:11', 'Admin1'))
-cur.execute('''
-    INSERT INTO auth_user (password, username, is_superuser, is_staff, is_active, last_name, email, date_joined, first_name) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-''', (password2, 'admin2', 0, 1, 1, 'Linh', 'admin2@gmail.com', '2025-05-08 14:54:11', 'Admin2'))
-cur.execute('''
-    INSERT INTO auth_user (password, username, is_superuser, is_staff, is_active, last_name, email, date_joined, first_name) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-''', (password3, 'admin3', 0, 1, 1, 'Nam', 'admin3@gmail.com', '2025-05-08 14:54:11', 'Admin3'))
+# === Bảng auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) ===
+users = [
+    (1, password, None, 1, 'adminuser', 'Admin', 'User', 'admin@example.com', 1, 1, datetime.now()),
+    (2, password, None, 0, 'voluser', 'Vol', 'User', 'vol@example.com', 0, 1, datetime.now()),
+    (3, password, None, 0, 'charityuser', 'Charity', 'User', 'charity@example.com', 0, 1, datetime.now()),
+    (4, password, None, 0, 'beneficiaryuser', 'Beneficiary', 'User', 'bene@example.com', 0, 1, datetime.now()),
+    (5, password, None, 0, 'extrauser', 'Extra', 'User', 'extra@example.com', 0, 1, datetime.now()),
+]
 
-# Chèn dữ liệu vào bảng NguoiDung cho 3 vai trò
-user_ids = [4, 5, 6]  # giả sử user_id là 1, 2, 3
-roles = ['Quản trị hệ thống', 'BQL Chung cư', 'Kế toán']
-for user_id, role in zip(user_ids, roles):
-    cur.execute('''
-        INSERT INTO apartment_management_nguoidung (user_id, vai_tro, so_dien_thoai, trang_thai) 
-        VALUES (?, ?, ?, ?)
-    ''', (user_id, role, f'012345678{user_id}', 'Đang hoạt động'))
+cur.executemany('''
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+''', users)
 
-# Chèn dữ liệu vào bảng HoGiaDinh
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_hogiadinh (id_chu_ho_id, so_can_ho, dien_tich, ghi_chu, thoi_gian_bat_dau_o, thoi_gian_ket_thuc_o, trang_thai) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (i, 101 + i, 50.0 + i, f'Ghi chú căn hộ {101 + i}', '2025-01-01', '2025-12-31', 'Đang ở'))
+# === Bảng app_nguoidung ===
+nguoidungs = [
+    (1, password, 'admin', 'admin@example.com', '1990-01-01', '0123456789', 'Address 1', 'Admin user', 'active', datetime.now()),
+    (2, password, 'volunteer', 'vol@example.com', '1992-02-02', '0123456790', 'Address 2', 'Volunteer user', 'active', datetime.now()),
+    (3, password, 'charity', 'charity@example.com', '1993-03-03', '0123456791', 'Address 3', 'Charity user', 'active', datetime.now()),
+    (4, password, 'beneficiary', 'bene@example.com', '1994-04-04', '0123456792', 'Address 4', 'Beneficiary user', 'active', datetime.now()),
+    (5, password, 'volunteer', 'extra@example.com', '1995-05-05', '0123456793', 'Address 5', 'Extra user', 'inactive', datetime.now()),
+]
 
-# Chèn dữ liệu vào bảng DanCu
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_dancu (ho_gia_dinh_id, ho_ten, ngay_sinh, gioi_tinh, ma_can_cuoc, so_dien_thoai, trang_thai, thoi_gian_chuyen_den, thoi_gian_chuyen_di) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (i, f'Nguyen Thi Lan {i}', '1990-05-05', 'Nữ', f'12345678{i}', f'0123456789{i}', 'Đang sinh sống', '2025-01-01', '2025-12-31'))
+cur.executemany('''
+INSERT INTO app_nguoidung (id, password, role, email, dob, phone, address, description, status, created_at, user_id)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+''', [(i+1, *nguoidungs[i][1:], i+1) for i in range(5)])
 
-# Chèn dữ liệu vào bảng KhoanThu
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_khoanthu (ten_khoan_thu, loai_khoan_thu, ghi_chu) 
-        VALUES (?, ?, ?)
-    ''', (f'Phí quản lý {i}', 'Bắt buộc', f'Phí quản lý hàng tháng {i}'))
+# === Volunteer ===
+cur.executemany('''
+INSERT INTO app_volunteer (user_id, gender) VALUES (?, ?)
+''', [(2, 'male'), (5, 'female')])
 
-# Chèn dữ liệu vào bảng DotThu
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_dotthu (khoan_thu_id, ten_dot_thu, noi_dung, thoi_gian_bat_dau, thoi_gian_ket_thuc, trang_thai) 
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (i, f'Đợt thu tháng {i}', f'Thu phí quản lý tháng {i}', f'2025-05-01', f'2025-05-31', 'Đang tiến hành'))
+# === Beneficiary ===
+cur.execute('INSERT INTO app_beneficiary (user_id, gender) VALUES (?, ?)', (4, 'female'))
 
-# Chèn dữ liệu vào bảng ChiTietThu
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_chitietthu (dot_thu_id, ho_gia_dinh_id, so_tien_can_nop, trang_thai_nop, ngay_nop) 
-        VALUES (?, ?, ?, ?, ?)
-    ''', (i, i, 500000 + (i * 100000), 'chưa nộp', None))
+# === CharityOrg ===
+cur.execute('INSERT INTO app_charityorg (user_id, type, website) VALUES (?, ?, ?)', (3, 'local', 'https://charity.org'))
 
-# Chèn dữ liệu vào bảng TamTruTamVang
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_tamtrutamvang (dan_cu_id, loai_tttv, thoi_gian_bat_dau, thoi_gian_ket_thuc, ly_do) 
-        VALUES (?, ?, ?, ?, ?)
-    ''', (i, 'Tạm trú', '2025-05-01', '2025-05-10', f'Công tác công ty {i}'))
+# === Skill ===
+skills = [('Cooking',), ('Teaching',), ('Driving',), ('Cleaning',), ('Designing',)]
+cur.executemany('INSERT INTO app_skill (name) VALUES (?)', skills)
 
-# Chèn dữ liệu vào bảng PhuongTien
-for i in range(1, 4):
-    cur.execute('''
-        INSERT INTO apartment_management_phuongtien (ho_gia_dinh_id, loai_phuong_tien, bien_so, mau, mo_ta) 
-        VALUES (?, ?, ?, ?, ?)
-    ''', (i, 'Ô tô', f'29A-1234{i}', 'Đen', f'Xe ô tô gia đình {i}'))
+# === VolunteerSkill ===
+cur.executemany('INSERT INTO app_volunteerskill (volunteer_id, skill_id) VALUES (?, ?)', [
+    (2, 1), (2, 2), (5, 3), (5, 4), (5, 5)
+])
+
+# === SupportArea ===
+areas = [
+    ('Food Supply',),
+    ('Medical Support',),
+    ('Education',),
+    ('Legal Assistance',),
+    ('Housing Support',)
+]
+cur.executemany('INSERT INTO app_supportarea (name) VALUES (?)', areas)
+
+
+# === SkillsSupportArea ===
+cur.executemany('INSERT INTO app_skillssupportarea (skill_id, support_area_id) VALUES (?, ?)', [
+    (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)
+])
+
+# === CharityOrgSupportArea ===
+cur.executemany('INSERT INTO app_charityorgsupportarea (charity_org_id, support_area_id) VALUES (?, ?)', [
+    (3, 1), (3, 2), (3, 3), (3, 4), (3, 5)
+])
+
+# === AssistanceRequestType ===
+types = [('Food',), ('Medical',), ('Shelter',), ('Education',), ('Transport',)]
+cur.executemany('INSERT INTO app_assistancerequesttype (name) VALUES (?)', types)
+
+# === AssistanceRequest ===
+requests = [
+    (4, 3, 'Need food', 'Requesting rice and noodles', 'high', 1715417600, 1715504000, 'pending', 'waiting', datetime.now(), 1, datetime.now(), 'Hanoi', 'http://proof.com/1', 'http://img.com/1'),
+    (4, 3, 'Need medicine', 'Urgent medical supplies', 'medium', 1715417600, 1715504000, 'approved', 'received', datetime.now(), 1, datetime.now(), 'Danang', 'http://proof.com/2', 'http://img.com/2'),
+    (4, 3, 'Need shelter', 'Temporary housing needed', 'low', 1715417600, 1715504000, 'approved', 'waiting', datetime.now(), 1, datetime.now(), 'Hue', 'http://proof.com/3', 'http://img.com/3'),
+    (4, 3, 'Need education', 'School support', 'medium', 1715417600, 1715504000, 'pending', 'waiting', datetime.now(), 1, datetime.now(), 'HCM', 'http://proof.com/4', 'http://img.com/4'),
+    (4, 3, 'Need transport', 'Bus tickets', 'low', 1715417600, 1715504000, 'pending', 'received', datetime.now(), 1, datetime.now(), 'Can Tho', 'http://proof.com/5', 'http://img.com/5'),
+]
+cur.executemany('''
+INSERT INTO app_assistancerequest (
+    beneficiary_id, charity_org_id, title, description, priority, start_date, end_date, status, receive, created_at,
+    approved_by_id, approved_at, place, proof_url, image
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+''', requests)
+
+# === AssistanceRequestTypeMap ===
+cur.executemany('''
+INSERT INTO app_assistancerequesttypemap (assistance_request_id, type_id) VALUES (?, ?)
+''', [(1,1), (2,2), (3,3), (4,4), (5,5)])
+
+# === Event ===
+events = [
+    (3, 1, 'Food Distribution', 'Distribute food packages', '2025-05-20 10:00:00', '2025-05-20 15:00:00', 'pending', datetime.now(), 1, datetime.now(), None, 10),
+    (3, 2, 'Medical Camp', 'Provide medical aid', '2025-05-21 09:00:00', '2025-05-21 14:00:00', 'approved', datetime.now(), 1, datetime.now(), 'http://report.com/1', 8),
+    (3, 3, 'Shelter Setup', 'Set up tents', '2025-05-22 08:00:00', '2025-05-22 12:00:00', 'completed', datetime.now(), 1, datetime.now(), 'http://report.com/2', 6),
+    (3, 4, 'Teaching Session', 'Teach children', '2025-05-23 13:00:00', '2025-05-23 17:00:00', 'pending', datetime.now(), 1, datetime.now(), '', 5),
+    (3, 5, 'Transport Help', 'Drive people to safe place', '2025-05-24 10:00:00', '2025-05-24 12:00:00', 'approved', datetime.now(), 1, datetime.now(), '', 7),
+]
+cur.executemany('''
+INSERT INTO app_event (
+    charity_org_id, assistance_request_id, title, description, start_time, end_time, status, created_at,
+    approved_by_id, approved_at, report_url, volunteers_number
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+''', events)
+
+# === EventRegistration ===
+registrations = [
+    (1, 2, 'pending', datetime.now(), None, None, None, None),
+    (2, 2, 'approved', datetime.now(), datetime.now(), None, 5, 'Great job!'),
+    (3, 5, 'completed', datetime.now(), datetime.now(), datetime.now(), 4, 'Good'),
+    (4, 2, 'pending', datetime.now(), None, None, None, None),
+    (5, 5, 'approved', datetime.now(), datetime.now(), None, 5, 'Nice'),
+]
+cur.executemany('''
+INSERT INTO app_eventregistration (
+    event_id, volunteer_id, status, registered_at, checked_in_at, checked_out_at, rating, review
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+''', registrations)
 
 # Lưu thay đổi và đóng kết nối
 con.commit()
 con.close()
-
-print("Dữ liệu đã được thêm vào!")
