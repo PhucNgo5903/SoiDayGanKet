@@ -1,64 +1,88 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Beneficiary, Donor, Volunteer
+from .models import NguoiDung, Volunteer, CharityOrg, Beneficiary
 
 
+# ==== Login Form ====
 class LoginForm(AuthenticationForm):
-    username = UsernameField(required=True, widget=forms.TextInput(attrs={'autofocus' : 'True',
-    'class': 'form-control', 'placeholder': 'username'}))
-    password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={'class': 'form-control',
-    'placeholder': 'Password'}))
+    username = forms.CharField(label="Username", max_length=150)
+    password = forms.CharField(label="Password", widget=forms.PasswordInput)
 
 
-
-class UserForm(UserCreationForm):
-    password1 = forms.CharField(
-        label="Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter Password"}),
-    )
-    password2 = forms.CharField(
-        label="Confirm Password (again)",
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter Password Again"}),
-    )
+# ==== Base Register Form for NguoiDung ====
+class BaseRegisterForm(forms.ModelForm):
+    username = forms.CharField(max_length=150)
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField()
+    dob = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    phone = forms.CharField(max_length=20)
+    address = forms.CharField(widget=forms.Textarea)
+    description = forms.CharField(widget=forms.Textarea)
 
     class Meta:
-        model = User
-        fields = ["first_name", "last_name", "username", "email", "password1", "password2"]
-        widgets = {
-            "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter First Name"}),
-            "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter Last Name"}),
-            "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Username"}),
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email ID"}),
-        }
+        model = NguoiDung
+        fields = ['username', 'password', 'confirm_password', 'email', 'dob', 'phone', 'address', 'description']
 
-class DonorSignupForm(forms.ModelForm):
-    userpic = forms.ImageField(widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm = cleaned_data.get("confirm_password")
+        if password and confirm and password != confirm:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data
 
-    class Meta:
-        model = Donor
-        fields = ["contact", "userpic"]
-        widgets = {
-            "contact": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Contact Number"}),
-        }
+    def save_user(self, role):
+        user = User.objects.create_user(
+            username=self.cleaned_data['username'],
+            password=self.cleaned_data['password']
+        )
+        nguoidung = NguoiDung.objects.create(
+            user=user,
+            role=role,  
+            password=self.cleaned_data['password'],  
+            email=self.cleaned_data['email'],
+            dob=self.cleaned_data['dob'],
+            phone=self.cleaned_data['phone'],
+            address=self.cleaned_data['address'],
+            description=self.cleaned_data['description'],
+            status='active'
+        )
+        return nguoidung
 
-class VolunteerSignupForm(forms.ModelForm):
-    userpic = forms.ImageField(widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+class VolunteerRegisterForm(BaseRegisterForm):
+    gender = forms.ChoiceField(choices=Volunteer.GENDER_CHOICES)
 
-    class Meta:
-        model = Volunteer
-        fields = ["contact", "userpic"]
-        widgets = {
-            "contact": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Contact Number"}),
-        }
+    def save(self, commit=True):
+        nguoidung = self.save_user(role='volunteer')
+        volunteer = Volunteer.objects.create(
+            user=nguoidung,
+            gender=self.cleaned_data['gender']
+        )
+        return volunteer
 
 
-class BeneficiarySignupForm(forms.ModelForm):
-    userpic = forms.ImageField(widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+class BeneficiaryRegisterForm(BaseRegisterForm):
+    gender = forms.ChoiceField(choices=Beneficiary.GENDER_CHOICES)
 
-    class Meta:
-        model = Beneficiary
-        fields = ["contact", "userpic"]
-        widgets = {
-            "contact": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Contact Number"}),
-        }
+    def save(self, commit=True):
+        nguoidung = self.save_user(role='beneficiary')
+        beneficiary = Beneficiary.objects.create(
+            user=nguoidung,
+            gender=self.cleaned_data['gender']
+        )
+        return beneficiary
+
+class CharityOrgRegisterForm(BaseRegisterForm):
+    type = forms.ChoiceField(choices=CharityOrg.ORG_TYPE_CHOICES)
+    website = forms.URLField(required=False)
+
+    def save(self, commit=True):
+        nguoidung = self.save_user(role='charity')
+        charity_org = CharityOrg.objects.create(
+            user=nguoidung,
+            type=self.cleaned_data['type'],
+            website=self.cleaned_data.get('website', '')
+        )
+        return charity_org

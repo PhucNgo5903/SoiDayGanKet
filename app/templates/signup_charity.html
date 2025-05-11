@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container">
+  <h2>Đăng ký tổ chức từ thiện</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="form-group">
+      <label for="id_username">Tên người dùng</label>
+      {{ form.username }}
+      {{ form.username.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_password">Mật khẩu</label>
+      {{ form.password }}
+      {{ form.password.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_confirm_password">Xác nhận mật khẩu</label>
+      {{ form.confirm_password }}
+      {{ form.confirm_password.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_email">Email</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_dob">Ngày thành lập</label>
+      {{ form.dob }}
+      {{ form.dob.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_phone">Số điện thoại</label>
+      {{ form.phone }}
+      {{ form.phone.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_address">Địa chỉ</label>
+      {{ form.address }}
+      {{ form.address.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_description">Giới thiệu về tổ chức</label>
+      {{ form.description }}
+      {{ form.description.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_type">Loại tổ chức</label>
+      {{ form.type }}
+      {{ form.type.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_website">Website</label>
+      {{ form.website }}
+      {{ form.website.errors }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Đăng ký</button>
+  </form>
+
+  <br>
+  <p>Đã có tài khoản? <a href="{% url 'login_charity' %}">Đăng nhập tại đây</a></p>
+</div>
+{% endblock main %}
