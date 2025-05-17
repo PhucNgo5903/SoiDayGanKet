@@ -1,4 +1,4 @@
-{% extends 'base-db-admin.html' %}
+{% extends 'admin/base-db-admin.html' %}
 
 {% load static %}
 
@@ -13,7 +13,7 @@
 </style>
     
 <div class="container p-4 scrollable-container">
-    <h2 class="text-center font-weight-bold">Assistance Request Detail</h2>
+    <h2 class="text-center font-weight-bold">Status Updated Assistance Request Details</h2>
     <div class="card p-3 mt-3">
         <div class="row">
             <div class="col-md-4">
@@ -45,26 +45,13 @@
                 <p><strong>Representative:</strong> Phuc Ngo</p>
                 <p><strong>Del:</strong> 0909090909</p>
                 <p><strong>Receiving condition:</strong> Waiting</p>
-                <div class="form-group">
-                    <label for="status"><strong>Status:</strong></label>
-                    <select id="status" class="form-control">
-                        <option>Pending</option>
-                        <option>Accept</option>
-                        <option>Reject</option>
-                    </select>
-                </div>
+                <p><strong>Status:</strong> <span style="color: #0BDB5E; font-weight: bold;">Accepted</span> / <span style="color: #f10808; font-weight: bold;">Rejected</span></p>
             </div>
         </div>
-
         <div class="form-group">
             <label for="admin_remark"><strong>Admin remark:</strong></label>
-            <textarea id="admin_remark" class="form-control" rows="3" placeholder="Enter admin remark..."></textarea>
-        </div>
-        <br>
-        <a href="{% url 'new_assistance_request' %}" class="btn btn-primary">Save</a>
+            <textarea id="admin_remark" class="form-control" rows="3" >Admin Remark for this request, explain reasons if reject</textarea>
+        </div>     
     </div>
-    <!-- <div class="alert alert-success mt-3" role="alert">
-        Assistance Request Status Updated Successfully
-    </div> -->
 </div>
 {% endblock main %}
