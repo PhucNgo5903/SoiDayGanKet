@@ -124,10 +124,11 @@ class AssistanceRequest(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     receiving_status = models.CharField(max_length=20, choices=RECEIVING_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
-    approved_by = models.ForeignKey(NguoiDung, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_requests')
-    approved_at = models.DateTimeField(null=True, blank=True)
+    update_by = models.ForeignKey(NguoiDung, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_requests')
+    update_status_at = models.DateTimeField(null=True, blank=True)
     place = models.TextField()
     proof_url = models.URLField()
+    admin_remark = models.TextField(default="No admin remark")
 
     def __str__(self):
         return self.title
