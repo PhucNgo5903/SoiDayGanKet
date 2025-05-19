@@ -112,7 +112,7 @@ cur.executemany('''
 con.commit()
 con.close()
 print("✅ Đã chèn dữ liệu mẫu vào cơ sở dữ liệu!")
-Mở lại kết nối
+
 con = sqlite3.connect('db.sqlite3')
 cur = con.cursor()
 
