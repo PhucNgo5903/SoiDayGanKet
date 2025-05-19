@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from app.models import AssistanceRequest
 from .views import role_required
-
+from django.core.paginator import Paginator
 
 @role_required('admin')
 def index_admin(request):
@@ -9,7 +10,34 @@ def index_admin(request):
 
 @role_required('admin')
 def new_assistance_request(request):
-    return render(request, "admin/new-assistance-request.html")
+    per_page = request.GET.get('entries', 'all')
+   
+    assistance_requests = AssistanceRequest.objects.filter(status='pending').order_by('-created_at')
+    
+    
+    if per_page == 'all':
+        page_obj = assistance_requests  
+        is_paginated = False
+    else:
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            per_page = 10  
+
+        paginator = Paginator(assistance_requests, per_page)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+        is_paginated = page_obj.has_other_pages()
+    
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+        'is_paginated': is_paginated,
+        'total_count': assistance_requests.count(),
+    }
+    return render(request, 'admin/new-assistance-request.html', context)
+
+
 
 @role_required('admin')
 def assistance_request_detail(request):
