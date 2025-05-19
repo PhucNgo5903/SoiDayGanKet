@@ -175,7 +175,7 @@ class Event(models.Model):
 
 # ==== Event Registration Model ====
 class EventRegistration(models.Model):
-    STATUS_CHOICES = [('pending', 'Pending'), ('approved', 'Approved'), ('completed', 'Completed')]
+    STATUS_CHOICES = [('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('completed', 'Completed')]
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
