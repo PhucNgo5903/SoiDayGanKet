@@ -2,68 +2,26 @@
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static './css/style-beneficiary.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-beneficiary.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
 {% endblock %}
 
 {% block main %}
-<div class="container" >
-    <h1>Submit Help Request</h1>
+<div class="container">
+    <h1>Submit Assistance Request</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ request_form.as_p }}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
+    
+    {{ type_form.as_p }}
 
-        <label for="{{ form.support_reason.id_for_label }}">Reason for Support:</label>
-        {{ form.support_reason }}
+    
+    {{ image_form.as_p }}
 
-        <label for="{{ form.image_upload.id_for_label }}">Add Image:</label>
-        <div class="upload-box" onclick="document.getElementById('id_image_upload').click();">
-            + Add Image
-        </div>
-        {{ form.image_upload }}
-        <div class="image-preview" id="imagePreview"></div>
+    <button type="submit">Submit</button>
+</form>
 
-        <label for="{{ form.support_type.id_for_label }}">Type of Support:</label>
-        {{ form.support_type }}
-
-        <label for="{{ form.priority_level.id_for_label }}">Priority Level:</label>
-        <div class="priority-container">
-            {{ form.priority_level }}
-        </div>
-
-        <label for="{{ form.phone.id_for_label }}">Phone Number:</label>
-        {{ form.phone }}
-
-        <label for="{{ form.document.id_for_label }}">Supporting Document:</label>
-        {{ form.document }}
-
-        <label for="{{ form.time_request.id_for_label }}">Preferred Time to Receive Support:</label>
-        {{ form.time_request }}
-
-        <label for="{{ form.address.id_for_label }}">Location:</label>
-        {{ form.address }}
-
-        <label for="{{ form.details.id_for_label }}">Detailed Description of Issue:</label>
-        {{ form.details }}
-
-        <button type="submit">Submit Request</button>
-    </form>
 </div>
-
-<script>
-    document.getElementById("id_image_upload").addEventListener("change", function(event) {
-        let imagePreview = document.getElementById("imagePreview");
-        imagePreview.innerHTML = "";
-        let file = event.target.files[0];
-        if (file) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let img = document.createElement("img");
-                img.src = e.target.result;
-                imagePreview.appendChild(img);
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
 {% endblock %}

@@ -2,8 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from .models import NguoiDung, Volunteer, CharityOrg, Beneficiary
-
+from .models import NguoiDung, Volunteer, CharityOrg, Beneficiary, AssistanceRequest, AssistanceRequestType, AssistanceRequestImage, AssistanceRequestTypeMap
 
 # ==== Login Form ====
 class LoginForm(AuthenticationForm):
@@ -97,14 +96,25 @@ class CharityOrgRegisterForm(BaseRegisterForm):
 
     
 # -------------------------------BENEFICIARY------------------------
-class HelpRequestForm(forms.Form):
-    support_reason = forms.CharField(required=True)
-    image_upload = forms.ImageField(required=False)
-    support_type = forms.ChoiceField(choices=[('food', 'Food'), ('medical', 'Medical'), ('education', 'Education')])
-    priority_level = forms.ChoiceField(choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High')])
-    phone = forms.CharField(required=True)
-    document = forms.FileField(required=False)
-    time_request = forms.CharField(required=False)
-    address = forms.CharField(required=True)
-    details = forms.CharField(widget=forms.Textarea, required=True)
 
+
+class AssistanceRequestForm(forms.ModelForm):
+    class Meta:
+        model = AssistanceRequest
+        fields = ['title', 'description', 'priority', 'start_date', 'end_date', 'place', 'proof_url']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+        
+class AssistanceRequestTypeForm(forms.Form):
+    types = forms.ModelMultipleChoiceField(
+        queryset=AssistanceRequestType.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Assistance Reques Type"
+    )
+
+
+class AssistanceRequestImageForm(forms.Form):
+    image_url = forms.URLField(label="Assistance Request Image", required=False)
