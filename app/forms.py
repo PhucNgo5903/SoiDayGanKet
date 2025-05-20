@@ -96,7 +96,7 @@ class CharityOrgRegisterForm(BaseRegisterForm):
         return charity_org
 
     
-    # -------------------------------BENEFICIARY------------------------
+# -------------------------------BENEFICIARY------------------------
 class HelpRequestForm(forms.Form):
     support_reason = forms.CharField(required=True)
     image_upload = forms.ImageField(required=False)
