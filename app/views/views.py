@@ -1,4 +1,3 @@
-
 from datetime import date
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -109,13 +108,15 @@ class signup_charity_org(View):
         if form.is_valid():
             form.save()
             return redirect('login_charity')
-        return render(request, 'signup_charity.html', {'form': form})
+        return render(request, 'share/signup_charity.html', {'form': form})
 
 
 
 
 # def login_admin(request):
 #     return render(request, 'share/login-admin.html')
+
+
 def login_admin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -124,20 +125,23 @@ def login_admin(request):
         # Lấy tài khoản admin từ .env
         admin_username = config('ADMIN_USERNAME')
         admin_password = config('ADMIN_PASSWORD')
+        admin_email = config('ADMIN_EMAIL', default='admin@example.com')  
 
         if username == admin_username and password == admin_password:
             # Kiểm tra user đã tồn tại chưa
             user = User.objects.filter(username=admin_username).first()
             if not user:
-                # Nếu chưa có thì tạo mới User
-                user = User.objects.create_user(username=admin_username, password=admin_password)
+                # Tạo mới User
+                user = User.objects.create_user(
+                    username=admin_username,
+                    password=admin_password,
+                    email=admin_email
+                )
 
                 # Tạo bản ghi NguoiDung cho admin
                 NguoiDung.objects.create(
                     user=user,
-                    password=admin_password,  # hoặc để null nếu không cần
                     role='admin',
-                    email='admin@example.com',  # Bạn có thể lấy từ .env nếu muốn
                     dob=date(1990, 1, 1),
                     phone='0123456789',
                     address='Trụ sở admin',
@@ -160,5 +164,3 @@ def login_admin(request):
             messages.error(request, "Sai thông tin đăng nhập.")
 
     return render(request, 'share/login-admin.html')
-
-

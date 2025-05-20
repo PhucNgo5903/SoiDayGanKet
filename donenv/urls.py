@@ -30,6 +30,15 @@ urlpatterns = [
     path("rejected-assistance-request/", admin_views.rejected_assistance_request, name="rejected_assistance_request"),
     path("status-updated-request-detail/", admin_views.status_updated_request_detail, name="status_updated_request_detail"),
 
+
+    path("new-event-request/", admin_views.new_event_request, name="new_event_request"),
+    path("event-request-detail/<int:event_id>/", admin_views.event_request_detail, name="event_request_detail"),
+    path("approved-event/", admin_views.approved_event, name="approved_event"),
+    path("rejected-event-request/", admin_views.rejected_event_request, name="rejected_event_request"),
+    path("full-volunteer-event/", admin_views.full_volunteer_event, name="full_volunteer_event"),
+    path("completed-event/", admin_views.completed_event, name="completed_event"),
+    path("all-event/", admin_views.all_event, name="all_event"),
+
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
 ]
