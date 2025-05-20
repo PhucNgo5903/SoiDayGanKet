@@ -1,3 +1,4 @@
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
@@ -13,9 +14,9 @@ class LoginForm(AuthenticationForm):
 # ==== Base Register Form for NguoiDung ====
 class BaseRegisterForm(forms.ModelForm):
     username = forms.CharField(max_length=150)
+    email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
-    email = forms.EmailField()
     dob = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     phone = forms.CharField(max_length=20)
     address = forms.CharField(widget=forms.Textarea)
@@ -23,7 +24,7 @@ class BaseRegisterForm(forms.ModelForm):
 
     class Meta:
         model = NguoiDung
-        fields = ['username', 'password', 'confirm_password', 'email', 'dob', 'phone', 'address', 'description']
+        fields = ['dob', 'phone', 'address', 'description']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -34,15 +35,17 @@ class BaseRegisterForm(forms.ModelForm):
         return cleaned_data
 
     def save_user(self, role):
+        # Tạo User (tài khoản đăng nhập)
         user = User.objects.create_user(
             username=self.cleaned_data['username'],
+            email=self.cleaned_data['email'],
             password=self.cleaned_data['password']
         )
+
+        # Tạo NguoiDung liên kết với User
         nguoidung = NguoiDung.objects.create(
             user=user,
-            role=role,  
-            password=self.cleaned_data['password'],  
-            email=self.cleaned_data['email'],
+            role=role,
             dob=self.cleaned_data['dob'],
             phone=self.cleaned_data['phone'],
             address=self.cleaned_data['address'],
@@ -51,6 +54,8 @@ class BaseRegisterForm(forms.ModelForm):
         )
         return nguoidung
 
+
+# ==== Volunteer Register Form ====
 class VolunteerRegisterForm(BaseRegisterForm):
     gender = forms.ChoiceField(choices=Volunteer.GENDER_CHOICES)
 
@@ -63,6 +68,7 @@ class VolunteerRegisterForm(BaseRegisterForm):
         return volunteer
 
 
+# ==== Beneficiary Register Form ====
 class BeneficiaryRegisterForm(BaseRegisterForm):
     gender = forms.ChoiceField(choices=Beneficiary.GENDER_CHOICES)
 
@@ -74,6 +80,8 @@ class BeneficiaryRegisterForm(BaseRegisterForm):
         )
         return beneficiary
 
+
+# ==== Charity Org Register Form ====
 class CharityOrgRegisterForm(BaseRegisterForm):
     type = forms.ChoiceField(choices=CharityOrg.ORG_TYPE_CHOICES)
     website = forms.URLField(required=False)
@@ -86,6 +94,7 @@ class CharityOrgRegisterForm(BaseRegisterForm):
             website=self.cleaned_data.get('website', '')
         )
         return charity_org
+
     
     # -------------------------------BENEFICIARY------------------------
 class HelpRequestForm(forms.Form):
@@ -98,3 +107,4 @@ class HelpRequestForm(forms.Form):
     time_request = forms.CharField(required=False)
     address = forms.CharField(required=True)
     details = forms.CharField(widget=forms.Textarea, required=True)
+
