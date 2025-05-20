@@ -13,7 +13,12 @@ urlpatterns = [
 
     path("login-volunteer/", views.login_volunteer.as_view(), name="login_volunteer"),
     path("signup-volunteer/", views.signup_volunteer.as_view(), name="signup_volunteer"),
-    path("volunteer/index-volunteer/", volunteer_views.index_volunteer, name="index_volunteer"),
+    path("volunteer/home-volunteer/", volunteer_views.volunteer_home, name="volunteer_home"),
+    path("volunteer/events-volunteer/", volunteer_views.volunteer_events, name="volunteer_events"),
+    path("volunteer/statistics-volunteer/", volunteer_views.volunteer_statistics, name="volunteer_statistics"),
+    path("volunteer/profile-volunteer/", volunteer_views.volunteer_profile, name="volunteer_profile"),
+    path("volunteer/logout-volunteer/", volunteer_views.logout_view, name="logout"),
+
 
     path("login-beneficiary/", views.login_beneficiary.as_view(), name="login_beneficiary"),
     path("signup-beneficiary/", views.signup_beneficiary.as_view(), name="signup_beneficiary"),
@@ -32,4 +37,6 @@ urlpatterns = [
 
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
+
 ]
+

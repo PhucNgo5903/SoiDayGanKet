@@ -1,0 +1,72 @@
+{% extends "volunteer/base-volunteer.html" %}
+
+{% block main %}
+
+<!-- BẢNG TIÊU CHÍ (CÓ KHUNG) -->
+<section class="mt-4">
+  <div class="container">
+    <div class="p-4 shadow-sm bg-white" style="border-radius: 30px;">
+        <div class="row text-center">
+        <div class="col-md-4 mb-4">
+          <i class="fa fa-tint fa-2x text-primary mb-2"></i>
+          <h5 class="fw-bold">Clean Water</h5>
+          <p>Providing clean water and building water supply systems for underprivileged communities, ensuring everyone has access to a safe and reliable water source.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <i class="fa fa-utensils fa-2x text-primary mb-2"></i>
+          <h5 class="fw-bold">Eating Well</h5>
+          <p>Providing nutritious meals for the poor and organizing educational programs on healthy eating habits.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <i class="fa fa-medkit fa-2x text-primary mb-2"></i>
+          <h5 class="fw-bold">Health Care</h5>
+          <p>Providing free medical services, healthcare check-ups, and disease prevention for underserved communities.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <i class="fa fa-heart fa-2x text-primary mb-2"></i>
+          <h5 class="fw-bold">Caring & Concern</h5>
+          <p>Supporting the care of the elderly, people with disabilities, and vulnerable individuals in society through social programs.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <i class="fa fa-book fa-2x text-primary mb-2"></i>
+          <h5 class="fw-bold">Schooling</h5>
+          <p>Providing scholarships, learning materials, and skill-building courses for children and youth in disadvantaged areas.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <i class="fa fa-globe fa-2x text-primary mb-2"></i>
+          <h5 class="fw-bold">Traveling</h5>
+          <p>Promoting sustainable tourism, creating opportunities for local communities, and protecting the environment.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SỰ KIỆN ĐÃ DIỄN RA -->
+<section class="mt-5">
+  <div class="container">
+    <h3 class="text-center mb-4">Events That Made a Difference</h3>
+    <div class="row">
+      {% for event in completed_events %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if event.image %}
+          <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text">{{ event.description|truncatechars:100 }}</p>
+            <p class="text-muted"><small>{{ event.end_time|date:"M d, Y" }}</small></p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center">
+        <p>No completed events to show yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

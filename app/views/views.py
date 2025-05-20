@@ -46,7 +46,7 @@ class login_volunteer(View):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('index_volunteer')
+            return redirect('volunteer_home')
         return render(request, 'share/login-volunteer.html', {'form': form})
 
 
