@@ -15,6 +15,9 @@ urlpatterns = [
     path("signup-volunteer/", views.signup_volunteer.as_view(), name="signup_volunteer"),
     path("volunteer/index-volunteer/", volunteer_views.index_volunteer, name="index_volunteer"),
 
+    #--------------------------------- BENEFICIARY-------------------------
+    
+    path("send-request/", beneficiary_views.send_request, name ="send_request"),
     path("login-beneficiary/", views.login_beneficiary.as_view(), name="login_beneficiary"),
     path("signup-beneficiary/", views.signup_beneficiary.as_view(), name="signup_beneficiary"),
     path("beneficiary/index-beneficiary/", beneficiary_views.index_beneficiary, name="index_beneficiary"),
@@ -32,4 +35,6 @@ urlpatterns = [
 
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
+    
+
 ]

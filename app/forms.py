@@ -86,3 +86,15 @@ class CharityOrgRegisterForm(BaseRegisterForm):
             website=self.cleaned_data.get('website', '')
         )
         return charity_org
+    
+    # -------------------------------BENEFICIARY------------------------
+class HelpRequestForm(forms.Form):
+    support_reason = forms.CharField(required=True)
+    image_upload = forms.ImageField(required=False)
+    support_type = forms.ChoiceField(choices=[('food', 'Food'), ('medical', 'Medical'), ('education', 'Education')])
+    priority_level = forms.ChoiceField(choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High')])
+    phone = forms.CharField(required=True)
+    document = forms.FileField(required=False)
+    time_request = forms.CharField(required=False)
+    address = forms.CharField(required=True)
+    details = forms.CharField(widget=forms.Textarea, required=True)
