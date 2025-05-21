@@ -49,7 +49,7 @@
     <div class="row">
       {% for event in completed_events %}
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+        <a href="{% url 'event_detail' event.id %}" class="card h-100 shadow-sm text-decoration-none text-dark">
           {% if event.image %}
           <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
           {% endif %}
@@ -58,12 +58,35 @@
             <p class="card-text">{{ event.description|truncatechars:100 }}</p>
             <p class="text-muted"><small>{{ event.end_time|date:"M d, Y" }}</small></p>
           </div>
-        </div>
+        </a>
       </div>
       {% empty %}
       <div class="col-12 text-center">
         <p>No completed events to show yet.</p>
       </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<!-- DANH SÁCH TÌNH NGUYỆN VIÊN -->
+<section class="mt-5">
+  <div class="container">
+    <h3 class="text-center mb-4">Our Volunteers</h3>
+    <div class="row">
+      {% for volunteer in volunteers %}
+        <div class="col-md-3 mb-4">
+          <div class="card h-100 shadow-sm p-3">
+            <h6 class="mb-1">
+              {{ volunteer.user.user.get_full_name|default:volunteer.user.user.username }}
+            </h6>
+            <p class="text-muted mb-0"><small>{{ volunteer.user.email }}</small></p>
+            <p class="mb-0"><small>{{ volunteer.gender|capfirst }}</small></p>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center">
+          <p>No volunteers found.</p>
+        </div>
       {% endfor %}
     </div>
   </div>

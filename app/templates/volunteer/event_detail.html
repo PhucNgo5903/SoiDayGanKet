@@ -1,0 +1,43 @@
+{% extends "volunteer/base-volunteer.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+  <h2 class="mb-4 text-center fw-bold">{{ event.title }}</h2>
+
+  <div class="row">
+    <!-- Ảnh bên trái -->
+    <div class="col-md-6">
+      <img src="{{ event.image }}" alt="{{ event.title }}" class="img-fluid rounded shadow-sm">
+    </div>
+
+    <!-- Nội dung bên phải -->
+    <div class="col-md-6">
+      <p>{{ event.description }}</p>
+
+      <ul class="list-unstyled">
+        <li><strong>Thời gian bắt đầu:</strong> {{ event.start_time|date:"d/m/Y H:i" }}</li>
+        <li><strong>Thời gian kết thúc:</strong> {{ event.end_time|date:"d/m/Y H:i" }}</li>
+        <li><strong>Địa điểm:</strong> {{ event.assistance_request.place }}</li>
+        <li><strong>Số lượng tình nguyện viên:</strong> {{ event.volunteers_number }}</li>
+      </ul>
+
+      {% if registration %}
+  <div class="alert alert-info mt-4">
+    Bạn đã đăng ký sự kiện này. 
+    {% if registration.status == 'pending' %}
+      <strong>Trạng thái:</strong> Chờ duyệt.
+    {% elif registration.status == 'approved' %}
+      <strong>Trạng thái:</strong> Đã được duyệt . Hẹn gặp bạn tại sự kiện!
+    {% elif registration.status == 'completed' %}
+      <strong>Trạng thái:</strong> Đã hoàn thành. Cảm ơn bạn đã tham gia!
+    {% endif %}
+  </div>
+{% else %}
+  <!-- Form đăng ký nếu chưa đăng ký -->
+{% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
