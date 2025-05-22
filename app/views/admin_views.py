@@ -1,7 +1,7 @@
 
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
-from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestTypeMap, EventRegistration, Volunteer
+from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestTypeMap, EventRegistration, Volunteer, VolunteerSkill
 from .views import role_required
 from django.core.paginator import Paginator
 from django.utils import timezone   
@@ -202,32 +202,6 @@ def total_volunteer(request):
 
     # Danh sách tất cả tình nguyện viên + trạng thái hoạt động
     all_volunteers = Volunteer.objects.select_related('user__user').all()
-    # volunteer_data = []
-    # for v in all_volunteers:
-    #     nguoidung = v.user
-    #     latest_registration = (
-    #         EventRegistration.objects
-    #         .filter(volunteer=v)
-    #         .order_by('-event__start_time')
-    #         .first()
-    #     )
-
-    #     now_time = now()
-    #     is_active = (
-    #         latest_registration is not None
-    #         and latest_registration.status == 'approved'
-    #         and latest_registration.event.start_time <= now_time <= latest_registration.event.end_time
-    #     )
-
-    #     volunteer_data.append({
-    #         'id': nguoidung.user.id,
-    #         'avatar_url': nguoidung.avatar_url, 
-    #         'full_name': getattr(nguoidung, 'full_name', None) or nguoidung.user.username,
-    #         'username': nguoidung.user.username,
-    #         'status': 'Active' if is_active else 'Inactive',
-    #         'event_name': latest_registration.event.title if latest_registration and is_active else '--',
-    #         'org_name': latest_registration.event.charity_org.user.user.username if latest_registration and is_active else '--',
-    #     })
     volunteer_data = []
     for v in all_volunteers:
         nguoidung = v.user
@@ -245,6 +219,7 @@ def total_volunteer(request):
         )
 
         volunteer_data.append({
+            'pk': v.pk,
             'id': nguoidung.user.id,
             'avatar_url': nguoidung.avatar_url, 
             'full_name': getattr(nguoidung, 'full_name', None) or nguoidung.user.username,
@@ -262,6 +237,39 @@ def total_volunteer(request):
     return render(request, 'admin/total_volunteer.html', context)
 
 
-# @role_required('admin')
-# def admin_volunteer_detail(request):
-#     return render(request, "admin/admin-volunteer-detail.html")
+@login_required
+@role_required('admin')
+def admin_volunteer_detail(request, pk):
+    # Lấy volunteer theo pk
+    volunteer = get_object_or_404(Volunteer, pk=pk)
+
+    # Thông tin user liên quan
+    nguoidung = volunteer.user  # NguoiDung instance
+    user = nguoidung.user       # Django User instance
+
+    # Kỹ năng của volunteer
+    skills = VolunteerSkill.objects.filter(volunteer=volunteer).select_related('skill')
+
+    # Các sự kiện volunteer đã tham gia với status 'approved'
+    event_regs = EventRegistration.objects.filter(volunteer=volunteer, status='approved').select_related('event')
+
+    # Tổng số sự kiện đã tham gia
+    total_events = event_regs.count()
+
+    # Ví dụ: tính tổng giờ tham gia (giả sử event có start_time, end_time
+    total_hours = 0
+    for reg in event_regs:
+        event = reg.event
+        duration = (event.end_time - event.start_time).total_seconds() / 3600
+        total_hours += duration
+
+    context = {
+        'volunteer': volunteer,
+        'nguoidung': nguoidung,
+        'user': user,
+        'skills': [vs.skill for vs in skills],
+        'event_regs': event_regs,
+        'total_events': total_events,
+        'total_hours': round(total_hours, 2),
+    }
+    return render(request, "admin/admin-volunteer-detail.html", context)

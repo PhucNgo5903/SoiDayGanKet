@@ -150,7 +150,7 @@
                     <img src="{{ v.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
                 </td>
                 <td>
-                    <a href="#" class="text-primary">{{ v.full_name }}</a>
+                    <a href="{% url 'admin_volunteer_detail' pk=v.pk %}" class="text-primary">{{ v.full_name }}</a>
                 </td>
                 <td>{{ v.username }}</td>
                 <td>

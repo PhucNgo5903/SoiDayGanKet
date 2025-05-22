@@ -30,5 +30,5 @@ urlpatterns = [
     path("rejected-assistance-request/", admin_views.rejected_assistance_request, name="rejected_assistance_request"),
 
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
-    # path("admin-volunteer-detail/", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
+    path("admin-volunteer-detail/<int:pk>", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
 ]

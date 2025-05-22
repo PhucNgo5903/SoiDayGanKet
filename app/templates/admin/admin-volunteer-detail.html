@@ -1,2 +1,75 @@
 {% extends 'admin/base-db-admin.html' %}
 {% load static %}
+
+
+{% block main %}
+<h1>Volunteer Detail</h1>
+
+<div style="display: flex; gap: 2rem;">
+  <!-- Thông tin cá nhân -->
+  <div style="flex: 1; border: 1px solid #ddd; padding: 1rem; border-radius: 8px;">
+    <img src="{{ nguoidung.avatar_url }}" alt="Avatar" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+    <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Date of Birth:</strong> {{ nguoidung.dob }}</p>
+    <p><strong>Gender:</strong> {{ volunteer.get_gender_display }}</p>
+    <p><strong>Phone:</strong> {{ nguoidung.phone }}</p>
+    <p><strong>Address:</strong> {{ nguoidung.address }}</p>
+    <p><strong>Status:</strong> {{ nguoidung.get_status_display }}</p>
+    <p><strong>Description:</strong> {{ nguoidung.description|default:"No description" }}</p>
+  </div>
+
+  <!-- Thông tin kỹ năng và hoạt động -->
+  <div style="flex: 2; border: 1px solid #ddd; padding: 1rem; border-radius: 8px;">
+    <h3>Skills</h3>
+    {% if skills %}
+      <ul>
+        {% for skill in skills %}
+          <li>{{ skill.name }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No skills listed.</p>
+    {% endif %}
+
+    <h3>Event Participation</h3>
+    <p><strong>Total events participated:</strong> {{ total_events }}</p>
+    <p><strong>Total volunteering hours:</strong> {{ total_hours }} hours</p>
+
+    {% if event_regs %}
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Event Title</th>
+            <th>Event Status</th>
+            <th>Registered At</th>
+            <th>Checked In</th>
+            <th>Checked Out</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in event_regs %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ reg.event.title }}</td>
+            <td>{{ reg.event.get_status_display }}</td>
+            <td>{{ reg.registered_at|date:"Y-m-d H:i" }}</td>
+            <td>{% if reg.checked_in_at %}{{ reg.checked_in_at|date:"Y-m-d H:i" }}{% else %}N/A{% endif %}</td>
+            <td>{% if reg.checked_out_at %}{{ reg.checked_out_at|date:"Y-m-d H:i" }}{% else %}N/A{% endif %}</td>
+            <td>{% if reg.rating %}{{ reg.rating }}/5{% else %}N/A{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No event participation records.</p>
+    {% endif %}
+  </div>
+</div>
+
+<a href="{% url 'total_volunteer' %}" style="display: inline-block; margin-top: 1rem;">← Back to Volunteer List</a>
+
+{% endblock main %}
