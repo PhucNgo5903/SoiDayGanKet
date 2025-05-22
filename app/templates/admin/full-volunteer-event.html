@@ -36,7 +36,7 @@
     }
 </style>
 <div class="container mt-4">
-    <h2 class="mb-3 text-center">Events With Full Volunteers</h2>
+    <h2 class="mb-3 text-center">Full Volunteer Allocated Events</h2>
     
     <!-- Search Bar -->
     <div class="card mb-4 search-card">
@@ -81,7 +81,7 @@
                             {{event.volunteers_number }}
                         </td>
                         <td>
-                            <a href="{% url 'event_request_detail' event.id %}" class="btn btn-primary btn-sm">View Detail</a>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary btn-sm">View Detail</a>
                         </td>
                     </tr>
                 {% empty %}

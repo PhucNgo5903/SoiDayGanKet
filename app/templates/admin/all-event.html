@@ -1,7 +1,7 @@
 {% extends "admin/base-db-admin.html" %}
 
 {% block main %}
-<style>
+<!-- <style>
     body, html {
         height: auto !important;
         overflow-y: auto !important;
@@ -34,7 +34,7 @@
         background: #212529;
         z-index: 10;
     }
-</style>
+</style> -->
 <div class="container mt-4">
     <h2 class="mb-3 text-center">All Events</h2>
     
@@ -94,7 +94,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'event_request_detail' event.id %}" class="btn btn-primary btn-sm">View Detail</a>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary btn-sm">View Detail</a>
                         </td>
                     </tr>
                 {% empty %}

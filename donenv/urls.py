@@ -32,7 +32,7 @@ urlpatterns = [
 
 
     path("new-event-request/", admin_views.new_event_request, name="new_event_request"),
-    path("event-request-detail/<int:event_id>/", admin_views.event_request_detail, name="event_request_detail"),
+    path("event-detail/<int:event_id>/", admin_views.event_detail, name="event_detail"),
     path("approved-event/", admin_views.approved_event, name="approved_event"),
     path("rejected-event-request/", admin_views.rejected_event_request, name="rejected_event_request"),
     path("full-volunteer-event/", admin_views.full_volunteer_event, name="full_volunteer_event"),

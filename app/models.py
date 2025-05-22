@@ -169,7 +169,7 @@ class Event(models.Model):
     report_url = models.URLField(blank=True, null=True)
     confirmed_by = models.BooleanField(default=False)
     volunteers_number = models.BigIntegerField()
-
+    reason = models.TextField(null=True)
     def __str__(self):
         return self.title
 

@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .views import role_required
-from ..models import Event, EventRegistration
+from ..models import Event, EventRegistration, NguoiDung
 from django.db.models import Count, Q, F,Subquery, OuterRef # Cho tìm kiếm nâng cao
 from django.core.paginator import Paginator, PageNotAnInteger,EmptyPage
-
+from django.contrib import messages
+from django.utils import timezone
 def index_admin(request):
     return render(request, "admin/index-admin.html")
 
@@ -65,9 +66,41 @@ def new_event_request(request):
     }
     return render(request, "admin/new-event-request.html", context)
 
-def event_request_detail(request):
-    return render(request, "admin/event-request-detail.html")
-
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        reason = request.POST.get('reason', '').strip()
+        
+        if action == 'approve':
+            event.status = 'approved'
+            event.approved_by = request.user.nguoidung
+            event.approved_at = timezone.now()
+            event.reason = ''
+            event.save()
+            messages.success(request, 'Sự kiện đã được phê duyệt thành công', extra_tags='event_approval')
+            
+        elif action == 'reject':
+            if not reason:
+                messages.error(request, 'Vui lòng nhập lý do từ chối', extra_tags='event_rejection')
+            else:
+                event.status = 'rejected'
+                event.approved_by = request.user.nguoidung
+                event.approved_at = timezone.now()
+                event.reason = reason
+                event.save()
+                messages.success(request, 'Sự kiện đã bị từ chối', extra_tags='event_rejection')
+        
+        # Luôn redirect sau khi xử lý POST để tránh resubmit form
+        return redirect('event_detail', event_id=event.id)
+    
+    context = {
+        'event': event,
+        'can_approve': event.status == 'pending' and request.user.nguoidung.role == 'admin',
+        'now': timezone.now(),
+    }
+    return render(request, 'admin/event-detail.html', context)
 def approved_event(request):
     events = Event.objects.filter(status='approved').select_related('charity_org')
     
@@ -149,7 +182,7 @@ def full_volunteer_event(request):
     full_events = Event.objects.annotate(
     approved_volunteers=Subquery(approved_counts)
     ).filter(
-    approved_volunteers__gte=F('volunteers_number'),
+    approved_volunteers=F('volunteers_number'),
     status='approved'
     ).order_by('-start_time')
     # Xử lý tìm kiếm
