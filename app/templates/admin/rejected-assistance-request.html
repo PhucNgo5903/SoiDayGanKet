@@ -4,53 +4,86 @@
 {% block main %}
 <div class="container p-4">
     <h2 class="text-center font-weight-bold">Rejected Assistance Request</h2>
-    <div class="card p-3 mt-3">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <label>Show 
-                <select class="form-select d-inline w-auto" id="entriesSelect">
-                    <option value="2">2</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form method="get" class="d-flex justify-content-between align-items-center mb-3" id="filterForm">
+            <label>Show
+                <select name="entries" class="form-select d-inline w-auto"
+                    onchange="document.getElementById('filterForm').submit();">
+                    <option value="all" {% if per_page == 'all' %}selected{% endif %}>All</option>
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
                 </select> entries
             </label>
-            <input type="text" id="searchInput" class="form-control w-auto" placeholder="Search">
-        </div>
-        
-        <table class="table table-striped mt-3">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Request</th>
-                    <th>Type</th>
-                    <th>Representative</th>
-                    <th>Contact</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td><img src="{% static 'images/poor kids.jpg' %}" class="img-thumbnail" width="100"></td>
-                    <td>Household items</td>
-                    <td>Phuc Ngo</td>
-                    <td>0909090909</td>
-                    <td>Rejected</td>
-                    <td><a href="{%url 'status_updated_request_detail'%}" class="text-primary">View detail</a></td>
-                </tr>
-               
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-between">
-            <p>Showing 2 of 100 entries</p>
-            <nav>
-                <ul class="pagination">
-                    <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                </ul>
-            </nav>
-        </div>
+        </form>
     </div>
+    <table class="table table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Type</th>
+                <th>Representative</th>
+                <th>Contact</th>
+                <th>Rejected time</th> <!-- ✅ Mới -->
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in page_obj %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    {% with type_map=request.assistancerequesttypemap_set.first %}
+                    {{ type_map.type.name }}
+                    {% endwith %}
+                </td>
+                <td>{{ request.beneficiary.user.user.username }}</td>
+                <td>{{ request.beneficiary.user.phone }}</td>
+                <td>{{ request.update_status_at|date:"Y-m-d H:i" }}</td> <!-- ✅ Mới -->
+                <td>
+                    <a href="{% url 'assistance_request_detail' pk=request.id %}" class="text-primary">View
+                        detail</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No approved requests found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <div class="d-flex justify-content-between">
+        <p>Showing {{ page_obj|length }} of {{ total_count }} entries</p>
+        {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link"
+                        href="?page={{ page_obj.previous_page_number }}&entries={{ per_page }}">&laquo;</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}&entries={{ per_page }}">{{ num
+                        }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link"
+                        href="?page={{ page_obj.next_page_number }}&entries={{ per_page }}">&raquo;</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
 </div>
 {% endblock main %}

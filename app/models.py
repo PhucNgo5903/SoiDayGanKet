@@ -21,7 +21,9 @@ class NguoiDung(models.Model):
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    avatar_url = models.URLField(
+        default='https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+    )
     def __str__(self):
         return self.user.username
 
