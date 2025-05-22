@@ -158,7 +158,7 @@ def total_volunteer(request):
             nguoidung = volunteer.user  # liên kết đến NguoiDung
             results.append({
                 'volunteer': volunteer,
-                'name': getattr(nguoidung, 'full_name', None) or nguoidung.user.username,
+                'name': f"{nguoidung.user.first_name} {nguoidung.user.last_name}".strip() or nguoidung.user.username,
                 'username': nguoidung.user.username,
                 'user_id': nguoidung.user.id,
                 'avatar_url': nguoidung.avatar_url,
@@ -222,7 +222,7 @@ def total_volunteer(request):
             'pk': v.pk,
             'id': nguoidung.user.id,
             'avatar_url': nguoidung.avatar_url, 
-            'full_name': getattr(nguoidung, 'full_name', None) or nguoidung.user.username,
+            'full_name': f"{nguoidung.user.first_name} {nguoidung.user.last_name}".strip() or nguoidung.user.username,
             'username': nguoidung.user.username,
             'status': 'Active' if has_approved_event else 'Inactive',
             'event_name': latest_registration.event.title if latest_registration else '--',
@@ -250,18 +250,30 @@ def admin_volunteer_detail(request, pk):
     # Kỹ năng của volunteer
     skills = VolunteerSkill.objects.filter(volunteer=volunteer).select_related('skill')
 
-    # Các sự kiện volunteer đã tham gia với status 'approved'
-    event_regs = EventRegistration.objects.filter(volunteer=volunteer, status='approved').select_related('event')
+    # Các sự kiện volunteer đã tham gia với status 'completed' và có check-in/out
+    event_regs = (
+        EventRegistration.objects
+        .filter(
+            volunteer=volunteer,
+            status='completed',
+            checked_in_at__isnull=False,
+            checked_out_at__isnull=False
+        )
+        .annotate(
+            duration=ExpressionWrapper(
+                F('checked_out_at') - F('checked_in_at'),
+                output_field=DurationField()
+            )
+        )
+        .select_related('event')
+    )
 
     # Tổng số sự kiện đã tham gia
     total_events = event_regs.count()
 
-    # Ví dụ: tính tổng giờ tham gia (giả sử event có start_time, end_time
-    total_hours = 0
-    for reg in event_regs:
-        event = reg.event
-        duration = (event.end_time - event.start_time).total_seconds() / 3600
-        total_hours += duration
+    # Tổng thời gian đã tham gia (tính bằng giờ)
+    total_duration = event_regs.aggregate(total=Sum('duration'))['total']
+    total_hours = round(total_duration.total_seconds() / 3600, 2) if total_duration else 0
 
     context = {
         'volunteer': volunteer,
@@ -270,6 +282,6 @@ def admin_volunteer_detail(request, pk):
         'skills': [vs.skill for vs in skills],
         'event_regs': event_regs,
         'total_events': total_events,
-        'total_hours': round(total_hours, 2),
+        'total_hours': total_hours,
     }
     return render(request, "admin/admin-volunteer-detail.html", context)
