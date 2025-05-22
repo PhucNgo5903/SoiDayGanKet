@@ -1,61 +1,63 @@
 {% extends "share/base.html" %}
 
 {% block main %}
-  <div class="container">
-    <h2>Đăng ký tài khoản Beneficiary</h2>
-    
-    <form method="POST">
-      {% csrf_token %}
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="w-100" style="max-width: 500px;">
+      <h2 class="text-center mb-4">Đăng ký tài khoản Beneficiary</h2>
       
-      <div class="form-group">
-        <label for="id_user">Tên người dùng</label>
-        {{ form.username }}
-      </div>
-      
-      <div class="form-group">
-        <label for="id_password">Mật khẩu</label>
-        {{ form.password }}
-      </div>
+      <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group mb-3">
+          <label for="id_user">Tên người dùng</label>
+          {{ form.username }}
+        </div>
+        
+        <div class="form-group mb-3">
+          <label for="id_password">Mật khẩu</label>
+          {{ form.password }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_confirm_password">Xác nhận mật khẩu</label>
-        {{ form.confirm_password }}
-      </div>
+        <div class="form-group mb-3">
+          <label for="id_confirm_password">Xác nhận mật khẩu</label>
+          {{ form.confirm_password }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_email">Email</label>
-        {{ form.email }}
-      </div>
+        <div class="form-group mb-3">
+          <label for="id_email">Email</label>
+          {{ form.email }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_dob">Ngày sinh</label>
-        {{ form.dob }}
-      </div>
+        <div class="form-group mb-3">
+          <label for="id_dob">Ngày sinh</label>
+          {{ form.dob }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_phone">Số điện thoại</label>
-        {{ form.phone }}
-      </div>
+        <div class="form-group mb-3">
+          <label for="id_phone">Số điện thoại</label>
+          {{ form.phone }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_address">Địa chỉ</label>
-        {{ form.address }}
-      </div>
+        <div class="form-group mb-3">
+          <label for="id_address">Địa chỉ</label>
+          {{ form.address }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_description">Mô tả</label>
-        {{ form.description }}
-      </div>
+        <div class="form-group mb-3">
+          <label for="id_description">Mô tả</label>
+          {{ form.description }}
+        </div>
 
-      <div class="form-group">
-        <label for="id_gender">Giới tính</label>
-        {{ form.gender }}
-      </div>
+        <div class="form-group mb-4">
+          <label for="id_gender">Giới tính</label>
+          {{ form.gender }}
+        </div>
 
-      <button type="submit" class="btn btn-primary">Đăng ký</button>
-    </form>
+        <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+      </form>
 
-    <br>
-    <p>Đã có tài khoản? <a href="{% url 'login_beneficiary' %}">Đăng nhập tại đây</a></p>
+      <br>
+      <p class="text-center">Đã có tài khoản? <a href="{% url 'login_beneficiary' %}">Đăng nhập tại đây</a></p>
+    </div>
   </div>
 {% endblock main %}

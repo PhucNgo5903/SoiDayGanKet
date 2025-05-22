@@ -32,7 +32,7 @@ urlpatterns = [
 
 
     path("new-assistance-request/", admin_views.new_assistance_request, name="new_assistance_request"),
-    path("assistance-request-detail/", admin_views.assistance_request_detail, name="assistance_request_detail"),
+    path("assistance-request-detail/<int:pk>", admin_views.assistance_request_detail, name="assistance_request_detail"),
     path("accepted-assistance-request/", admin_views.accepted_assistance_request, name="accepted_assistance_request"),
     path("rejected-assistance-request/", admin_views.rejected_assistance_request, name="rejected_assistance_request"),
     path("status-updated-request-detail/", admin_views.status_updated_request_detail, name="status_updated_request_detail"),
