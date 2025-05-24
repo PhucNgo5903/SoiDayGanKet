@@ -20,7 +20,7 @@
 </head>
 
 <body class="bg-light bg-gradient">
-    <div class="sidebar">
+    <div class="sidebar active">
         <div class="logo_content">
             <div class="logo">
                 <i id="icon-home" class="fa-solid fa-home"></i>
@@ -52,13 +52,20 @@
                     <span class="links_name">Dashboard</span>
                 </a>
             </li>
+            <li>
+                
+                <a href="#" id="navbarDropdownvol" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i id="icon" class="fa fa-user-circle" aria-hidden="true"></i>
+                    <span class="links_name">User</span>
+                    <i class="down-arrow fa-solid fa-angle-down"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdownvol">
+                    <li><a class="dropdown-item" href="{% url 'total_volunteer' %}">All Volunteer</a></li>
+                    <li><a class="dropdown-item" href="{% url 'total_charity_orgs' %}">All Charity Organization</a></li>
+                    <li><a class="dropdown-item" href="#">All Beneficiary</a></li>
+                </ul>  
+            </li>
             <li >
-                <!-- <a href="#">
-                    
-                    <i id="icon" class="fa fa-users" aria-hidden="true"></i>
-                    <span class="links_name">Donor</span> 
-                    
-                </a> -->
                 
                <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i id="icon" class="fa fa-users" aria-hidden="true"></i>
@@ -74,29 +81,12 @@
                     <li><a class="dropdown-item" href="#!">All Event</a></li>
                   </ul>  
             </li>
-            <li>
-                <a href="#!">
-                    <!--grid -->
-                    <i id="icon" class="fa fa-info-circle" aria-hidden="true"></i>
-                    <span class="links_name">Charity Organization</span>
-                </a>
-            </li>
-            <li>
-                
-                <a href="#" id="navbarDropdownvol" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i id="icon" class="fa fa-user-circle" aria-hidden="true"></i>
-                    <span class="links_name">Volunteer</span>
-                    <i class="down-arrow fa-solid fa-angle-down"></i>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdownvol">
-                    <li><a class="dropdown-item" href="#!">All Volunteer</a></li>
-                   </ul>  
-            </li>
+            
             <li>
                 
                 <a href="#" id="navbarDropdownarea" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i id="icon" id="icon" class="fa fa-address-card" aria-hidden="true"></i>
-                    <span class="links_name">Beneficiary</span>
+                    <span class="links_name">Assistance Request</span>
                     <i class="down-arrow fa-solid fa-angle-down"></i>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdownarea">

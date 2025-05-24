@@ -180,10 +180,6 @@ body{
     padding-right: 100px;*/
 }
 
-.sidebar.active ~ .home_content{
-    width: calc(100% - 350px);
-    left: 350px;
-}
 
 /* .home_content .text{
     font-size: 25px;

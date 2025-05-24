@@ -1,12 +1,14 @@
 
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
-from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestTypeMap, EventRegistration, Volunteer, VolunteerSkill
+from app import models
+from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestType, AssistanceRequestTypeMap, CharityOrg, Event, EventRegistration, Volunteer, VolunteerSkill
 from .views import role_required
 from django.core.paginator import Paginator
 from django.utils import timezone   
 from django.db.models import Count, Sum, ExpressionWrapper, DurationField, F
 from django.utils.timezone import now
+from django.db.models import Q
 
 @role_required('admin')
 def index_admin(request):
@@ -201,9 +203,19 @@ def total_volunteer(request):
     top_month_volunteers = get_top_volunteers(month_top)
 
     # Danh sách tất cả tình nguyện viên + trạng thái hoạt động
-    all_volunteers = Volunteer.objects.select_related('user__user').all()
+    search_query = request.GET.get('search', '').strip()
+
+    volunteers = Volunteer.objects.select_related('user__user')
+
+    if search_query:
+        volunteers = volunteers.filter(
+            Q(user__user__first_name__icontains=search_query) |
+            Q(user__user__last_name__icontains=search_query) |
+            Q(user__user__username__icontains=search_query)
+        )
+
     volunteer_data = []
-    for v in all_volunteers:
+    for v in volunteers:
         nguoidung = v.user
 
         has_approved_event = EventRegistration.objects.filter(
@@ -217,6 +229,7 @@ def total_volunteer(request):
             .order_by('-event__start_time')
             .first()
         )
+    
 
         volunteer_data.append({
             'pk': v.pk,
@@ -285,3 +298,110 @@ def admin_volunteer_detail(request, pk):
         'total_hours': total_hours,
     }
     return render(request, "admin/admin-volunteer-detail.html", context)
+
+
+
+@role_required('admin')
+def total_charity_orgs(request):
+    current_time = now()
+    start_of_month = current_time.replace(day=1)
+
+    def get_top_charities(queryset):
+        results = []
+        for stat in queryset:
+            charity = CharityOrg.objects.select_related('user__user').get(pk=stat['charity_org'])
+            user = charity.user
+            results.append({
+                'charity_org': charity,
+                'name': f"{user.user.first_name} {user.user.last_name}".strip() or user.user.username,
+                'username': user.user.username,
+                'user_id': user.user.id,
+                'avatar_url': user.avatar_url,
+                'total_events': stat['total_events'],
+            })
+        return results
+
+    # Top 3 hội thiện nguyện mọi thời đại (dựa vào bảng Event)
+    all_time_top = (
+        Event.objects
+        .filter(status='completed')
+        .values('charity_org')
+        .annotate(total_events=Count('id'))
+        .order_by('-total_events')[:3]
+    )
+    top_all_time = get_top_charities(all_time_top)
+
+    # Top 3 hội thiện nguyện trong tháng này
+    month_top = (
+        Event.objects
+        .filter(status='completed', start_time__gte=start_of_month)
+        .values('charity_org')
+        .annotate(total_events=Count('id'))
+        .order_by('-total_events')[:3]
+    )
+    top_month = get_top_charities(month_top)
+
+    # Danh sách tất cả hội thiện nguyện với tổng số sự kiện completed
+    all_charities = CharityOrg.objects.select_related('user__user').all()
+    charity_data = []
+    for c in all_charities:
+        user = c.user
+
+        num_completed_events = Event.objects.filter(
+            charity_org=c,
+            status='completed'
+        ).count()
+
+        charity_data.append({
+            'pk': c.pk,
+            'avatar_url': user.avatar_url,
+            'name': f"{user.user.first_name} {user.user.last_name}".strip() or user.user.username,
+            'username': user.user.username,
+            'total_completed_events': num_completed_events,
+        })
+
+    # Sắp xếp theo số sự kiện hoàn thành giảm dần
+    charity_data.sort(key=lambda x: x['total_completed_events'], reverse=True)
+
+    context = {
+        'top_all_time': top_all_time,
+        'top_month': top_month,
+        'charity_data': charity_data,
+    }
+
+    return render(request, 'admin/total_charity_orgs.html', context)
+
+
+@login_required
+@role_required('admin')
+def admin_charity_org_detail(request, pk):
+    # Lấy CharityOrg theo pk
+    charity_org = get_object_or_404(CharityOrg, pk=pk)
+
+    # Lấy thông tin liên quan
+    nguoidung = charity_org.user  # NguoiDung instance
+    user = nguoidung.user         # Django User instance
+
+    # Các lĩnh vực hỗ trợ đã đăng ký
+    support_types = (
+        AssistanceRequestType.objects
+        .filter(charityorgassistancerequesttype__charity_org=charity_org)
+        .distinct()
+    )
+
+    # Danh sách các sự kiện đã hoàn thành
+    completed_events = (
+        Event.objects
+        .filter(charity_org=charity_org, status='completed')
+        .order_by('-start_time')
+    )
+
+    context = {
+        'charity_org': charity_org,
+        'nguoidung': nguoidung,
+        'user': user,
+        'support_types': support_types,
+        'completed_events': completed_events,
+    }
+
+    return render(request, "admin/admin-charity-org-detail.html", context)
