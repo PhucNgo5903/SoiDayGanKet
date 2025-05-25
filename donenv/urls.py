@@ -1,7 +1,9 @@
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from app.views import views
+from app.views.volunteer_views import volunteer_registered_events
 from app.views import views, admin_views, beneficiary_views,charity_orgs_views, volunteer_views
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -17,6 +19,7 @@ urlpatterns = [
     path("volunteer/event/<int:event_id>/", volunteer_views.event_detail, name="event_detail"),
     path("volunteer/events-volunteer/", volunteer_views.volunteer_events, name="volunteer_events"),
     path("volunteer/event/<int:event_id>/register/", volunteer_views.register_event, name="register_event"),
+    path('volunteer/registered-events/', volunteer_registered_events, name='volunteer_registered_events'),
     path("volunteer/statistics-volunteer/", volunteer_views.volunteer_statistics, name="volunteer_statistics"),
     path("volunteer/profile-volunteer/", volunteer_views.volunteer_profile, name="volunteer_profile"),
     path("volunteer/logout-volunteer/", volunteer_views.logout_view, name="logout"),
@@ -41,4 +44,5 @@ urlpatterns = [
     path("admin-volunteer-detail/", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
 
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

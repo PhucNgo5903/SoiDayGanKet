@@ -1,0 +1,43 @@
+{% extends "volunteer/base-volunteer.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+  <h3 class="fw-bold text-center mb-4">Your Completed Events</h3>
+
+  {% if completed_count > 0 %}
+    <div class="alert alert-success text-center">
+      You have completed <strong>{{ completed_count }}</strong> event{{ completed_count|pluralize }}.
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      You have not completed any events yet.
+    </div>
+  {% endif %}
+
+  {% if completed_count > 0 %}
+  <div class="row mt-4">
+    {% for event in completed_events %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if event.image %}
+            <img src="{{ event.image }}" class="card-img-top" alt="{{ event.title }}">
+          {% else %}
+            <img src="{% static 'images/default-event.jpg' %}" class="card-img-top" alt="Default image">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text">
+              <strong>Time:</strong><br>
+              {{ event.start_time|date:"d/m/Y H:i" }} – {{ event.end_time|date:"d/m/Y H:i" }}<br>
+              <strong>Location:</strong><br>
+              {{ event.assistance_request.place }}
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
