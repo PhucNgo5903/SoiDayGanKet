@@ -24,18 +24,14 @@
   <!-- Danh sách sự kiện -->
   <div class="row">
     {% for event in events %}
-      <div class="col-md-4 mb-5 text-center">
+      <div class="col-md-4 mb-5 d-flex align-items-stretch">
         <a href="{% url 'event_detail' event.id %}?from={% if registered %}registered{% else %}unregistered{% endif %}"
-           class="text-decoration-none text-dark">
+           class="text-decoration-none text-dark w-100">
           <div class="card border-0 h-100 shadow-sm">
 
-            {% with images=event.assistance_request.images.all %}
-              {% if images and images.0.image_url %}
-                <img src="{{ images.0.image_url }}" class="card-img-top rounded" style="height: 250px; object-fit: cover;">
-              {% else %}
-                <img src="{% static 'images/default-event.png' %}" class="card-img-top rounded" style="height: 250px; object-fit: cover;">
-              {% endif %}
-            {% endwith %}
+            <img src="{{ event.assistance_request.images.first.image_url|default:'https://via.placeholder.com/400x250?text=No+Image' }}"
+                      class="card-img-top rounded"
+                     style="height: 250px; object-fit: cover;">
 
             <div class="card-body">
               <h5 class="fw-bold">{{ event.title }}</h5>
