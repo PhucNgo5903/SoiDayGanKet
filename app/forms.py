@@ -117,4 +117,54 @@ class AssistanceRequestTypeForm(forms.Form):
 
 
 class AssistanceRequestImageForm(forms.Form):
-    image_url = forms.URLField(label="Assistance Request Image", required=False)
+    image = forms.ImageField(
+        required=False,
+    )
+
+class BeneficiaryProfileForm(forms.ModelForm):
+    first_name = forms.CharField(label='Họ', max_length=30, required=False)
+    last_name = forms.CharField(label='Tên', max_length=150, required=False)
+    email = forms.EmailField(label='Email', required=False)
+    
+    class Meta:
+        model = NguoiDung
+        fields = ['dob', 'phone', 'address', 'description']
+        labels = {
+            'dob': 'Ngày sinh',
+            'phone': 'Số điện thoại',
+            'address': 'Địa chỉ',
+            'description': 'Giới thiệu bản thân',
+        }
+        widgets = {
+            'dob': forms.DateInput(attrs={'type': 'date'}),
+            'address': forms.Textarea(attrs={'rows': 2}),
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        # Gán giá trị ban đầu từ User nếu có
+        if self.user:
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['email'].initial = self.user.email
+
+    def save(self, commit=True):
+        nguoidung = super().save(commit=False)
+
+        # Cập nhật thông tin tài khoản User
+        if self.user:
+            self.user.first_name = self.cleaned_data.get('first_name', '')
+            self.user.last_name = self.cleaned_data.get('last_name', '')
+            self.user.email = self.cleaned_data.get('email', '')
+            if commit:
+                self.user.save()
+
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+            
+        if commit:
+            nguoidung.save()
+        return nguoidung

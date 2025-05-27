@@ -1,0 +1,88 @@
+{% extends 'beneficiary/base-beneficiary.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5">
+    <h2 class="mb-4">Edit Personal Information</h2>
+    
+    <!-- Messages display -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">First Name</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger">{{ form.first_name.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger">{{ form.last_name.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-danger">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Date of Birth</label>
+            {{ form.dob }}
+            {% if form.dob.errors %}
+                <div class="text-danger">{{ form.dob.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+                <div class="text-danger">{{ form.phone.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            {{ form.address }}
+            {% if form.address.errors %}
+                <div class="text-danger">{{ form.address.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">About Me</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-primary me-md-2">Save Changes</button>
+            <a href="{% url 'beneficiary_profile' %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

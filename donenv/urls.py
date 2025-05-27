@@ -3,6 +3,9 @@ from django.contrib import admin
 from django.urls import path
 from app.views import views
 from app.views import views, admin_views, beneficiary_views,charity_orgs_views, volunteer_views
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
@@ -10,7 +13,7 @@ urlpatterns = [
 
     path("login-admin/", views.login_admin, name="login_admin"),
     path("index-admin/", admin_views.index_admin, name="index_admin"),
-
+    
     path("login-volunteer/", views.login_volunteer.as_view(), name="login_volunteer"),
     path("signup-volunteer/", views.signup_volunteer.as_view(), name="signup_volunteer"),
     path("volunteer/index-volunteer/", volunteer_views.index_volunteer, name="index_volunteer"),
@@ -18,10 +21,16 @@ urlpatterns = [
     #--------------------------------- BENEFICIARY-------------------------
     
     path("send-request/", beneficiary_views.send_request, name ="send_request"),
+    path("support-status/", beneficiary_views.support_status, name ="support_status"),
     path("login-beneficiary/", views.login_beneficiary.as_view(), name="login_beneficiary"),
     path("signup-beneficiary/", views.signup_beneficiary.as_view(), name="signup_beneficiary"),
     path("beneficiary/index-beneficiary/", beneficiary_views.index_beneficiary, name="index_beneficiary"),
-
+    path('update-status/<int:request_id>/', beneficiary_views.update_user_status, name="update_user_status"),
+    path('request/<int:pk>/', beneficiary_views.assistance_request_detail, name="beneficiary_request_detail"),
+    path('beneficiary-profile/edit/',  beneficiary_views.edit_beneficiary_profile, name='beneficiary_profile'),
+    
+    #---------------------------------CHARITY-------------------------
+    
     path("login-charity/", views.login_charity_org.as_view(), name="login_charity"),
     path("signup-charity/", views.signup_charity_org.as_view(), name="signup_charity"),
     path("charity-orgs/index-charity/", charity_orgs_views.index_charity_org, name="index_charity"),
@@ -38,3 +47,6 @@ urlpatterns = [
     
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

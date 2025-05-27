@@ -1,0 +1,59 @@
+{% extends 'beneficiary/base-beneficiary.html' %}
+{% block main %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5>Assistance Request Detail</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Title:</strong> {{ request_item.title }}</p>
+        <p><strong>Priority:</strong> {{ request_item.get_priority_display }}</p>
+        <p><strong>Status:</strong> {{ request_item.get_status_display }}</p>
+        <p><strong>Receiving Status:</strong> {{ request_item.get_receiving_status_display }}</p>
+        <p><strong>Place:</strong> {{ request_item.place }}</p>
+        <p><strong>Start Date:</strong> {{ request_item.start_date }}</p>
+        <p><strong>End Date:</strong> {{ request_item.end_date }}</p>
+        <p><strong>Description:</strong> {{ request_item.description }}</p>
+
+        <p><strong>Charity Organization:</strong> {{ request_item.charity_org.user.user.username|default:"NULL" }}</p>
+
+        <p><strong>Assistance Type(s):</strong>
+            {% for type_map in request_item.assistancerequesttypemap_set.all %}
+                {{ type_map.type.name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                NULL
+            {% endfor %}
+        </p>
+
+        <p><strong>Approved By:</strong> {{ request_item.update_by.user.username|default:"NULL" }}</p>
+        <p><strong>Update Status At:</strong> {{ request_item.update_status_at|default:"NULL" }}</p>
+        <p><strong>Proof:</strong>
+            {% if request_item.proof_url %}
+                <a href="{{ request_item.proof_url }}" target="_blank">View Proof</a>
+            {% else %}
+                NULL
+            {% endif %}
+        </p>
+        <p><strong>Admin Remark:</strong> {{ request_item.admin_remark|default:"NULL" }}</p>
+
+        <p><strong>Images:</strong></p>
+        {% if request_item.images.all %}
+            {% for image in request_item.images.all %}
+                <img src="{{ image.image_url }}" alt="Image" style="max-width: 1000px;" class="img-thumbnail me-2 mb-2">
+            {% endfor %}
+        {% else %}
+            <p>NULL</p>
+        {% endif %}
+
+        {# Tìm event liên quan nếu có #}
+        {% with related_event=request_item.event_set.first %}
+            {% if related_event %}
+                <p><strong>Related Event:</strong> {{ related_event.title }}</p>
+                <p><strong>Number of Volunteers:</strong> {{ related_event.volunteers_number }}</p>
+            {% else %}
+                <p><strong>Related Event:</strong> NULL</p>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+<a href="{% url 'support_status' %}" class="btn btn-secondary mt-3">Back to list</a>
+{% endblock %}
