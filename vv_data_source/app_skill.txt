@@ -1,0 +1,14 @@
+1|First Aid
+2|Nursing
+3|Medicine Dispensing
+4|Tutoring
+5|Listening
+6|Psychological Counseling
+7|Career Advising
+8|Financial Planning
+9|Accounting
+10|Emergency Response
+11|Manual Labor
+12|Cooking
+13|Child Supervision
+14|Elderly Assistance

@@ -20,7 +20,7 @@ from app.models import (
 fake = Faker()
 
 def create_users():
-    roles = ['admin', 'volunteer', 'charity', 'beneficiary']
+    roles = 'beneficiary' #['admin', 'volunteer', 'charity', 'beneficiary']
     nguoi_dung_list = []
 
     for _ in range(5):
@@ -30,12 +30,14 @@ def create_users():
         user = User.objects.create(
             username=username,
             email=email,
-            last_login=timezone.now()
+            last_login=timezone.now(),
+            first_name='Ngo',
+            last_name='Hoang Phuc'
         )
         user.set_password(password)
         user.save()
 
-        role = random.choice(roles)
+        role = roles
         nd = NguoiDung.objects.create(
             user=user,
             role=role,
@@ -95,17 +97,14 @@ def create_assistance_types():
     return [AssistanceRequestType.objects.create(name=fake.word()) for _ in range(5)]
 
 
-def create_assistance_requests(beneficiaries, charities, admins, types):
+def create_assistance_requests():
     requests = []
 
     for _ in range(5):
-        ben = random.choice(beneficiaries)
-        org = random.choice(charities) if charities else None
-        admin = random.choice(admins) if admins else None
+        ben = Beneficiary.objects.get(pk=47) #random.choice(beneficiaries)
         title = fake.sentence()
         request = AssistanceRequest.objects.create(
             beneficiary=ben,
-            charity_org=org,
             title=title,
             description=fake.text(),
             priority=random.choice(['low', 'medium', 'high']),
@@ -113,13 +112,12 @@ def create_assistance_requests(beneficiaries, charities, admins, types):
             end_date=timezone.now() + timedelta(days=10),
             status=random.choice(['approved', 'pending', 'rejected', 'completed']),
             receiving_status='waiting',
-            update_by=admin,
             update_status_at=timezone.now(),
             place=fake.address(),
             proof_url=fake.image_url(),
             admin_remark=fake.sentence()
         )
-        AssistanceRequestTypeMap.objects.create(assistance_request=request, type=random.choice(types))
+        AssistanceRequestTypeMap.objects.create(assistance_request=request, type=AssistanceRequestType.objects.get(pk=1))
         AssistanceRequestImage.objects.create(assistance_request=request, image_url=fake.image_url())
         requests.append(request)
 
@@ -129,9 +127,9 @@ def create_assistance_requests(beneficiaries, charities, admins, types):
 def create_events(charities, requests, admins):
     events = []
     for _ in range(5):
-        charity = random.choice(charities)
+        charity = CharityOrg.objects.get(pk=2) #random.choice(charities)
         request = random.choice(requests)
-        admin = random.choice(admins)
+        admin = NguoiDung.objects.get(pk=3) #random.choice(admins)
         event = Event.objects.create(
             charity_org=charity,
             assistance_request=request,
@@ -151,13 +149,13 @@ def create_events(charities, requests, admins):
 
 
 def create_event_registrations(events, volunteers):
-    for event in events:
-        selected_volunteers = random.sample(volunteers, k=min(2, len(volunteers)))
+    for _ in range(10):
+        selected_volunteers = random.sample(volunteers, k=2)
         for vol in selected_volunteers:
             EventRegistration.objects.create(
-                event=event,
+                event=events,
                 volunteer=vol,
-                status=random.choice(['approved', 'pending', 'rejected', 'completed']),
+                status='approved',
                 checked_in_at=timezone.now(),
                 checked_out_at=timezone.now() + timedelta(hours=3),
                 rating=random.randint(1, 5),
@@ -166,16 +164,16 @@ def create_event_registrations(events, volunteers):
 
 
 def run():
-    nguoi_dungs = create_users()
-    volunteers, beneficiaries, charities = create_sub_roles(nguoi_dungs)
-    admins = [nd for nd in nguoi_dungs if nd.role == 'admin']
-    skills, areas = create_skills_support()
-    create_volunteer_skills(volunteers, skills)
-    create_charity_org_support_areas(charities, areas)
-    types = create_assistance_types()
-    requests = create_assistance_requests(beneficiaries, charities, admins, types)
-    events = create_events(charities, requests, admins)
-    create_event_registrations(events, volunteers)
+    # nguoi_dungs = create_users()
+    # volunteers, beneficiaries, charities = create_sub_roles(nguoi_dungs)
+    # admins = [nd for nd in nguoi_dungs if nd.role == 'admin']
+    # skills, areas = create_skills_support()
+    # create_volunteer_skills(volunteers, skills)
+    # create_charity_org_support_areas(charities, areas)
+    # types = create_assistance_types()
+    requests = create_assistance_requests()
+    # events = Event.objects.get(pk=20)
+    # create_event_registrations(events, volunteers)
     print("✅ Fake data inserted successfully!")
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
 
 {% block main %}
 <style>
-    body, html {
+    /* body, html {
         height: auto !important;
         overflow-y: auto !important;
     }
@@ -10,7 +10,7 @@
     .container {
         min-height: 95vh;
     }
-    
+     */
     /* Thêm CSS mới */
     .search-card {
         border: 1px solid #dee2e6 !important;
@@ -61,8 +61,9 @@
                     <th>Charity Organization</th>
                     <th>Event Start Time</th>
                     <th>Event End Time</th>
+                    <th>Volunteers</th>
                     <th>Status</th>
-                    <th>Number</th>
+                    
                     <th>Action</th>
                 </tr>
             </thead>
@@ -75,14 +76,15 @@
                         <td>{{ event.start_time|date:"M d, Y h:i A" }}</td>
                         <td>{{ event.end_time|date:"M d, Y h:i A" }}</td>
                         <td>
-                            <span class="badge bg-success text-white">Full Volunteers</span>
+                            {{event.volunteers_number }}/{{event.volunteers_number }}
                         </td>
                         <td>
-                            {{event.volunteers_number }}
+                            <span class="badge bg-success text-white">Full Volunteers</span>
                         </td>
                         <td>
                             <a href="{% url 'event_detail' event.id %}" class="btn btn-primary btn-sm">View Detail</a>
                         </td>
+                        
                     </tr>
                 {% empty %}
                     <tr>

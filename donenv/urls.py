@@ -38,6 +38,8 @@ urlpatterns = [
     path("full-volunteer-event/", admin_views.full_volunteer_event, name="full_volunteer_event"),
     path("completed-event/", admin_views.completed_event, name="completed_event"),
     path("all-event/", admin_views.all_event, name="all_event"),
+    path("admin-beneficiary-detail/<int:user_id>/", admin_views.admin_beneficiary_detail, name="admin_beneficiary_detail"), 
+    path("total-beneficiary/", admin_views.total_beneficiary, name="total_beneficiary"),
 
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),

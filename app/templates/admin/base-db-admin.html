@@ -72,7 +72,7 @@
                     <li><a class="dropdown-item" href="{% url 'rejected_event_request' %}">Rejected Event Requests</a></li>
                     <li><a class="dropdown-item" href="{% url 'full_volunteer_event' %}">Full Volunteer Allocated Events</a></li>
                     <li><a class="dropdown-item" href="{% url 'completed_event' %}">Completed Events</a></li>
-                    <li><a class="dropdown-item" href="{% url 'all_event' %}">All Events</a></li>
+                    <!-- <li><a class="dropdown-item" href="{% url 'all_event' %}">All Events</a></li> -->
                   </ul>  
             </li>
             <li>
@@ -101,6 +101,7 @@
                     <i class="down-arrow fa-solid fa-angle-down"></i>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdownarea">
+                    <li><a class="dropdown-item" href="{% url 'total_beneficiary' %}">All Beneficiary</a></li>
                     <li><a class="dropdown-item" href="{% url 'new_assistance_request' %}">New Assistance Request</a></li>
                     <li><a class="dropdown-item" href="{% url 'accepted_assistance_request' %}">Accepted Assistance Request</a></li>
                     <li><a class="dropdown-item" href="{% url 'rejected_assistance_request' %}">Rejected Assistance Request</a></li>

@@ -1,0 +1,189 @@
+{% extends "admin/base-db-admin.html" %}
+
+{% block main %}
+<style>
+    /* body, html {
+        height: auto !important;
+        overflow-y: auto !important;
+    }
+
+    .container {
+        min-height: 95vh;
+    }
+     */
+    /* Thêm CSS mới */
+    .search-card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+        transition: none !important;
+    }
+    
+    .search-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    .table-responsive {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    #eventTable thead th {
+        position: sticky;
+        top: 0;
+        background: #212529;
+        z-index: 10;
+    }
+</style>
+<div class="container mt-4">
+    <div class="card mb-4 search-card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title">Beneficiary Details</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Personal Information</h5>
+                    <p><strong>Full Name:</strong> {{ beneficiary.user.user.get_full_name }}</p>
+                    <p><strong>Date of Birth:</strong> {{ beneficiary.user.dob|date:"Y-m-d" }}</p>
+                    <p><strong>Gender:</strong> {{ beneficiary.get_gender_display }}</p>
+                    <p><strong>Email:</strong> {{ beneficiary.user.user.email }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Contact Information</h5>
+                    <p><strong>Phone:</strong> {{ beneficiary.user.phone }}</p>
+                    <p><strong>Address:</strong> {{ beneficiary.user.address }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge {% if beneficiary.user.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ beneficiary.user.get_status_display }}
+                        </span>
+                        <button class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#statusModal">
+                            Change
+                        </button>
+                    </p>
+                    <p><strong>Registered At:</strong> {{ beneficiary.user.created_at|date:"Y-m-d H:i" }}</p>
+                </div>
+            </div>
+            <div class="mt-3">
+                <h5>Description</h5>
+                <p>{{ beneficiary.user.description|default:"No description provided" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card search-card">
+        <div class="card-header bg-warning text-black">
+            <h4 class="card-title">Assistance Requests</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Request Title</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in assistance_requests %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ request.title }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if request.status == 'pending' %}bg-warning text-dark
+                                    {% elif request.status == 'approved' %}bg-success
+                                    {% elif request.status == 'rejected' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ request.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ request.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <a href="#" 
+                                   class="btn btn-sm btn-primary">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No assistance requests found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Change Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">Change Beneficiary Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Current status: <strong>{{ beneficiary.user.get_status_display }}</strong></p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="status" id="statusActive" 
+                           value="active" {% if beneficiary.user.status == 'active' %}checked{% endif %}>
+                    <label class="form-check-label" for="statusActive">
+                        Active
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="status" id="statusInactive" 
+                           value="inactive" {% if beneficiary.user.status == 'inactive' %}checked{% endif %}>
+                    <label class="form-check-label" for="statusInactive">
+                        Inactive
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmStatusChange">Confirm Change</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmBtn = document.getElementById('confirmStatusChange');
+    
+    confirmBtn.addEventListener('click', function() {
+        const selectedStatus = document.querySelector('input[name="status"]:checked').value;
+        const beneficiaryId = {{ beneficiary.user.id }};
+        
+        fetch(window.location.pathname, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `status=${selectedStatus}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Refresh to show new status
+            } else {
+                alert('Error updating status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating status');
+        });
+    });
+});
+</script>
+{% endblock %}

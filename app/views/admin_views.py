@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .views import role_required
-from ..models import Event, EventRegistration, NguoiDung
+from ..models import Event, EventRegistration, NguoiDung, Beneficiary, AssistanceRequest
 from django.db.models import Count, Q, F,Subquery, OuterRef # Cho tìm kiếm nâng cao
 from django.core.paginator import Paginator, PageNotAnInteger,EmptyPage
 from django.contrib import messages
 from django.utils import timezone
+from django.http import JsonResponse
 def index_admin(request):
     return render(request, "admin/index-admin.html")
 
@@ -77,20 +78,20 @@ def event_detail(request, event_id):
             event.status = 'approved'
             event.approved_by = request.user.nguoidung
             event.approved_at = timezone.now()
-            event.reason = ''
+            event.reason = reason
             event.save()
-            messages.success(request, 'Sự kiện đã được phê duyệt thành công', extra_tags='event_approval')
+            messages.success(request, 'Event successfully approved', extra_tags='event_approval')
             
         elif action == 'reject':
             if not reason:
-                messages.error(request, 'Vui lòng nhập lý do từ chối', extra_tags='event_rejection')
+                messages.error(request, 'Please enter reason for rejection', extra_tags='event_rejection')
             else:
                 event.status = 'rejected'
                 event.approved_by = request.user.nguoidung
                 event.approved_at = timezone.now()
                 event.reason = reason
                 event.save()
-                messages.success(request, 'Sự kiện đã bị từ chối', extra_tags='event_rejection')
+                messages.success(request, 'Event has been rejected', extra_tags='event_rejection')
         
         # Luôn redirect sau khi xử lý POST để tránh resubmit form
         return redirect('event_detail', event_id=event.id)
@@ -102,8 +103,12 @@ def event_detail(request, event_id):
     }
     return render(request, 'admin/event-detail.html', context)
 def approved_event(request):
-    events = Event.objects.filter(status='approved').select_related('charity_org')
-    
+    events = Event.objects.filter(status='approved').select_related('charity_org').annotate(
+        approved_volunteers=Count(
+            'eventregistration',
+            filter=Q(eventregistration__status='approved')
+        )
+    )
     # Xử lý tìm kiếm
     search_query = request.GET.get('q', '')
     
@@ -178,7 +183,6 @@ def full_volunteer_event(request):
     ).values('event').annotate(
     cnt=Count('id')
     ).values('cnt')
-
     full_events = Event.objects.annotate(
     approved_volunteers=Subquery(approved_counts)
     ).filter(
@@ -279,3 +283,50 @@ def all_event(request):
     }
     
     return render(request, 'admin/all-event.html', context)
+
+def total_beneficiary(request):
+    beneficiaries = Beneficiary.objects.all().select_related('user__user')
+    
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    
+    if search_query:
+        beneficiaries = beneficiaries.filter(
+            Q(user__user__first_name__icontains=search_query) |
+            Q(user__user__last_name__icontains=search_query) |
+            Q(user__phone__icontains=search_query)
+        )
+    
+    if status_filter:
+        beneficiaries = beneficiaries.filter(user__status=status_filter)
+    
+    # Pagination
+    paginator = Paginator(beneficiaries, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'beneficiaries': page_obj,
+        'search_query': search_query,
+        'status_filter': status_filter,
+    }
+    return render(request, 'admin/total-beneficiary.html', context)
+
+def admin_beneficiary_detail(request, user_id):
+    beneficiary = get_object_or_404(Beneficiary, user_id=user_id)
+    assistance_requests = AssistanceRequest.objects.filter(beneficiary=beneficiary).order_by('-created_at')
+    
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        new_status = request.POST.get('status')
+        if new_status in ['active', 'inactive']:
+            beneficiary.user.status = new_status
+            beneficiary.user.save()
+            return JsonResponse({'success': True, 'new_status': new_status})
+        return JsonResponse({'success': False, 'error': 'Invalid status'})
+    
+    context = {
+        'beneficiary': beneficiary,
+        'assistance_requests': assistance_requests,
+    }
+    return render(request, 'admin/admin-beneficiary-detail.html', context)

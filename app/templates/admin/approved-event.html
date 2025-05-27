@@ -2,7 +2,7 @@
 
 {% block main %}
 <style>
-    body, html {
+    /* body, html {
         height: auto !important;
         overflow-y: auto !important;
     }
@@ -10,7 +10,7 @@
     .container {
         min-height: 95vh;
     }
-    
+     */
     /* Thêm CSS mới */
     .search-card {
         border: 1px solid #dee2e6 !important;
@@ -61,6 +61,7 @@
                     <th>Charity Organization</th>
                     <th>Event Start Time</th>
                     <th>Event End Time</th>
+                    <th>Volunteers</th>  <!-- Thêm cột mới -->
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -73,6 +74,15 @@
                         <td>{{ event.charity_org.user.user.first_name }}</td>
                         <td>{{ event.start_time|date:"M d, Y h:i A" }}</td>
                         <td>{{ event.end_time|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            
+                            <!-- {% if event.approved_volunteers >= event.volunteers_number %}
+                                <span class="badge bg-success ms-2">{{ event.approved_volunteers }}/{{ event.volunteers_number }}</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark ms-2">{{ event.approved_volunteers }}/{{ event.volunteers_number }}</span>
+                            {% endif %} -->
+                            {{ event.approved_volunteers }}/{{ event.volunteers_number }}
+                        </td>
                         <td>
                             {% if event.status == 'pending' %}
                                 <span class="badge bg-warning text-dark">Pending</span>
@@ -90,7 +100,7 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center py-4">
+                        <td colspan="8" class="text-center py-4">  <!-- Đổi thành 8 cột -->
                             {% if request.GET.q or request.GET.status %}
                                 No events found matching your criteria.
                             {% else %}
