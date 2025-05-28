@@ -1,14 +1,15 @@
 1|First Aid
-2|Nursing
-3|Medicine Dispensing
-4|Tutoring
-5|Listening
-6|Psychological Counseling
-7|Career Advising
-8|Financial Planning
-9|Accounting
-10|Emergency Response
-11|Manual Labor
-12|Cooking
-13|Child Supervision
-14|Elderly Assistance
+2|Sign Language
+3|Cooking
+4|Child Care
+5|Elderly Care
+6|Basic IT Support
+7|Mental Health Support
+8|Transportation
+9|Fundraising
+10|Teaching
+11|Disaster Relief
+12|Translation
+13|Public Speaking
+14|Medical Assistance
+15|Event Organization
