@@ -63,6 +63,20 @@ def insert_users_and_nguoidung():
     conn.close()
     print("Đã chèn xong dữ liệu người dùng.")
 
+def update_user_names(cursor):
+    for user_id in range(1, 31):
+        first_name = f'First{user_id}'
+        last_name = f'Last{user_id}'
+
+        cursor.execute(
+            """
+            UPDATE auth_user
+            SET first_name = ?, last_name = ?
+            WHERE id = ?
+            """,
+            (first_name, last_name, user_id)
+        )
+
 def insert_volunteer(cursor, user_id, gender):
     try:
         cursor.execute("INSERT INTO app_volunteer (user_id, gender) VALUES (?, ?)", (user_id, gender))
@@ -209,14 +223,7 @@ def insert_eventregistration(cursor, id, event_id, volunteer_id, status, registe
 def main():
     conn = sqlite3.connect("db.sqlite3")
     cursor = conn.cursor()
-
-    # Insert NguoiDung
-    with open("vv_data_source/app_nguoidung.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) == 8:
-                insert_nguoidung(cursor, int(parts[0]), parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7])
-
+    
     insert_users_and_nguoidung()
     # Insert Volunteer
     with open("vv_data_source/app_volunteer.txt", "r", encoding="utf-8") as f:
@@ -333,6 +340,7 @@ def main():
                 insert_eventregistration(cursor, id, event_id, volunteer_id, status,
                                          registered_at, checked_in_at, checked_out_at,
                                          rating, review)
+    update_user_names(cursor)
     conn.commit()
     conn.close()
     print("✅ Đã chèn dữ liệu thành công vào các bảng")
