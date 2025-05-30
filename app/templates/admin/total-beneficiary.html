@@ -1,0 +1,135 @@
+{% extends "admin/base-db-admin.html" %}
+
+{% block main %}
+<style>
+    
+    /* Thêm CSS mới */
+    .search-card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+        transition: none !important;
+    }
+    
+    .search-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    .table-responsive {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    #eventTable thead th {
+        position: sticky;
+        top: 0;
+        background: #212529;
+        z-index: 10;
+    }
+</style>
+<div class="container mt-4 text-center">
+    <h2 class="mb-3">Beneficiary List</h2>
+    
+    <!-- Search Bar -->
+    <div class="card mb-4 search-card">
+        <div class="card-body">
+            <form method="get" action="." class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" name="q" class="form-control" placeholder="Search by name or phone..." 
+                           value="{{ search_query }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Full Name</th>
+                    <th>Date of Birth</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for beneficiary in beneficiaries %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ beneficiary.user.user.get_full_name }}</td>
+                    <td>{{ beneficiary.user.dob|date:"Y-m-d" }}</td>
+                    <td>{{ beneficiary.get_gender_display }}</td>
+                    <td>{{ beneficiary.user.phone }}</td>
+                    <td>
+                        <span class="badge {% if beneficiary.user.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ beneficiary.user.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_beneficiary_detail' beneficiary.user.user.id %}" class="btn btn-sm btn-primary">View Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        {% if search_query or status_filter %}
+                            No beneficiaries found matching your criteria.
+                        {% else %}
+                            No beneficiaries found.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if beneficiaries.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if beneficiaries.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ beneficiaries.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            
+            {% for num in beneficiaries.paginator.page_range %}
+                {% if beneficiaries.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > beneficiaries.number|add:'-3' and num < beneficiaries.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if beneficiaries.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ beneficiaries.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ beneficiaries.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

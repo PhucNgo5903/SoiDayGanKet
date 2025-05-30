@@ -29,6 +29,17 @@ urlpatterns = [
     path("accepted-assistance-request/", admin_views.accepted_assistance_request, name="accepted_assistance_request"),
     path("rejected-assistance-request/", admin_views.rejected_assistance_request, name="rejected_assistance_request"),
 
+
+    path("new-event-request/", admin_views.new_event_request, name="new_event_request"),
+    path("event-detail/<int:event_id>/", admin_views.event_detail, name="event_detail"),
+    path("approved-event/", admin_views.approved_event, name="approved_event"),
+    path("rejected-event-request/", admin_views.rejected_event_request, name="rejected_event_request"),
+    path("full-volunteer-event/", admin_views.full_volunteer_event, name="full_volunteer_event"),
+    path("completed-event/", admin_views.completed_event, name="completed_event"),
+    path("all-event/", admin_views.all_event, name="all_event"),
+    path("admin-beneficiary-detail/<int:user_id>/", admin_views.admin_beneficiary_detail, name="admin_beneficiary_detail"), 
+    path("total-beneficiary/", admin_views.total_beneficiary, name="total_beneficiary"),
+
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/<int:pk>", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
 

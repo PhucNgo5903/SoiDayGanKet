@@ -1,0 +1,10 @@
+1|Medical Help
+2|Food Support
+3|Education Support
+4|Mental Health Counseling
+5|Disaster Recovery
+6|Childcare
+7|Transport Assistance
+8|Language Translation
+9|Home Repair
+10|Elderly Care

@@ -1,0 +1,30 @@
+1|admin1|admin123|admin1@example.com|admin|1980-01-01|0900000001|Hanoi|First admin account|active|/avatars/admin1.png
+2|admin2|admin456|admin2@example.com|admin|1982-02-02|0900000002|HCM|Second admin account|active|/avatars/admin2.png
+3|charity1|charity123|charity1@example.com|charity|1985-03-03|0900000003|Da Nang|Helping the poor|active|/avatars/charity1.png
+4|charity2|charity456|charity2@example.com|charity|1986-04-04|0900000004|Hue|Support elderly|active|/avatars/charity2.png
+5|charity3|charity789|charity3@example.com|charity|1987-05-05|0900000005|Can Tho|Aid for children|active|/avatars/charity3.png
+6|beneficiary1|bene123|bene1@example.com|beneficiary|1990-01-06|0900000006|Hanoi|Elderly person needs help|active|/avatars/bene1.png
+7|beneficiary2|bene234|bene2@example.com|beneficiary|1991-01-07|0900000007|HCM|Single mom with kids|active|/avatars/bene2.png
+8|beneficiary3|bene345|bene3@example.com|beneficiary|1992-01-08|0900000008|Da Nang|Disabled man|active|/avatars/bene3.png
+9|beneficiary4|bene456|bene4@example.com|beneficiary|1993-01-09|0900000009|Hue|Unemployed youth|active|/avatars/bene4.png
+10|beneficiary5|bene567|bene5@example.com|beneficiary|1994-01-10|0900000010|Can Tho|Poor student|active|/avatars/bene5.png
+11|volunteer1|vol123|vol1@example.com|volunteer|2000-01-11|0900000011|Hanoi|Student helper|active|/avatars/vol1.png
+12|volunteer2|vol234|vol2@example.com|volunteer|2000-01-12|0900000012|HCM|Medical student|active|/avatars/vol2.png
+13|volunteer3|vol345|vol3@example.com|volunteer|2000-01-13|0900000013|Da Nang|IT Support|active|/avatars/vol3.png
+14|volunteer4|vol456|vol4@example.com|volunteer|2000-01-14|0900000014|Hue|Community worker|active|/avatars/vol4.png
+15|volunteer5|vol567|vol5@example.com|volunteer|2000-01-15|0900000015|Can Tho|Driver volunteer|active|/avatars/vol5.png
+16|volunteer6|vol678|vol6@example.com|volunteer|2000-01-16|0900000016|Hanoi|Free time helper|active|/avatars/vol6.png
+17|volunteer7|vol789|vol7@example.com|volunteer|2000-01-17|0900000017|HCM|Student volunteer|active|/avatars/vol7.png
+18|volunteer8|vol890|vol8@example.com|volunteer|2000-01-18|0900000018|Da Nang|Helper|active|/avatars/vol8.png
+19|volunteer9|vol901|vol9@example.com|volunteer|2000-01-19|0900000019|Hue|NGO helper|active|/avatars/vol9.png
+20|volunteer10|vol012|vol10@example.com|volunteer|2000-01-20|0900000020|Can Tho|Student|active|/avatars/vol10.png
+21|volunteer11|vol1234|vol11@example.com|volunteer|2000-01-21|0900000021|Hanoi|Doctor volunteer|active|/avatars/vol11.png
+22|volunteer12|vol2345|vol12@example.com|volunteer|2000-01-22|0900000022|HCM|Engineer|active|/avatars/vol12.png
+23|volunteer13|vol3456|vol13@example.com|volunteer|2000-01-23|0900000023|Da Nang|Support team|active|/avatars/vol13.png
+24|volunteer14|vol4567|vol14@example.com|volunteer|2000-01-24|0900000024|Hue|Ready anytime|active|/avatars/vol14.png
+25|volunteer15|vol5678|vol15@example.com|volunteer|2000-01-25|0900000025|Can Tho|Quick responder|active|/avatars/vol15.png
+26|volunteer16|vol6789|vol16@example.com|volunteer|2000-01-26|0900000026|Hanoi|University student|active|/avatars/vol16.png
+27|volunteer17|vol7890|vol17@example.com|volunteer|2000-01-27|0900000027|HCM|Youth union|active|/avatars/vol17.png
+28|volunteer18|vol8901|vol18@example.com|volunteer|2000-01-28|0900000028|Da Nang|Caregiver|active|/avatars/vol18.png
+29|volunteer19|vol9012|vol19@example.com|volunteer|2000-01-29|0900000029|Hue|Free time|active|/avatars/vol19.png
+30|volunteer20|vol0123|vol20@example.com|volunteer|2000-01-30|0900000030|Can Tho|Part-time volunteer|active|/avatars/vol20.png
