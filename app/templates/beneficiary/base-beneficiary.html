@@ -62,23 +62,19 @@
                     <span class="links_name">Send Request</span>
                 </a>
             </li>
-            <li >
                 <!-- <a href="#">
                     
                     <i id="icon" class="fa fa-users" aria-hidden="true"></i>
                     <span class="links_name">Donor</span> 
                     
                 </a> -->
-                
-               <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                <li>
+                <a href="{% url 'support_status' %}">
+                    <!--grid -->
                     <i id="icon" class="fa fa-list" aria-hidden="true"></i>
-                    <span class="links_name">Assistance Request List</span> 
-                    <i class="down-arrow fa-solid fa-angle-down"></i>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="{% url 'support_status' %}">Support Status</a></li>
-                    <li><a class="dropdown-item" href="#!">Assistance Request History</a></li>
-                  </ul>  
+                    <span class="links_name">Support Status</span>
+                </a>
             </li>
                 
             {% comment %} <li>
