@@ -3,15 +3,15 @@
 
 {% block main %}
 <div class="container" style="overflow-y: auto; max-height: 100vh; padding-bottom: 20px;">
-    <h2 class="text-center">Volunteer Management</h2>
+    <h2 class="text-center">Charity Organization Management</h2>
     <hr>
 
     <h3 class="text-primary">
         <span style="color: #3B78F3; font-weight: bold">Top 3</span>
-        <span style="color: #000000; ">most active volunteers</span>
+        <span style="color: #000000;">most active charity orgs of all time</span>
     </h3>
     <div class="row">
-        {% for v in top_all_time|slice:":3" %}
+        {% for c in top_all_time %}
         <div class="col-md-4">
             <div class="card shadow-sm p-3">
                 <div class="card-body">
@@ -38,42 +38,33 @@
                     </div>
                     <hr>
                     <div class="d-flex align-items-center">
-                        <img src="{{ v.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
+                        <img src="{{ c.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
                         <div class="ms-2">
-                            <p class="fw-bold mb-0">{{ v.name }}</p>
-                            <p class="text-muted mb-0">{{ v.username }} #{{ v.user_id }}</p>
+                            <p class="fw-bold mb-0">{{ c.name }}</p>
+                            <p class="text-muted mb-0">{{ c.username }} #{{ c.user_id }}</p>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <div class="text-center">
-                            <p class="mb-0"
-                                style="color: {% if forloop.counter == 1 %}#F99C05{% elif forloop.counter == 2 %}#8D8B88{% else %}#A15600{% endif %} !important; font-weight: bold; font-size: 2rem;">
-                                {{ v.total_events }}
-                            </p>
-                            <p class="text-muted mb-0">Completed events</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="mb-0"
-                                style="color: {% if forloop.counter == 1 %}#F99C05{% elif forloop.counter == 2 %}#8D8B88{% else %}#A15600{% endif %} !important; font-weight: bold; font-size: 2rem;">
-                                {{ v.total_hours }}
-                            </p>
-                            <p class="text-muted mb-0">Total hours</p>
-                        </div>
+                    <div class="mt-2 text-center">
+                        <p class="mb-0"
+                            style="color: {% if forloop.counter == 1 %}#F99C05{% elif forloop.counter == 2 %}#8D8B88{% else %}#A15600{% endif %}; font-weight: bold; font-size: 2rem;">
+                            {{ c.total_events }}
+                        </p>
+                        <p class="text-muted mb-0">Completed events</p>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <p>No data for top volunteers yet.</p>
+        <p>No data for top organizations yet.</p>
         {% endfor %}
     </div>
 
     <h3 class="text-primary mt-5">
         <span style="color: #3B78F3; font-weight: bold">Top 3</span>
-        <span style="color: #000000; ">monthly active volunteers</span>
+        <span style="color: #000000;">most active this month</span>
     </h3>
     <div class="row">
-        {% for v in top_month|slice:":3" %}
+        {% for c in top_month %}
         <div class="col-md-4">
             <div class="card shadow-sm p-3">
                 <div class="card-body">
@@ -100,74 +91,53 @@
                     </div>
                     <hr>
                     <div class="d-flex align-items-center">
-                        <img src="{{ v.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
+                        <img src="{{ c.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
                         <div class="ms-2">
-                            <p class="fw-bold mb-0">{{ v.name }}</p>
-                            <p class="text-muted mb-0">{{ v.username }} #{{ v.user_id }}</p>
+                            <p class="fw-bold mb-0">{{ c.name }}</p>
+                            <p class="text-muted mb-0">{{ c.username }} #{{ c.user_id }}</p>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <div class="text-center">
-                            <p class="mb-0"
-                                style="color: {% if forloop.counter == 1 %}#F99C05{% elif forloop.counter == 2 %}#8D8B88{% else %}#A15600{% endif %} !important; font-weight: bold; font-size: 2rem;">
-                                {{ v.total_events }}
-                            </p>
-                            <p class="text-muted mb-0">Completed events</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="mb-0"
-                                style="color: {% if forloop.counter == 1 %}#F99C05{% elif forloop.counter == 2 %}#8D8B88{% else %}#A15600{% endif %} !important; font-weight: bold; font-size: 2rem;">
-                                {{ v.total_hours }}
-                            </p>
-                            <p class="text-muted mb-0">Total hours</p>
-                        </div>
+                    <div class="mt-2 text-center">
+                        <p class="mb-0"
+                            style="color: {% if forloop.counter == 1 %}#F99C05{% elif forloop.counter == 2 %}#8D8B88{% else %}#A15600{% endif %}; font-weight: bold; font-size: 2rem;">
+                            {{ c.total_events }}
+                        </p>
+                        <p class="text-muted mb-0">Completed events</p>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <p>No data for monthly top volunteers yet.</p>
+        <p>No data for this month's organizations.</p>
         {% endfor %}
     </div>
-    <br>
-    <form method="get" class="mb-3 d-flex justify-content-end">
-        <input type="text" name="search" class="form-control me-2 w-25" placeholder="Search by name..." value="{{ request.GET.search }}">
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+
     <table class="table table-bordered text-center mt-5">
         <thead class="table-dark">
             <tr>
                 <th>#</th>
                 <th>Avatar</th>
-                <th>Full Name</th>
-                <th>User name</th>
-                <th>Status</th>
-                <th>Event</th>
-                <th>Organization</th>
+                <th>Organization Name</th>
+                <th>Username</th>
+                <th>Completed Events</th>
             </tr>
         </thead>
         <tbody>
-            {% for v in volunteer_data %}
+            {% for c in charity_data %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>
-                    <img src="{{ v.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
+                    <img src="{{ c.avatar_url }}" width="80" class="rounded-circle me-3" alt="Avatar">
                 </td>
                 <td>
-                    <a href="{% url 'admin_volunteer_detail' pk=v.pk %}" class="text-primary">{{ v.full_name }}</a>
+                    <a href="{% url 'admin_charity_org_detail' pk=c.pk %}" class="text-primary">{{ c.name }}</a>
                 </td>
-                <td>{{ v.username }}</td>
-                <td>
-                    <span class="badge {% if v.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">
-                        {{ v.status }}
-                    </span>
-                </td>
-                <td>{{ v.event_name|default:"--" }}</td>
-                <td>{{ v.org_name|default:"--" }}</td>
+                <td>{{ c.username }}</td>
+                <td>{{ c.total_completed_events }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7">No volunteers found.</td>
+                <td colspan="5">No charity organizations found.</td>
             </tr>
             {% endfor %}
         </tbody>

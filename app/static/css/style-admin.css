@@ -7,7 +7,6 @@ body{
     position: relative;
     min-height: 100vh;
     width: 100%;
-    overflow: hidden;
 }
 .sidebar{
     position: fixed;
@@ -171,7 +170,7 @@ body{
 /* home */
 
 .home_content{
-    position: absolute;
+    position: relative;
     height: 100%;
     width: calc(100% - 70px);
     left: 70px;

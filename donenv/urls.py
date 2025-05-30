@@ -31,4 +31,7 @@ urlpatterns = [
 
     path("total-volunteer/", admin_views.total_volunteer, name="total_volunteer"),
     path("admin-volunteer-detail/<int:pk>", admin_views.admin_volunteer_detail, name="admin_volunteer_detail"),
+
+    path("total-charity-orgs/", admin_views.total_charity_orgs, name="total_charity_orgs"),
+    path("admin-charity-org-detail/<int:pk>", admin_views.admin_charity_org_detail, name="admin_charity_org_detail"),
 ]

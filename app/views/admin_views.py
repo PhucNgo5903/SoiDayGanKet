@@ -1,16 +1,29 @@
 
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
-from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestTypeMap, EventRegistration, Volunteer, VolunteerSkill
+from app import models
+from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestType, AssistanceRequestTypeMap, CharityOrg, Event, EventRegistration, Volunteer, VolunteerSkill
 from .views import role_required
 from django.core.paginator import Paginator
 from django.utils import timezone   
 from django.db.models import Count, Sum, ExpressionWrapper, DurationField, F
 from django.utils.timezone import now
+from django.db.models import Q
 
 @role_required('admin')
 def index_admin(request):
-    return render(request, "admin/index-admin.html")
+    total_charity_orgs = models.CharityOrg.objects.count()
+    total_volunteers = models.Volunteer.objects.count()
+    total_pending_requests = models.AssistanceRequest.objects.filter(status='pending').count()
+    total_accepted_requests = models.AssistanceRequest.objects.filter(status='approved').count()
+
+    context = {
+        'total_charity_orgs': total_charity_orgs,
+        'total_volunteers': total_volunteers,
+        'total_pending_requests': total_pending_requests,
+        'total_accepted_requests': total_accepted_requests,
+    }
+    return render(request, "admin/index-admin.html", context)
 
 @role_required('admin')
 def new_assistance_request(request):
@@ -158,7 +171,7 @@ def total_volunteer(request):
             nguoidung = volunteer.user  # liên kết đến NguoiDung
             results.append({
                 'volunteer': volunteer,
-                'name': getattr(nguoidung, 'full_name', None) or nguoidung.user.username,
+                'name': f"{nguoidung.user.first_name} {nguoidung.user.last_name}".strip() or nguoidung.user.username,
                 'username': nguoidung.user.username,
                 'user_id': nguoidung.user.id,
                 'avatar_url': nguoidung.avatar_url,
@@ -201,9 +214,19 @@ def total_volunteer(request):
     top_month_volunteers = get_top_volunteers(month_top)
 
     # Danh sách tất cả tình nguyện viên + trạng thái hoạt động
-    all_volunteers = Volunteer.objects.select_related('user__user').all()
+    search_query = request.GET.get('search', '').strip()
+
+    volunteers = Volunteer.objects.select_related('user__user')
+
+    if search_query:
+        volunteers = volunteers.filter(
+            Q(user__user__first_name__icontains=search_query) |
+            Q(user__user__last_name__icontains=search_query) |
+            Q(user__user__username__icontains=search_query)
+        )
+
     volunteer_data = []
-    for v in all_volunteers:
+    for v in volunteers:
         nguoidung = v.user
 
         has_approved_event = EventRegistration.objects.filter(
@@ -217,12 +240,13 @@ def total_volunteer(request):
             .order_by('-event__start_time')
             .first()
         )
+    
 
         volunteer_data.append({
             'pk': v.pk,
             'id': nguoidung.user.id,
             'avatar_url': nguoidung.avatar_url, 
-            'full_name': getattr(nguoidung, 'full_name', None) or nguoidung.user.username,
+            'full_name': f"{nguoidung.user.first_name} {nguoidung.user.last_name}".strip() or nguoidung.user.username,
             'username': nguoidung.user.username,
             'status': 'Active' if has_approved_event else 'Inactive',
             'event_name': latest_registration.event.title if latest_registration else '--',
@@ -250,18 +274,30 @@ def admin_volunteer_detail(request, pk):
     # Kỹ năng của volunteer
     skills = VolunteerSkill.objects.filter(volunteer=volunteer).select_related('skill')
 
-    # Các sự kiện volunteer đã tham gia với status 'approved'
-    event_regs = EventRegistration.objects.filter(volunteer=volunteer, status='approved').select_related('event')
+    # Các sự kiện volunteer đã tham gia với status 'completed' và có check-in/out
+    event_regs = (
+        EventRegistration.objects
+        .filter(
+            volunteer=volunteer,
+            status='completed',
+            checked_in_at__isnull=False,
+            checked_out_at__isnull=False
+        )
+        .annotate(
+            duration=ExpressionWrapper(
+                F('checked_out_at') - F('checked_in_at'),
+                output_field=DurationField()
+            )
+        )
+        .select_related('event')
+    )
 
     # Tổng số sự kiện đã tham gia
     total_events = event_regs.count()
 
-    # Ví dụ: tính tổng giờ tham gia (giả sử event có start_time, end_time
-    total_hours = 0
-    for reg in event_regs:
-        event = reg.event
-        duration = (event.end_time - event.start_time).total_seconds() / 3600
-        total_hours += duration
+    # Tổng thời gian đã tham gia (tính bằng giờ)
+    total_duration = event_regs.aggregate(total=Sum('duration'))['total']
+    total_hours = round(total_duration.total_seconds() / 3600, 2) if total_duration else 0
 
     context = {
         'volunteer': volunteer,
@@ -270,6 +306,113 @@ def admin_volunteer_detail(request, pk):
         'skills': [vs.skill for vs in skills],
         'event_regs': event_regs,
         'total_events': total_events,
-        'total_hours': round(total_hours, 2),
+        'total_hours': total_hours,
     }
     return render(request, "admin/admin-volunteer-detail.html", context)
+
+
+
+@role_required('admin')
+def total_charity_orgs(request):
+    current_time = now()
+    start_of_month = current_time.replace(day=1)
+
+    def get_top_charities(queryset):
+        results = []
+        for stat in queryset:
+            charity = CharityOrg.objects.select_related('user__user').get(pk=stat['charity_org'])
+            user = charity.user
+            results.append({
+                'charity_org': charity,
+                'name': f"{user.user.first_name} {user.user.last_name}".strip() or user.user.username,
+                'username': user.user.username,
+                'user_id': user.user.id,
+                'avatar_url': user.avatar_url,
+                'total_events': stat['total_events'],
+            })
+        return results
+
+    # Top 3 hội thiện nguyện mọi thời đại (dựa vào bảng Event)
+    all_time_top = (
+        Event.objects
+        .filter(status='completed')
+        .values('charity_org')
+        .annotate(total_events=Count('id'))
+        .order_by('-total_events')[:3]
+    )
+    top_all_time = get_top_charities(all_time_top)
+
+    # Top 3 hội thiện nguyện trong tháng này
+    month_top = (
+        Event.objects
+        .filter(status='completed', start_time__gte=start_of_month)
+        .values('charity_org')
+        .annotate(total_events=Count('id'))
+        .order_by('-total_events')[:3]
+    )
+    top_month = get_top_charities(month_top)
+
+    # Danh sách tất cả hội thiện nguyện với tổng số sự kiện completed
+    all_charities = CharityOrg.objects.select_related('user__user').all()
+    charity_data = []
+    for c in all_charities:
+        user = c.user
+
+        num_completed_events = Event.objects.filter(
+            charity_org=c,
+            status='completed'
+        ).count()
+
+        charity_data.append({
+            'pk': c.pk,
+            'avatar_url': user.avatar_url,
+            'name': f"{user.user.first_name} {user.user.last_name}".strip() or user.user.username,
+            'username': user.user.username,
+            'total_completed_events': num_completed_events,
+        })
+
+    # Sắp xếp theo số sự kiện hoàn thành giảm dần
+    charity_data.sort(key=lambda x: x['total_completed_events'], reverse=True)
+
+    context = {
+        'top_all_time': top_all_time,
+        'top_month': top_month,
+        'charity_data': charity_data,
+    }
+
+    return render(request, 'admin/total_charity_orgs.html', context)
+
+
+@login_required
+@role_required('admin')
+def admin_charity_org_detail(request, pk):
+    # Lấy CharityOrg theo pk
+    charity_org = get_object_or_404(CharityOrg, pk=pk)
+
+    # Lấy thông tin liên quan
+    nguoidung = charity_org.user  # NguoiDung instance
+    user = nguoidung.user         # Django User instance
+
+    # Các lĩnh vực hỗ trợ đã đăng ký
+    support_types = (
+        AssistanceRequestType.objects
+        .filter(charityorgassistancerequesttype__charity_org=charity_org)
+        .distinct()
+    )
+
+    # Danh sách các sự kiện đã hoàn thành
+    completed_events = (
+        Event.objects
+        .filter(charity_org=charity_org, status='completed')
+        .order_by('-start_time')
+    )
+
+    context = {
+        'charity_org': charity_org,
+        'nguoidung': nguoidung,
+        'user': user,
+        'support_types': support_types,
+        'completed_events': completed_events,
+    }
+
+    return render(request, "admin/admin-charity-org-detail.html", context)
