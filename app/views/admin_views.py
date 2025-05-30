@@ -12,7 +12,18 @@ from django.db.models import Q
 
 @role_required('admin')
 def index_admin(request):
-    return render(request, "admin/index-admin.html")
+    total_charity_orgs = models.CharityOrg.objects.count()
+    total_volunteers = models.Volunteer.objects.count()
+    total_pending_requests = models.AssistanceRequest.objects.filter(status='pending').count()
+    total_accepted_requests = models.AssistanceRequest.objects.filter(status='approved').count()
+
+    context = {
+        'total_charity_orgs': total_charity_orgs,
+        'total_volunteers': total_volunteers,
+        'total_pending_requests': total_pending_requests,
+        'total_accepted_requests': total_accepted_requests,
+    }
+    return render(request, "admin/index-admin.html", context)
 
 @role_required('admin')
 def new_assistance_request(request):
