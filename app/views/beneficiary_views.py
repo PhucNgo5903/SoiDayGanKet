@@ -7,6 +7,8 @@ from ..forms import AssistanceRequestForm, AssistanceRequestTypeForm, Assistance
 from django.utils.translation import gettext as _ 
 from django.views.decorators.http import require_POST
 from django.db.models import Q
+from django.core.files.storage import FileSystemStorage
+import uuid
 
 @role_required('beneficiary')
 def index_beneficiary(request):
@@ -156,6 +158,15 @@ def edit_beneficiary_profile(request):
             # Lưu thông tin người dùng (NguoiDung)
             nguoidung = form.save(commit=True)
             
+            if 'avatar_file' in request.FILES:
+                avatar_file = request.FILES['avatar_file']
+                if avatar_file.content_type.startswith('image/'):
+                    fs = FileSystemStorage()
+                    ext = avatar_file.name.split('.')[-1]
+                    filename = fs.save(f"avatars/{request.user.username}_{uuid.uuid4()}.{ext}", avatar_file)
+                    nguoidung.avatar_url = fs.url(filename)
+
+            nguoidung.save()
             # Cập nhật thông tin User liên quan
             user = request.user
             user.first_name = form.cleaned_data.get('first_name', '')
