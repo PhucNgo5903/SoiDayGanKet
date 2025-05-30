@@ -14,7 +14,8 @@ from django.db.models import Count, Q, F,Subquery, OuterRef # Cho tìm kiếm n�
 from django.core.paginator import Paginator, PageNotAnInteger,EmptyPage
 from django.contrib import messages
 from django.utils import timezone
-from django.http import JsonResponse@role_required('admin')
+from django.http import JsonResponse
+@role_required('admin')
 def index_admin(request):
     total_charity_orgs = models.CharityOrg.objects.count()
     total_volunteers = models.Volunteer.objects.count()
@@ -422,7 +423,7 @@ def admin_charity_org_detail(request, pk):
     return render(request, "admin/admin-charity-org-detail.html", context)
 
 
-    def new_event_request(request):
+def new_event_request(request):
         events = Event.objects.filter(status='pending').select_related('charity_org')
         # Xử lý tìm kiếm
         search_query = request.GET.get('q', '')
@@ -456,7 +457,7 @@ def admin_charity_org_detail(request, pk):
         }
         return render(request, "admin/new-event-request.html", context)
 
-    def event_detail(request, event_id):
+def event_detail(request, event_id):
         event = get_object_or_404(Event, pk=event_id)
         
         if request.method == 'POST':
@@ -492,7 +493,7 @@ def admin_charity_org_detail(request, pk):
         }
         return render(request, 'admin/event-detail.html', context)
     
-    def approved_event(request):
+def approved_event(request):
         events = Event.objects.filter(status='approved').select_related('charity_org').annotate(
             approved_volunteers=Count(
                 'eventregistration',
@@ -532,7 +533,7 @@ def admin_charity_org_detail(request, pk):
         
         return render(request, "admin/approved-event.html", context)
 
-    def rejected_event_request(request):
+def rejected_event_request(request):
         events = Event.objects.filter(status='rejected').select_related('charity_org')
         # Xử lý tìm kiếm
         search_query = request.GET.get('q', '')
@@ -566,7 +567,7 @@ def admin_charity_org_detail(request, pk):
         }
         return render(request, "admin/rejected-event-request.html", context)
 
-    def full_volunteer_event(request):
+def full_volunteer_event(request):
         approved_counts = EventRegistration.objects.filter(
         event=OuterRef('pk'),
         status='approved'
@@ -599,7 +600,7 @@ def admin_charity_org_detail(request, pk):
         }
         return render(request, 'admin/full-volunteer-event.html', context)
 
-    def completed_event(request):
+def completed_event(request):
         events = Event.objects.filter(status='completed').select_related('charity_org')
         # Xử lý tìm kiếm
         search_query = request.GET.get('q', '')
@@ -633,7 +634,7 @@ def admin_charity_org_detail(request, pk):
         }
         return render(request, "admin/completed-event.html", context)
 
-    def all_event(request):
+def all_event(request):
         # Lấy tất cả sự kiện đã hoàn thành (hoặc theo điều kiện của bạn)
         events = Event.objects.all()
         
@@ -674,7 +675,7 @@ def admin_charity_org_detail(request, pk):
         
         return render(request, 'admin/all-event.html', context)
 
-    def total_beneficiary(request):
+def total_beneficiary(request):
         beneficiaries = Beneficiary.objects.all().select_related('user__user')
         
         # Search functionality
@@ -703,7 +704,7 @@ def admin_charity_org_detail(request, pk):
         }
         return render(request, 'admin/total-beneficiary.html', context)
 
-    def admin_beneficiary_detail(request, user_id):
+def admin_beneficiary_detail(request, user_id):
         beneficiary = get_object_or_404(Beneficiary, user_id=user_id)
         assistance_requests = AssistanceRequest.objects.filter(beneficiary=beneficiary).order_by('-created_at')
         
