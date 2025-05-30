@@ -1,4 +1,3 @@
-
 from datetime import date
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -109,13 +108,15 @@ class signup_charity_org(View):
         if form.is_valid():
             form.save()
             return redirect('login_charity')
-        return render(request, 'signup_charity.html', {'form': form})
+        return render(request, 'share/signup_charity.html', {'form': form})
 
 
 
 
 # def login_admin(request):
 #     return render(request, 'share/login-admin.html')
+
+
 
 
 def login_admin(request):
@@ -132,6 +133,12 @@ def login_admin(request):
             # Kiểm tra user đã tồn tại chưa
             user = User.objects.filter(username=admin_username).first()
             if not user:
+                # Tạo mới User
+                user = User.objects.create_user(
+                    username=admin_username,
+                    password=admin_password,
+                    email=admin_email
+                )
                 # Tạo mới User
                 user = User.objects.create_user(
                     username=admin_username,
