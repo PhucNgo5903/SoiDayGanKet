@@ -5,11 +5,14 @@ from app.views import views
 from app.views import views, admin_views, beneficiary_views,charity_orgs_views, volunteer_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
     path("gallery/", views.gallery, name="gallery"),
+    path('api/gallery/', views.gallery_api_view, name='gallery_api'),
+    path('logout/', LogoutView.as_view(next_page='index'), name='logout'),
 
     path("login-admin/", views.login_admin, name="login_admin"),
     path("index-admin/", admin_views.index_admin, name="index_admin"),

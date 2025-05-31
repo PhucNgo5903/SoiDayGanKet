@@ -91,21 +91,16 @@
                     <span class="links_name">View Information</span>
                 </a> 
             </li>
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+    {% csrf_token %}
+</form>
+
             <li>
-                <a href="#!">
-                    <!--key -->
-                    <i id="icon" class="fa fa-key" aria-hidden="true"></i>
-                    <span class="links_name">Change Password</span>
-                </a> 
-            </li>
-            <li>
-                <a href="#!">
-                    <!--logout -->
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i id="icon" class="fa fa-sign-out" aria-hidden="true"></i>
                     <span class="links_name">Logout</span>
                 </a>
             </li>
-            
         </ul>
     </div>
     <div class="home_content">
