@@ -107,10 +107,13 @@ def support_status(request):
     if priority:
         assistance_requests = assistance_requests.filter(priority=priority)
 
-    if receive_status:
+    # if receive_status:
+    #     assistance_requests = assistance_requests.filter(receiving_status=receive_status)
+    if receive_status == 'N/A':
+        assistance_requests = assistance_requests.filter(receiving_status__isnull=True)
+    elif receive_status:
         assistance_requests = assistance_requests.filter(receiving_status=receive_status)
-
-    assistance_requests = assistance_requests.order_by('-created_at')
+        assistance_requests = assistance_requests.order_by('-created_at')
 
     context = {
         'assistance_requests': assistance_requests,
