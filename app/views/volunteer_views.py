@@ -76,7 +76,6 @@ def volunteer_events(request):
     registered_ids = EventRegistration.objects.filter(volunteer=volunteer).values_list('event_id', flat=True)
     query = request.GET.get('q', '')
 
-    # Lọc sự kiện theo kỹ năng của tình nguyện viên
     events = Event.objects.filter(
         start_time__gt=now_time,
         status='approved',
@@ -97,16 +96,18 @@ def volunteer_events(request):
         'query': query
     })
 
-# ==== Sự kiện đã đăng ký ====
+# ==== Sự kiện đã đăng ký (chờ duyệt hoặc bị từ chối) ====
 @role_required('volunteer')
 def volunteer_registered_events(request):
     volunteer = get_object_or_404(Volunteer, user=request.user.nguoidung)
     query = request.GET.get('q', '')
 
-    registrations = EventRegistration.objects.filter(volunteer=volunteer).exclude(status='completed')
+    registrations = EventRegistration.objects.filter(
+        volunteer=volunteer,
+        status__in=['pending', 'rejected']
+    )
     events = Event.objects.filter(
-        id__in=registrations.values_list('event_id', flat=True),
-        end_time__gt=now()
+        id__in=registrations.values_list('event_id', flat=True)
     )
 
     if query:
@@ -121,6 +122,30 @@ def volunteer_registered_events(request):
         'events': events,
         'registered': True,
         'query': query
+    })
+
+# ==== Sự kiện đang tham gia (approved) ====
+@role_required('volunteer')
+def volunteer_ongoing_events(request):
+    volunteer = get_object_or_404(Volunteer, user=request.user.nguoidung)
+
+    ongoing_regs = EventRegistration.objects.filter(
+        volunteer=volunteer,
+        status='approved',
+        event__end_time__gt=timezone.now()
+    ).select_related('event')
+
+    events = [reg.event for reg in ongoing_regs]
+    query = request.GET.get('q', '')
+
+    if query:
+        events = [e for e in events if query.lower() in e.title.lower() or query.lower() in (e.assistance_request.place if e.assistance_request else '').lower()]
+
+    return render(request, 'volunteer/events-volunteer.html', {
+        'events': events,
+        'registered': True,
+        'query': query,
+        'ongoing': True
     })
 
 # ==== Đăng ký sự kiện ====

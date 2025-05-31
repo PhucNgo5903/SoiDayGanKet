@@ -2,14 +2,16 @@
 {% load static %}
 
 {% block main %}
-<div class="container mt-5">
-  <h2 class="mb-4 text-center">
-    {% if registered %}
-      Your Registered Events
-    {% else %}
-      Making The World A Better Place — One Act Of Kindness At A Time.
-    {% endif %}
-  </h2>
+<div class="container mt-5 text-center">
+  <h2>
+  {% if ongoing %}
+    Ongoing Events
+  {% elif registered %}
+    Registered Events 
+  {% else %}
+    Upcoming Events
+  {% endif %}
+</h2>
 
   <!-- Thanh tìm kiếm -->
   <div class="row mb-4">

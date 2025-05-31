@@ -20,6 +20,7 @@ urlpatterns = [
     path("volunteer/events-volunteer/", volunteer_views.volunteer_events, name="volunteer_events"),
     path("volunteer/event/<int:event_id>/register/", volunteer_views.register_event, name="register_event"),
     path('volunteer/registered-events/', volunteer_registered_events, name='volunteer_registered_events'),
+    path('volunteer/events/ongoing/', volunteer_views.volunteer_ongoing_events, name='volunteer_ongoing_events'),
     path("volunteer/statistics-volunteer/", volunteer_views.volunteer_statistics, name="volunteer_statistics"),
     path("volunteer/profile-volunteer/", volunteer_views.volunteer_profile, name="volunteer_profile"),
     path("volunteer/logout-volunteer/", volunteer_views.logout_view, name="logout"),
