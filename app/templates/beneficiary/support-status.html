@@ -1,0 +1,133 @@
+{% extends 'beneficiary/base-beneficiary.html' %}
+{% load static %}
+
+{% block main %}
+<style>
+    .search-form {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.search-form input,
+.search-form select,
+.search-form button {
+    min-width: 120px !important;
+}
+
+.search-form input {
+    width: 25% !important;
+}
+
+.search-form select {
+    width: 15% !important;
+}
+
+.search-form button {
+    width: 10% !important;
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .search-form input,
+    .search-form select,
+    .search-form button {
+        width: 100% !important;
+    }
+}
+
+</style>
+
+<!-- Search Bar -->
+<div class="card mb-4 search-card">
+    <div class="card-body p-3">
+        <form method="get" action="." class="search-form">
+            <input type="text" name="q" class="form-control" placeholder="Search by title, place..." value="{{ request.GET.q }}">
+
+            <select name="status" class="form-select">
+                <option value="">System Status</option>
+                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+
+            <select name="priority" class="form-select">
+                <option value="">Priority</option>
+                <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>High</option>
+                <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Low</option>
+            </select>
+
+            <select name="receive_status" class="form-select">
+                <option value="">User Status</option>
+                <option value="waiting" {% if request.GET.receive_status == 'waiting' %}selected{% endif %}>Waiting</option>
+                <option value="received" {% if request.GET.receive_status == 'received' %}selected{% endif %}>Received</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+
+
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center shadow-sm rounded" style="overflow: hidden;">
+            <thead class="table-light">
+                <tr class="table-primary">
+                    <th style="width: 20%;">Title</th>
+                    <th style="width: 10%;">Priority</th>
+                    <th style="width: 12%;">System Status</th>
+                    <th style="width: 12%;">Receiving Status</th>
+                    <th style="width: 10%;">Place</th>
+                    <th style="width: 15%;">Start Date</th>
+                    <th style="width: 15%;">End Date</th>
+                    <th style="width: 6%;">Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in assistance_requests %}
+                <tr>
+                    <td>{{ request.title }}</td>
+                    <td>{{ request.get_priority_display }}</td>
+                    <td>{{ request.get_status_display }}</td>
+                    <td>
+                <form method="post" action="{% url 'update_user_status' request.id %}" class="mb-0">
+                    {% csrf_token %}
+                    <select name="receiving_status"
+                            class="form-control"
+                            onchange="this.form.submit()"
+                            {% if request.status != 'completed' %}disabled{% endif %}>
+
+                        <option value="waiting" {% if request.receiving_status == 'waiting' %}selected{% endif %}>
+                            Waiting
+                        </option>
+                        <option value="received" {% if request.receiving_status == 'received' %}selected{% endif %}>
+                            Received
+                        </option>
+                    </select>
+                </form>
+                </td>
+                    <td>{{ request.place }}</td>
+                    <td>{{ request.start_date|date:"Y-m-d" }}</td>
+                    <td>{{ request.end_date|date:"Y-m-d" }}</td>
+                    <td>
+                        <a href="{% url 'beneficiary_request_detail' request.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-muted py-4">No support requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

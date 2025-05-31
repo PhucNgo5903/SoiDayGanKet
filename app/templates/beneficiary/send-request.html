@@ -1,0 +1,41 @@
+{% extends 'beneficiary/base-beneficiary.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/style-beneficiary.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h1>Submit Assistance Request</h1>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Assistance Request Form -->
+        <div class="form-section">
+            {{ request_form.as_p }}
+        </div>
+
+        <!-- Type Selection -->
+        <div class="form-section">
+            {{ type_form.as_p }}
+        </div>
+
+        <!-- Image URL Input -->
+        <div class="form-section">
+            {{ image_form.as_p }}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}
