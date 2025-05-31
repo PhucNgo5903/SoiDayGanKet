@@ -102,7 +102,7 @@
                             <!-- Pending/Rejected => Hiển thị N/A, không cho thay đổi -->
                             <span class="text-muted">N/A</span>
                             
-                        {% elseif request.status == 'approved' and request.has_completed_event %}
+                        {% elif request.status == 'approved' and request.has_completed_event %}
                             <!-- Approved + có event completed => Cho phép chọn waiting/received -->
                             <form method="post" action="{% url 'update_user_status' request.id %}">
                                 {% csrf_token %}
@@ -111,7 +111,7 @@
                                     <option value="received" {% if request.receiving_status == 'received' %}selected{% endif %}>Received</option>
                                 </select>
                             </form>
-                        {% elseif request.status == 'approved' and not request.has_completed_event %}
+                        {% elif request.status == 'approved' and not request.has_completed_event %}
                             <!-- Approved + chưa có event completed => Fix cứng là waiting -->
                             <span class="badge bg-warning">Waiting</span>
                             <small class="text-muted d-block">Event chưa hoàn thành</small>
