@@ -106,17 +106,16 @@
                             <!-- Approved + có event completed => Cho phép chọn waiting/received -->
                             <form method="post" action="{% url 'update_user_status' request.id %}">
                                 {% csrf_token %}
-                                <select name="receiving_status" onchange="this.form.submit()" class="form-select form-select-sm">
+                                <select name="receiving_status" class="form-select form-select-sm status-select">
                                     <option value="waiting" {% if request.receiving_status == 'waiting' %}selected{% endif %}>Waiting</option>
                                     <option value="received" {% if request.receiving_status == 'received' %}selected{% endif %}>Received</option>
                                 </select>
                             </form>
-                            
                         {% elseif request.status == 'approved' and not request.has_completed_event %}
                             <!-- Approved + chưa có event completed => Fix cứng là waiting -->
                             <span class="badge bg-warning">Waiting</span>
                             <small class="text-muted d-block">Event chưa hoàn thành</small>
-                            
+                        
                         {% else %}
                             <!-- Fallback case -->
                             <span class="text-muted">
@@ -144,4 +143,14 @@
         </table>
     </div>
 </div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    document.querySelectorAll('.status-select').forEach(function(select) {
+                                        select.addEventListener('change', function() {
+                                            this.form.submit();
+                                        });
+                                    });
+                                });
+                                </script>
+
 {% endblock %}
