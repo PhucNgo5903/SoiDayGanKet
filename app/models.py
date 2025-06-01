@@ -21,10 +21,8 @@ class NguoiDung(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     avatar_url = models.URLField(
-        default='https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-    )
-    avatar_url = models.URLField(
-        default='https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+        default='https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+        null=True
     )
 
     def __str__(self):
@@ -215,8 +213,6 @@ class Event(models.Model):
     report_url = models.URLField(blank=True, null=True)
     confirmed_by = models.BooleanField(default=False)
     volunteers_number = models.BigIntegerField()
-    reason = models.TextField(null=True)
-    
     reason = models.TextField(null=True)
     
     def __str__(self):
