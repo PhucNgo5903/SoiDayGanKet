@@ -374,12 +374,18 @@ for event_id, event_status in event_data:
         elif event_status == 'rejected':
             reg_status = random.choice(['pending', 'rejected'])
         elif event_status == 'approved':
-            reg_status = random.choice(['approved', 'completed'])
+            # ⭐ THAY ĐỔI TẠI ĐÂY: Thêm volunteers có status "pending" cho events "approved"
+            if idx < 3:  # 3 volunteers đầu tiên sẽ có status "pending"
+                reg_status = 'pending'
+                print(f"  🔄 Event #{event_id} (approved): Volunteer {volunteer_id} = PENDING (cần duyệt)")
+            else:
+                reg_status = random.choice(['approved', 'completed'])
         else:  # completed
             reg_status = 'completed'
         
         registered_at = random_datetime_past(25)
         
+        # Chỉ set check-in time cho volunteers đã approved/completed
         if reg_status in ['approved', 'completed']:
             checked_in_at = registered_at + timedelta(days=random.randint(1, 10))
         else:
@@ -395,7 +401,7 @@ for event_id, event_status in event_data:
                 unrated_volunteers_count += 1
                 print(f"  ⭐ Event #{event_id}: Volunteer {volunteer_id} chưa được đánh giá")
             else:
-                rating = random.randint(3, 5)  # Rating cao để test tốt
+                rating = random.randint(7, 10)  # Rating cao để có dữ liệu tốt cho View Rating
                 review = random.choice(reviews_templates) + f" (Event #{event_id})"
         else:
             checked_out_at = None
@@ -416,6 +422,17 @@ INSERT INTO app_eventregistration
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ''', registrations_data)
 conn.commit()
+
+# Đếm số volunteers pending trong events approved
+conn_check = sqlite3.connect('db.sqlite3')
+cur_check = conn_check.cursor()
+cur_check.execute('''
+    SELECT COUNT(*) FROM app_eventregistration er
+    JOIN app_event e ON er.event_id = e.id 
+    WHERE e.status = 'approved' AND er.status = 'pending' AND e.charity_org_id = 3
+''')
+pending_count = cur_check.fetchone()[0]
+conn_check.close()
 
 # ========== 9. Tạo thêm một số dữ liệu phụ ==========
 print("Tạo dữ liệu bổ sung...")

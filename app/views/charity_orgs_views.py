@@ -11,6 +11,11 @@ from django.db import transaction
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect
 import json
+import os
+import uuid
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 
 @role_required('charity')
@@ -179,23 +184,31 @@ def events_list_by_status(request, status):
     except (AttributeError, CharityOrg.DoesNotExist):
         return render(request, 'error.html', {'message': 'Không tìm thấy tổ chức từ thiện của bạn'})
 
-    # Lọc sự kiện theo charity_org và status (sử dụng status gốc, không phải display_status)
+    # Lọc sự kiện theo charity_org và status
     event_data = Event.objects.filter(
         charity_org=charity_org,
-        status=status  # Sử dụng status parameter, không phải display_status
+        status=status
     ).select_related('charity_org', 'assistance_request').order_by('-start_time')
 
     # Thêm STT và đếm số tình nguyện viên cho mỗi sự kiện
     for i, event in enumerate(event_data, 1):
         event.stt = i
         
-        # Đếm số tình nguyện viên đã đăng ký (status approved hoặc completed)
-        if status in ['approved', 'completed']:
+        # Đếm số tình nguyện viên dựa trên trạng thái sự kiện
+        if status == 'approved':
+            # Sự kiện đã được chấp nhận: đếm TNV đã được chấp nhận
             event.volunteers = EventRegistration.objects.filter(
                 event=event,
-                status__in=['approved', 'completed']
+                status='approved'
+            ).count()
+        elif status == 'completed':
+            # Sự kiện đã hoàn thành: đếm TNV đã hoàn thành
+            event.volunteers = EventRegistration.objects.filter(
+                event=event,
+                status='completed'
             ).count()
         else:
+            # Các trạng thái khác (pending, rejected): không hiển thị số TNV
             event.volunteers = 0
 
     return render(request, 'charity-orgs/event_list_status.html', {
@@ -334,6 +347,7 @@ def get_volunteer_reviews(request, volunteer_id):
             'success': False,
             'message': f'Có lỗi xảy ra: {str(e)}'
         })
+        
 @role_required('charity')
 def approve_volunteer_registration(request, registration_id):
     """Chấp nhận đăng ký TNV"""
@@ -525,6 +539,109 @@ def rate_volunteer(request):
             'success': False,
             'message': f'Có lỗi xảy ra: {str(e)}'
         }, status=500)
+
+# Kết thúc sự kiện và cập nhật trạng thái
+@role_required('charity')
+@require_http_methods(["POST"])
+def end_event(request, event_id):
+    """Kết thúc sự kiện và cập nhật trạng thái"""
+    try:
+        # Lấy charity org từ user hiện tại
+        nguoi_dung = request.user.nguoidung
+        charity_org = CharityOrg.objects.get(user=nguoi_dung)
+        
+        # Lấy sự kiện và kiểm tra quyền truy cập
+        event = get_object_or_404(
+            Event, 
+            id=event_id, 
+            charity_org=charity_org, 
+            status='approved'
+        )
+        
+        # Kiểm tra file báo cáo
+        if 'report_file' not in request.FILES:
+            return JsonResponse({
+                'success': False,
+                'message': 'Vui lòng tải lên file báo cáo'
+            })
+        
+        report_file = request.FILES['report_file']
+        
+        # Kiểm tra kích thước file (max 10MB)
+        if report_file.size > 10 * 1024 * 1024:
+            return JsonResponse({
+                'success': False,
+                'message': 'Kích thước file không được vượt quá 10MB'
+            })
+        
+        # Kiểm tra định dạng file
+        allowed_extensions = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png']
+        file_extension = os.path.splitext(report_file.name)[1].lower()
+        
+        if file_extension not in allowed_extensions:
+            return JsonResponse({
+                'success': False,
+                'message': 'Định dạng file không được hỗ trợ. Vui lòng tải lên file PDF, DOC, DOCX, JPG, JPEG hoặc PNG'
+            })
+        
+        # Tạo tên file unique
+        unique_filename = f"event_reports/{event.id}_{uuid.uuid4()}{file_extension}"
+        
+        # Lưu file và tạo URL
+        try:
+            # Lưu file vào storage (có thể là local hoặc cloud storage)
+            file_path = default_storage.save(unique_filename, ContentFile(report_file.read()))
+            
+            # Tạo URL cho file (điều chỉnh theo cấu hình storage của bạn)
+            if hasattr(settings, 'MEDIA_URL'):
+                report_url = request.build_absolute_uri(settings.MEDIA_URL + file_path)
+            else:
+                # Fallback URL nếu không có MEDIA_URL
+                report_url = request.build_absolute_uri('/media/' + file_path)
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Lỗi khi lưu file: {str(e)}'
+            })
+        
+        # Cập nhật database trong transaction
+        with transaction.atomic():
+            # Cập nhật trạng thái sự kiện
+            event.status = 'completed'
+            event.report_url = report_url
+            event.save()
+            
+            # Cập nhật trạng thái tất cả volunteer registrations từ 'approved' thành 'completed'
+            approved_registrations = EventRegistration.objects.filter(
+                event=event,
+                status='approved'
+            )
+            
+            updated_count = approved_registrations.update(
+                status='completed',
+                checked_out_at=timezone.now()
+            )
+            
+            # Log thông tin (optional)
+            print(f"Event {event.id} completed. Updated {updated_count} volunteer registrations.")
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Sự kiện đã được kết thúc thành công. Đã cập nhật trạng thái cho {updated_count} tình nguyện viên.'
+        })
+        
+    except CharityOrg.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Không tìm thấy tổ chức từ thiện của bạn'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Có lỗi xảy ra: {str(e)}'
+        })
+
 
 #---logout view      
 def charity_logout(request):

@@ -5,13 +5,6 @@
 <div class="container mt-5 mb-5">
   <h3 class="fw-bold text-center mb-4">Charity Organization Information</h3>
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-  
-
   <div class="text-center mb-4">
     <img src="{{ nguoidung.avatar_url }}" alt="Avatar" class="rounded-circle shadow-sm" width="120" height="120" style="object-fit: cover;">
   </div>
@@ -84,4 +77,47 @@
     </div>
   </form>
 </div>
+
+<!-- Toastr CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+// Cấu hình toastr
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "300",
+    "timeOut": "1500", // 1.5 giây
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+
+// Hiển thị toastr nếu có message từ Django
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            toastr.success('{{ message }}');
+        {% elif message.tags == 'error' %}
+            toastr.error('{{ message }}');
+        {% elif message.tags == 'warning' %}
+            toastr.warning('{{ message }}');
+        {% elif message.tags == 'info' %}
+            toastr.info('{{ message }}');
+        {% else %}
+            toastr.success('{{ message }}');
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</script>
 {% endblock %}
