@@ -1,7 +1,9 @@
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from app.views import views
+from app.views.volunteer_views import volunteer_registered_events
 from app.views import views, admin_views, beneficiary_views,charity_orgs_views, volunteer_views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -60,7 +62,11 @@ urlpatterns = [
 
     path("total-charity-orgs/", admin_views.total_charity_orgs, name="total_charity_orgs"),
     path("admin-charity-org-detail/<int:pk>", admin_views.admin_charity_org_detail, name="admin_charity_org_detail"),
+    
+
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

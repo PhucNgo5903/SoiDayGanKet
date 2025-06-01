@@ -168,3 +168,9 @@ class BeneficiaryProfileForm(forms.ModelForm):
         if commit:
             nguoidung.save()
         return nguoidung
+# ==== Event Register Form ====
+class EventRegisterForm(forms.Form):
+    full_name = forms.CharField(label="Họ và tên", max_length=100, required=True)
+    email = forms.EmailField(label="Email", required=True)
+    phone = forms.CharField(label="Điện thoại", max_length=20, required=True)
+    skill_description = forms.CharField(label="Mô tả kĩ năng", widget=forms.Textarea, required=False)

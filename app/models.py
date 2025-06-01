@@ -23,6 +23,9 @@ class NguoiDung(models.Model):
     avatar_url = models.URLField(
         default='https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
     )
+    avatar_url = models.URLField(
+        default='https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+    )
 
     def __str__(self):
         return self.user.username
@@ -82,6 +85,30 @@ class AssistanceRequestType(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# ==== Skill - Assistance Request Type Mapping Model ====
+class SkillAssistanceRequestType(models.Model):
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    assistance_request_type = models.ForeignKey(AssistanceRequestType, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('skill', 'assistance_request_type')
+
+    def __str__(self):
+        return f"{self.skill.name} - {self.assistance_request_type.name}"
+
+
+# ==== Charity Org - Assistance Request Type Mapping Model ====
+class CharityOrgAssistanceRequestType(models.Model):
+    charity_org = models.ForeignKey(CharityOrg, on_delete=models.CASCADE)
+    assistance_request_type = models.ForeignKey(AssistanceRequestType, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('charity_org', 'assistance_request_type')
+
+    def __str__(self):
+        return f"{self.charity_org.user.user.username} - {self.assistance_request_type.name}"
 
 
 # ==== Skill - Assistance Request Type Mapping Model ====
@@ -188,6 +215,8 @@ class Event(models.Model):
     report_url = models.URLField(blank=True, null=True)
     confirmed_by = models.BooleanField(default=False)
     volunteers_number = models.BigIntegerField()
+    reason = models.TextField(null=True)
+    
     reason = models.TextField(null=True)
     
     def __str__(self):

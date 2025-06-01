@@ -1,0 +1,81 @@
+{% extends "volunteer/base-volunteer.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+
+  <!-- Tiêu đề sự kiện -->
+  <h2 class="mb-4 text-center fw-bold">{{ event.title }}</h2>
+
+  <!-- Ảnh sự kiện -->
+  <div class="text-center mb-4">
+    {% with images=event.assistance_request.images.all %}
+      {% if images and images.0.image_url %}
+        <img src="{{ images.0.image_url }}" alt="{{ event.title }}" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: cover;">
+      {% else %}
+        <img src="{% static 'images/default-event.jpg' %}" alt="Default Image" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: cover;">
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Thông tin và mô tả -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <p class="fs-5">{{ event.description }}</p>
+
+      <ul class="list-unstyled fs-6">
+        <li><strong>Thời gian bắt đầu:</strong> {{ event.start_time|date:"d/m/Y H:i" }}</li>
+        <li><strong>Thời gian kết thúc:</strong> {{ event.end_time|date:"d/m/Y H:i" }}</li>
+        <li><strong>Địa điểm:</strong> {{ event.assistance_request.place }}</li>
+        <li>
+          <strong>Số lượng tình nguyện viên:</strong> 
+          {{ approved_count|default:0 }} / {{ event.volunteers_number }}
+        </li>
+      </ul>
+
+      <!-- Trạng thái tham gia -->
+      {% if event_has_ended %}
+        <div class="alert alert-secondary">
+          <strong>Sự kiện đã diễn ra.</strong>
+        </div>
+
+      {% elif registration %}
+        {% if registration.status == 'pending' %}
+          <div class="alert alert-info">
+            Bạn đã đăng ký sự kiện này. <strong>Trạng thái:</strong> Chờ duyệt.
+          </div>
+        {% elif registration.status == 'approved' %}
+          <div class="alert alert-success">
+            Bạn đã đăng ký sự kiện này. <strong>Trạng thái:</strong> Đã được duyệt.
+          </div>
+        {% elif registration.status == 'rejected' %}
+          <div class="alert alert-warning">
+            Bạn đã đăng ký sự kiện này nhưng <strong>đã bị từ chối.</strong>
+          </div>
+        {% elif registration.status == 'completed' %}
+          <div class="alert alert-primary">
+            Bạn đã hoàn thành sự kiện này.
+          </div>
+        {% endif %}
+
+      {% elif is_full %}
+        <div class="alert alert-warning">
+          Sự kiện đã đủ số lượng tình nguyện viên.
+        </div>
+
+      {% else %}
+        <form method="post" action="{% url 'register_event' event.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary mb-3">Đăng ký tham gia</button>
+        </form>
+      {% endif %}
+
+      <!-- Nút quay lại -->
+      <div class="mt-4">
+        <button onclick="history.back()" class="btn btn-dark btn-lg fw-bold">Back</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
