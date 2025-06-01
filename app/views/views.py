@@ -109,7 +109,7 @@ class signup_charity_org(View):
         if form.is_valid():
             form.save()
             return redirect('login_charity')
-        return render(request, 'signup_charity.html', {'form': form})
+        return render(request, 'share/signup_charity.html', {'form': form})
 
 
 

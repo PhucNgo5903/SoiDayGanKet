@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donation & Volunteer System</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/helping-hand.png' %}"
+    />
+    <!-- Font Awesome icons (free version)-->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- Google fonts-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;100;300;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/style-admin.css' %}" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Toastr CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
+    <!-- JS Toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  </head>
+
+  <body class="bg-light bg-gradient">
+    <div class="sidebar">
+      <div class="logo_content">
+        <div class="logo">
+          <i id="icon-home" class="fa-solid fa-home"></i>
+          <div class="logo_name">Charity Organization</div>
+        </div>
+        <span id="btn-sidebar"
+          ><i class="fa fa-bars" aria-hidden="true"></i
+        ></span>
+      </div>
+      <div class="profile_content">
+        <div class="profile">
+          <div class="profile_details">
+            <img src="{{ request.user.nguoidung.avatar_url }}" alt="Avatar" class="rounded-circle" style="object-fit: cover; width: 100px; height: 100px;">
+            <div class="name_job">
+              <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+              <div class="email">{{ user.email }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="nav_list">
+        <!-- Trang chủ -->
+        <li>
+          <a href="{% url 'index_charity' %}">
+            <i id="icon" class="fa fa-th-large" aria-hidden="true"></i>
+            <span class="links_name">Assistance Requests</span>
+          </a>
+        </li>
+
+        <!-- Danh sách sự kiện -->
+        <li class="submenu">
+          <a href="#">
+            <i id="icon" class="fa fa-calendar" aria-hidden="true"></i>
+            <span class="links_name">Event List</span>
+            <span class="menu-arrow"></span>
+          </a>
+          <ul>
+            <li><a href="{% url 'charity_events_by_status' 'pending' %}">Pending Events</a></li>
+            <li><a href="{% url 'charity_events_by_status' 'approved' %}">Approved Events</a></li>
+            <li><a href="{% url 'charity_events_by_status' 'completed' %}">Completed Events</a></li>
+            <li><a href="{% url 'charity_events_by_status' 'rejected' %}">Rejected Events</a></li>
+          </ul>
+        </li>
+
+        <!-- Danh sách đơn đăng ký -->
+        <li>
+          {% comment %}
+          <a href="{% url 'registration_list' %}">
+            <i id="icon" class="fa fa-list-alt" aria-hidden="true"></i>
+            <span class="links_name">Danh sách đơn đăng ký</span>
+          </a>
+          {% endcomment %}
+          <a href="{% url 'charity-profile' %}">
+            <i id="icon" class="fa fa-list-alt" aria-hidden="true"></i>
+            <span class="links_name">Profile Information</span>
+          </a>
+        </li>
+
+        <!-- Đăng xuất -->
+        <li>
+          <a href="{% url 'charity_logout' %}">
+            <i id="icon" class="fa fa-sign-out" aria-hidden="true"></i>
+            <span class="links_name">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="home_content">{% block main %}{% endblock main %}</div>
+    {% include 'charity-orgs/charity_base_footer.html' %}
+  </body>
+</html>
