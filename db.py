@@ -547,6 +547,17 @@ for atype_id in assistance_type_ids:
 cur.execute('DELETE FROM app_skillassistancerequesttype')
 conn.commit()
 
+# Đếm số volunteers pending trong events approved
+conn_check = sqlite3.connect('db.sqlite3')
+cur_check = conn_check.cursor()
+cur_check.execute('''
+    SELECT COUNT(*) FROM app_eventregistration er
+    JOIN app_event e ON er.event_id = e.id 
+    WHERE e.status = 'approved' AND er.status = 'pending' AND e.charity_org_id = 3
+''')
+pending_count = cur_check.fetchone()[0]
+conn_check.close()
+
 # ===== 4. Chèn dữ liệu mới =====
 cur.executemany('''
     INSERT INTO app_skillassistancerequesttype (skill_id, assistance_request_type_id)
