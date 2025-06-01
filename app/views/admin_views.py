@@ -1,5 +1,5 @@
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from app import models
 from app.models import AssistanceRequest, AssistanceRequestImage, AssistanceRequestType, AssistanceRequestTypeMap, CharityOrg, Event, EventRegistration, Volunteer, VolunteerSkill
