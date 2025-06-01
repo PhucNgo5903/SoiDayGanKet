@@ -1,0 +1,377 @@
+{% extends 'beneficiary/base-beneficiary.html' %}
+{% block main %}
+<div class="container-fluid p-4">
+    <!-- Header Card -->
+    <div class="card border-0 shadow-lg mb-4">
+        <div class="card-header text-white p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-file-alt me-3"></i>
+                        Assistance Request Detail
+                    </h3>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-light text-primary px-3 py-2 fs-6">
+                        {{ request_item.get_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Images Section - First -->
+    {% if request_item.images.all %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-primary fw-bold">
+                <i class="fas fa-images me-2"></i>
+                Request Images
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                {% for image in request_item.images.all %}
+                <div class="col-md-4">
+                    <div class="image-container position-relative">
+                        <img src="{{ image.image_url }}" alt="Request Image" 
+                             class="img-fluid rounded shadow-sm hover-image"
+                             style="width: 100%; height: 250px; object-fit: cover; cursor: pointer;"
+                             onclick="openImageModal('{{ image.image_url }}')">
+                        <div class="image-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-expand text-white fs-3 opacity-0"></i>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Information Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-primary fw-bold">
+                <i class="fas fa-info-circle me-2"></i>
+                Request Information
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Basic Info -->
+                <div class="col-md-6">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-1">TITLE</label>
+                        <h6 class="fw-bold text-primary mb-0">{{ request_item.title }}</h6>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-1">PRIORITY</label>
+                        <span class="badge bg-{% if request_item.priority == 'high' %}danger{% elif request_item.priority == 'medium' %}warning{% else %}secondary{% endif %} fs-6">
+                            {{ request_item.get_priority_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-1">RECEIVING STATUS</label>
+                        <span class="badge bg-{% if request_item.receiving_status == 'received' %}success{% elif request_item.receiving_status == 'pending' %}warning{% else %}secondary{% endif %} fs-6">
+                            {{ request_item.get_receiving_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Location & Dates -->
+                <div class="col-md-4">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-1">LOCATION</label>
+                        <p class="mb-0 fw-semibold">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            {{ request_item.place }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-1">START DATE</label>
+                        <p class="mb-0 fw-semibold">
+                            <i class="fas fa-calendar-start text-success me-2"></i>
+                            {{ request_item.start_date }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-1">END DATE</label>
+                        <p class="mb-0 fw-semibold">
+                            <i class="fas fa-calendar-times text-warning me-2"></i>
+                            {{ request_item.end_date }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-2">DESCRIPTION</label>
+                        <p class="mb-0 lh-lg">{{ request_item.description }}</p>
+                    </div>
+                </div>
+
+                <!-- Assistance Types -->
+                <div class="col-12">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-2">ASSISTANCE TYPE(S)</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for type_map in request_item.assistancerequesttypemap_set.all %}
+                                <span class="badge bg-info fs-6 px-3 py-2">
+                                    <i class="fas fa-tag me-1"></i>
+                                    {{ type_map.type.name }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted fst-italic">No assistance types specified</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Important Information - Highlighted -->
+    <div class="card border-0 shadow-sm mb-4" style="border-left: 5px solid #dc3545 !important;">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-danger fw-bold">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Important Information
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Charity Organization -->
+                <div class="col-md-6">
+                    <div class="alert alert-primary border-0 mb-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-building fs-4 me-3"></i>
+                            <div>
+                                <label class="text-primary small mb-1 fw-bold">CHARITY ORGANIZATION</label>
+                                <h6 class="mb-0 fw-bold text-dark">
+                                    {{ request_item.charity_org.user.user.username|default:"Not Assigned" }}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approved By -->
+                <div class="col-md-6">
+                    <div class="alert alert-success border-0 mb-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-user-check fs-4 me-3"></i>
+                            <div>
+                                <label class="text-success small mb-1 fw-bold">APPROVED BY</label>
+                                <h6 class="mb-0 fw-bold text-dark">
+                                    {{ request_item.update_by.user.username|default:"Not Approved Yet" }}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Status At -->
+                <div class="col-md-6">
+                    <div class="alert alert-warning border-0 mb-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-clock fs-4 me-3"></i>
+                            <div>
+                                <label class="text-warning small mb-1 fw-bold">UPDATE STATUS AT</label>
+                                <h6 class="mb-0 fw-bold text-dark">
+                                    {{ request_item.update_status_at|default:"Not Updated Yet" }}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Event -->
+                <div class="col-md-6">
+                    {% with related_event=request_item.event_set.first %}
+                    <div class="alert alert-info border-0 mb-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-calendar-alt fs-4 me-3"></i>
+                            <div>
+                                <label class="text-info small mb-1 fw-bold">RELATED EVENT</label>
+                                <h6 class="mb-0 fw-bold text-dark">
+                                    {% if related_event %}
+                                        {{ related_event.title }}
+                                    {% else %}
+                                        No Related Event
+                                    {% endif %}
+                                </h6>
+                                {% if related_event %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1"></i>
+                                        {{ related_event.volunteers_number }} volunteers needed
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-primary fw-bold">
+                <i class="fas fa-plus-circle me-2"></i>
+                Additional Information
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Proof -->
+                <div class="col-md-6">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-2">PROOF DOCUMENT</label>
+                        {% if request_item.proof_url %}
+                            <a href="{{ request_item.proof_url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-external-link-alt me-2"></i>
+                                View Proof Document
+                            </a>
+                        {% else %}
+                            <span class="text-muted fst-italic">No proof document provided</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Admin Remark -->
+                <div class="col-md-6">
+                    <div class="info-item p-3 rounded bg-light">
+                        <label class="text-muted small mb-2">ADMIN REMARK</label>
+                        <p class="mb-0 {% if not request_item.admin_remark %}text-muted fst-italic{% endif %}">
+                            {{ request_item.admin_remark|default:"No admin remarks" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center">
+        <a href="{% url 'support_status' %}" class="btn btn-secondary btn-lg px-5">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Request List
+        </a>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <img id="modalImage" src="" alt="Full Size Image" class="img-fluid w-100">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-item {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.info-item:hover {
+    border-color: #dee2e6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.hover-image {
+    transition: all 0.3s ease;
+}
+
+.image-container:hover .hover-image {
+    transform: scale(1.05);
+}
+
+.image-container:hover .image-overlay i {
+    opacity: 1 !important;
+}
+
+.image-overlay {
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: all 0.3s ease;
+    border-radius: 0.375rem;
+}
+
+.image-container:hover .image-overlay {
+    opacity: 1;
+}
+
+.alert {
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.badge {
+    border-radius: 20px;
+}
+
+.card {
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem !important;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+</style>
+
+<script>
+function openImageModal(imageSrc) {
+    document.getElementById('modalImage').src = imageSrc;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+// Add smooth scrolling
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on load
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

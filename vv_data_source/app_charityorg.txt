@@ -1,0 +1,3 @@
+3|local|https://charityA.org
+4|national|https://charityB.org
+5|international|https://charityC.org

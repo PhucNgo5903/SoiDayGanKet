@@ -1,0 +1,42 @@
+{% extends "base-db-admin.html" %}
+
+{% block main %}
+<div class="container mt-4">
+    <h2 class="mb-3">New Event Request List</h2>
+    <div class="table-responsive">
+        <table id="eventTable" class="table table-striped table-hover table-bordered">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Event Name</th>
+                    <th>Charity Organization</th>
+                    <th>Event Start Time</th>
+                    <th>Event End Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                <tr>
+                    <td>1</td>
+                    <td>Community Cleanup</td>
+                    <td>F4 Viet Nhat</td>
+                    <td>Mar 15, 2025 10:00 AM</td>
+                    <td>Mar 16, 2025 10:00 AM</td>
+                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                    <td><a href="#" class="btn btn-primary btn-sm">View Detail</a></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Food Distribution</td>
+                    <td>Peter Pan the Man</td>
+                    <td>Mar 20, 2025 2:00 PM</td>
+                    <td>Mar 21, 2025 2:00 PM</td>
+                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                    <td><a href="#" class="btn btn-primary btn-sm">View Detail</a></td>
+                </tr>
+            </tbody>
+        </table>        
+    </div>
+</div>
+{% endblock main %}

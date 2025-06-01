@@ -1,0 +1,279 @@
+{% extends "charity-orgs/charity_base.html" %} {% load static %} {% block main%}
+<div class="container mt-5">
+  <h2 class="mb-4">{{ req.title }}</h2>
+
+  <div class="row">
+    <div class="col-md-6">
+      {% if req.images.all %}
+      <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for img in req.images.all %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img
+              src="{{ img.image_url }}"
+              class="d-block w-100"
+              alt="Ảnh minh họa"
+              onerror="this.onerror=null;this.src='{% static 'img/no-image.png' %}'"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+      {% else %}
+      <img
+        src="{% static 'img/no-image.png' %}"
+        class="img-fluid"
+        alt="Không có ảnh"
+      />
+      {% endif %}
+    </div>
+
+    <div class="col-md-6">
+      <p>
+        <strong>Người nhận:</strong> {{ req.beneficiary.user.user.first_name }}
+        {{ req.beneficiary.user.user.last_name }}
+      </p>
+      <p><strong>Địa điểm:</strong> {{ req.place }}</p>
+      <p>
+        <strong>Thời gian:</strong> {{ req.start_date|date:"d/m/Y H:i" }} -
+        {{req.end_date|date:"d/m/Y H:i" }}
+      </p>
+      <p><strong>Mức ưu tiên:</strong> {{ req.get_priority_display }}</p>
+      <p>
+        <strong>Trạng thái nhận:</strong> {{ req.get_receiving_status_display }}
+      </p>
+      <p>
+        <strong>Loại hỗ trợ:</strong>
+        {% for type_map in req.assistancerequesttypemap_set.all %}
+        <span class="badge bg-info">{{ type_map.type.name }}</span>
+        {% empty %}
+        <span>Không có</span>
+        {% endfor %}
+      </p>
+      <p><strong>Mô tả chi tiết:</strong></p>
+      <p>{{ req.description|linebreaks }}</p>
+      <p><strong>Link minh chứng:</strong></p>
+      <p>{{req.proof_url}}</p>
+      <p><strong>Ghi chú quản trị viên:</strong></p>
+      <p>{{ req.admin_remark }}</p>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex justify-content-center gap-3">
+    <a href="{% url 'index_charity' %}" class="btn btn-danger">
+      <i class="bi bi-x-circle"></i> Từ chối
+    </a>
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#createEventModal"
+    >
+      <i class="bi bi-check-circle"></i> Đồng ý
+    </button>
+  </div>
+</div>
+
+<!-- ✅ Bắt đầu modal đúng chuẩn Bootstrap -->
+<div
+  class="modal fade"
+  id="createEventModal"
+  tabindex="-1"
+  aria-labelledby="createEventModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- ✅ Bắt đầu thẻ form bên trong modal-content -->
+      <form id="event-form" method="post" action="{% url 'create_event' req.id %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="createEventModalLabel">
+            Tạo sự kiện hỗ trợ
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Đóng"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <p><strong>Yêu cầu:</strong> {{ req.title }}</p>
+          <p>
+            <strong>Thời gian:</strong> {{ req.start_date|date:"d/m/Y H:i" }} đến
+            {{req.end_date|date:"d/m/Y H:i" }}
+          </p>
+          <p><strong>Địa điểm:</strong> {{ req.place }}</p>
+          <p>
+            <strong>Loại hỗ trợ:</strong>
+            {% for type_map in req.assistancerequesttypemap_set.all %}
+              <span class="badge bg-info">{{ type_map.type.name }}</span>
+            {% empty %}
+              <span>Không có</span>
+            {% endfor %}
+          </p>
+          <div class="form-group">
+            {{ form.start_time.label_tag }}
+            {{ form.start_time }}
+            {% if form.start_time.errors %}
+              <div class="text-danger small">{{ form.start_time.errors.as_text }}</div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group">
+            {{ form.end_time.label_tag }}
+            {{ form.end_time }}
+            {% if form.end_time.errors %}
+              <div class="text-danger small">{{ form.end_time.errors.as_text }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.volunteers_number.label_tag }}
+            {{ form.volunteers_number }}
+            {% if form.volunteers_number.errors %}
+              <div class="text-danger small">
+                {{ form.volunteers_number.errors.as_text }}
+              </div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger small">{{ form.description.errors }}</div>
+            {% endif %}
+          </div>
+      </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Tạo</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Quay lại
+          </button>
+        </div>
+      </form>
+      <!-- ✅ Kết thúc thẻ form ở đây -->
+
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+      $('#event-form').submit(function (e) {
+        e.preventDefault(); // Ngăn reload
+  
+        const $form = $(this);
+        $.ajax({
+          type: 'POST',
+          url: $form.attr('action'),
+          data: $form.serialize(),
+          dataType: 'json',
+          success: function (response) {
+            if (response.success) {
+                const modalEl = document.getElementById('createEventModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                modalInstance.hide();
+                $form[0].reset();
+                
+                // Chuyển hướng với parameter success
+                window.location.href = "{% url 'index_charity' %}?success=" + encodeURIComponent(response.message);
+              } else {
+              // Hiển thị lỗi toastr
+              response.errors.forEach(msg => {
+                toastr.error(msg);
+              });
+            }
+          },
+          error: function () {
+            toastr.error('Đã xảy ra lỗi không xác định.');
+          }
+        });
+      });
+    });
+  </script>
+  
+
+{% endblock main %}
+
+
+<!-- Toastr CSS inline hoặc import từ file riêng -->
+{% comment %}
+<style>
+  #toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+  .toast {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #28a745;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    animation: fadein 0.5s, fadeout 0.5s 2.3s;
+  }
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  function showToastr(message) {
+    const existing = document.getElementById("toast-container");
+    if (existing) existing.remove(); // clear old toastr
+
+    const container = document.createElement("div");
+    container.id = "toast-container";
+
+    const toast = document.createElement("div");
+    toast.classList.add("toast");
+    toast.innerText = message;
+
+    container.appendChild(toast);
+    document.body.appendChild(container);
+
+    setTimeout(() => {
+      container.remove();
+    }, 2800);
+  }
+
+  document
+    .getElementById("createEventForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Ẩn modal
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("createEventModal")
+      );
+      modal.hide();
+
+      // Gửi dữ liệu qua fetch hoặc AJAX nếu cần (tạm bỏ qua vì bạn xử lý sau)
+      showToastr("Tạo sự kiện thành công!");
+    });
+</script>
+{% endcomment %}

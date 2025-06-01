@@ -1,0 +1,93 @@
+{% extends "volunteer/base-volunteer.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+  <h3 class="fw-bold text-center mb-4">Your Profile</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="text-center mb-4">
+    <img src="{{ nguoidung.avatar_url }}" alt="Avatar" class="rounded-circle shadow-sm" width="120" height="120" style="object-fit: cover;">
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Change Avatar</label>
+      <input type="file" name="avatar_file" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Username</label>
+      <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">First Name</label>
+        <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Last Name</label>
+        <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Date of Birth</label>
+        <input type="date" name="dob" class="form-control" value="{{ nguoidung.dob|date:'Y-m-d' }}" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Phone</label>
+      <input type="text" name="phone" class="form-control" value="{{ nguoidung.phone }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Address</label>
+      <textarea name="address" class="form-control" rows="2" required>{{ nguoidung.address }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Description</label>
+      <textarea name="description" class="form-control" rows="3">{{ nguoidung.description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Gender</label>
+      <select name="gender" class="form-select">
+        <option value="male" {% if volunteer.gender == "male" %}selected{% endif %}>Male</option>
+        <option value="female" {% if volunteer.gender == "female" %}selected{% endif %}>Female</option>
+        <option value="other" {% if volunteer.gender == "other" %}selected{% endif %}>Other</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label fw-bold">Your Skills</label><br>
+      {% for skill in all_skills %}
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="skills" value="{{ skill.id }}" id="skill_{{ skill.id }}"
+                 {% if skill in selected_skills %}checked{% endif %}>
+          <label class="form-check-label" for="skill_{{ skill.id }}">{{ skill.name }}</label>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-end">
+      <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

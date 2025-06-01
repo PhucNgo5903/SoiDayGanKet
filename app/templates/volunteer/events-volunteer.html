@@ -1,0 +1,52 @@
+{% extends "volunteer/base-volunteer.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5 text-center">
+  <h2>
+  {% if ongoing %}
+    Ongoing Events
+  {% elif registered %}
+    Registered Events 
+  {% else %}
+    Upcoming Events
+  {% endif %}
+</h2>
+
+  <!-- Thanh tìm kiếm -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <form method="get" class="d-flex">
+        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search by title or place..." class="form-control me-2">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Danh sách sự kiện -->
+  <div class="row">
+    {% for event in events %}
+      <div class="col-md-4 mb-5 d-flex align-items-stretch">
+        <a href="{% url 'volunteer_event_detail' event.id %}?from={% if registered %}registered{% else %}unregistered{% endif %}"
+           class="text-decoration-none text-dark w-100">
+          <div class="card border-0 h-100 shadow-sm">
+
+            <img src="{{ event.assistance_request.images.first.image_url|default:'https://via.placeholder.com/400x250?text=No+Image' }}"
+                      class="card-img-top rounded"
+                     style="height: 250px; object-fit: cover;">
+
+            <div class="card-body">
+              <h5 class="fw-bold">{{ event.title }}</h5>
+              <p class="text-muted">{{ event.description|truncatechars:100 }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center">
+        <p>No events found.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

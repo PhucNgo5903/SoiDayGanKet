@@ -1,0 +1,363 @@
+{% extends 'share/base.html' %}
+{% load static %}
+{% block main %}
+
+<!-- Gallery Header -->
+<section class="bg-primary text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Success Stories Gallery</h1>
+        <p class="lead">Celebrating completed assistance requests and the positive impact we've made together</p>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="bg-light py-4">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <h3 class="text-primary fw-bold">{{ total_completed }}</h3>
+                        <p class="text-muted mb-0">Completed Requests</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <h3 class="text-success fw-bold">{{ total_beneficiaries }}</h3>
+                        <p class="text-muted mb-0">People Helped</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <h3 class="text-info fw-bold">{{ total_events }}</h3>
+                        <p class="text-muted mb-0">Events Organized</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search by title or description...">
+                    <button class="btn btn-outline-primary" type="button" id="searchBtn">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="priorityFilter">
+                    <option value="">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Grid -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4" id="galleryGrid">
+            {% for request in completed_requests %}
+            <div class="col-lg-4 col-md-6 gallery-item" 
+                 data-priority="{{ request.priority }}" 
+                 data-title="{{ request.title|lower }}" 
+                 data-description="{{ request.description|lower }}">
+                <div class="card h-100 shadow-sm hover-card">
+                    <!-- Image Carousel -->
+                    {% if request.images.all %}
+                    <div id="carousel{{ request.id }}" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for image in request.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ image.image_url }}" class="d-block w-100 gallery-image" alt="Request Image">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if request.images.all|length > 1 %}
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ request.id }}" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ request.id }}" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <img src="{% static 'images/default-request.jpg' %}" class="card-img-top gallery-image" alt="Default Image">
+                    {% endif %}
+
+                    <!-- Priority Badge -->
+                    <div class="priority-badge priority-{{ request.priority }}">
+                        {{ request.get_priority_display }}
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-primary fw-bold">{{ request.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ request.description|truncatewords:20 }}</p>
+                        
+                        <!-- Request Details -->
+                        <div class="mt-auto">
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Beneficiary</small>
+                                    <strong>{{ request.beneficiary.user.user.get_full_name|default:request.beneficiary.user.user.username }}</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Completed</small>
+                                    <strong>{{ request.update_status_at|date:"M d, Y" }}</strong>
+                                </div>
+                            </div>
+
+                            <!-- Charity Organization -->
+                            {% if request.charity_org %}
+                            <div class="text-center mb-3">
+                                <small class="text-muted d-block">Supported by</small>
+                                <span class="badge bg-success">{{ request.charity_org.user.user.get_full_name|default:request.charity_org.user.user.username }}</span>
+                            </div>
+                            {% endif %}
+
+                            <!-- Request Types -->
+                            <div class="mb-3">
+                                {% for type_map in request.assistancerequesttypemap_set.all %}
+                                <span class="badge bg-info me-1">{{ type_map.type.name }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <!-- View Details Button -->
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#detailModal{{ request.id }}">
+                                <i class="fa fa-eye me-2"></i>View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Modal -->
+            <div class="modal fade" id="detailModal{{ request.id }}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ request.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Full Description -->
+                            <div class="mb-4">
+                                <h6>Description</h6>
+                                <p>{{ request.description }}</p>
+                            </div>
+
+                            <!-- Timeline -->
+                            <div class="mb-4">
+                                <h6>Timeline</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Start Date:</strong> {{ request.start_date|date:"M d, Y H:i" }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>End Date:</strong> {{ request.end_date|date:"M d, Y H:i" }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="mb-4">
+                                <h6>Location</h6>
+                                <p><i class="fa fa-map-marker me-2"></i>{{ request.place }}</p>
+                            </div>
+
+                            <!-- Proof Document -->
+                            {% if request.proof_url %}
+                            <div class="mb-4">
+                                <h6>Proof of Completion</h6>
+                                <a href="{{ request.proof_url }}" target="_blank" class="btn btn-outline-primary">
+                                    <i class="fa fa-external-link me-2"></i>View Proof Document
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            <!-- Admin Remark -->
+                            {% if request.admin_remark and request.admin_remark != "No admin remark" %}
+                            <div class="mb-4">
+                                <h6>Admin Notes</h6>
+                                <div class="alert alert-info">
+                                    {{ request.admin_remark }}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- All Images -->
+                            {% if request.images.all %}
+                            <div class="mb-4">
+                                <h6>Images</h6>
+                                <div class="row g-2">
+                                    {% for image in request.images.all %}
+                                    <div class="col-md-4">
+                                        <img src="{{ image.image_url }}" class="img-fluid rounded" alt="Request Image">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fa fa-heart-o fa-5x text-muted mb-3"></i>
+                <h4 class="text-muted">No completed requests yet</h4>
+                <p class="text-muted">Check back later to see our success stories!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Load More Button -->
+{% if has_more %}
+<section class="text-center py-4">
+    <div class="container">
+        <button class="btn btn-outline-primary btn-lg" id="loadMoreBtn">
+            Load More Stories
+        </button>
+    </div>
+</section>
+{% endif %}
+
+<!-- Custom Styles -->
+<style>
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.gallery-image {
+    height: 250px;
+    object-fit: cover;
+}
+
+.priority-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.priority-high {
+    background-color: #dc3545;
+    color: white;
+}
+
+.priority-medium {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.priority-low {
+    background-color: #28a745;
+    color: white;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.gallery-item {
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item.hidden {
+    display: none;
+}
+
+.modal-body img {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.modal-body img:hover {
+    transform: scale(1.05);
+}
+</style>
+
+<!-- JavaScript for filtering and interactions -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const priorityFilter = document.getElementById('priorityFilter');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+
+    function filterItems() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedPriority = priorityFilter.value;
+
+        galleryItems.forEach(item => {
+            const title = item.dataset.title;
+            const description = item.dataset.description;
+            const priority = item.dataset.priority;
+
+            const matchesSearch = !searchTerm || 
+                title.includes(searchTerm) || 
+                description.includes(searchTerm);
+            
+            const matchesPriority = !selectedPriority || priority === selectedPriority;
+
+            if (matchesSearch && matchesPriority) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterItems);
+    priorityFilter.addEventListener('change', filterItems);
+    
+    // Search button click
+    document.getElementById('searchBtn').addEventListener('click', filterItems);
+
+    // Image click to expand in modal
+    document.querySelectorAll('.modal-body img').forEach(img => {
+        img.addEventListener('click', function() {
+            const newWindow = window.open();
+            newWindow.document.write(`<img src="${this.src}" style="width:100%; height:auto;">`);
+        });
+    });
+});
+</script>
+
+{% endblock main %}

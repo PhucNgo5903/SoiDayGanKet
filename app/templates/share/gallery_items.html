@@ -1,0 +1,154 @@
+<!-- gallery_items.html - Template for AJAX loading -->
+{% load static %}
+
+{% for request in completed_requests %}
+<div class="col-lg-4 col-md-6 gallery-item" 
+     data-priority="{{ request.priority }}" 
+     data-title="{{ request.title|lower }}" 
+     data-description="{{ request.description|lower }}">
+    <div class="card h-100 shadow-sm hover-card">
+        <!-- Image Carousel -->
+        {% if request.images.all %}
+        <div id="carousel{{ request.id }}" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in request.images.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image.image_url }}" class="d-block w-100 gallery-image" alt="Request Image">
+                </div>
+                {% endfor %}
+            </div>
+            {% if request.images.all|length > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ request.id }}" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ request.id }}" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            {% endif %}
+        </div>
+        {% else %}
+        <img src="{% static 'images/default-request.jpg' %}" class="card-img-top gallery-image" alt="Default Image">
+        {% endif %}
+
+        <!-- Priority Badge -->
+        <div class="priority-badge priority-{{ request.priority }}">
+            {{ request.get_priority_display }}
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-primary fw-bold">{{ request.title }}</h5>
+            <p class="card-text flex-grow-1">{{ request.description|truncatewords:20 }}</p>
+            
+            <!-- Request Details -->
+            <div class="mt-auto">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Beneficiary</small>
+                        <strong>{{ request.beneficiary.user.user.get_full_name|default:request.beneficiary.user.user.username }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Completed</small>
+                        <strong>{{ request.update_status_at|date:"M d, Y" }}</strong>
+                    </div>
+                </div>
+
+                <!-- Charity Organization -->
+                {% if request.charity_org %}
+                <div class="text-center mb-3">
+                    <small class="text-muted d-block">Supported by</small>
+                    <span class="badge bg-success">{{ request.charity_org.user.user.get_full_name|default:request.charity_org.user.user.username }}</span>
+                </div>
+                {% endif %}
+
+                <!-- Request Types -->
+                <div class="mb-3">
+                    {% for type_map in request.assistancerequesttypemap_set.all %}
+                    <span class="badge bg-info me-1">{{ type_map.type.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <!-- View Details Button -->
+                <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#detailModal{{ request.id }}">
+                    <i class="fa fa-eye me-2"></i>View Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal{{ request.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ request.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Full Description -->
+                <div class="mb-4">
+                    <h6>Description</h6>
+                    <p>{{ request.description }}</p>
+                </div>
+
+                <!-- Timeline -->
+                <div class="mb-4">
+                    <h6>Timeline</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Start Date:</strong> {{ request.start_date|date:"M d, Y H:i" }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>End Date:</strong> {{ request.end_date|date:"M d, Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="mb-4">
+                    <h6>Location</h6>
+                    <p><i class="fa fa-map-marker me-2"></i>{{ request.place }}</p>
+                </div>
+
+                <!-- Proof Document -->
+                {% if request.proof_url %}
+                <div class="mb-4">
+                    <h6>Proof of Completion</h6>
+                    <a href="{{ request.proof_url }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="fa fa-external-link me-2"></i>View Proof Document
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Admin Remark -->
+                {% if request.admin_remark and request.admin_remark != "No admin remark" %}
+                <div class="mb-4">
+                    <h6>Admin Notes</h6>
+                    <div class="alert alert-info">
+                        {{ request.admin_remark }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- All Images -->
+                {% if request.images.all %}
+                <div class="mb-4">
+                    <h6>Images</h6>
+                    <div class="row g-2">
+                        {% for image in request.images.all %}
+                        <div class="col-md-4">
+                            <img src="{{ image.image_url }}" class="img-fluid rounded" alt="Request Image">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
