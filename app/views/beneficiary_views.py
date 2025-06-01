@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from ..models import Beneficiary, NguoiDung, User, AssistanceRequestTypeMap, AssistanceRequestImage, AssistanceRequest
+from ..models import Beneficiary, NguoiDung, Event, AssistanceRequestTypeMap, AssistanceRequestImage, AssistanceRequest
 from .views import role_required
 from django.contrib import messages
 from ..forms import AssistanceRequestForm, AssistanceRequestTypeForm, AssistanceRequestImageForm, BeneficiaryProfileForm
 from django.utils.translation import gettext as _ 
 from django.views.decorators.http import require_POST
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef
 from django.core.files.storage import FileSystemStorage
 import uuid
 
@@ -69,30 +69,36 @@ def send_request(request):
 
     
 
-@role_required('beneficiary')    
+@role_required('beneficiary')     
 def support_status(request):
     nguoi_dung = get_object_or_404(NguoiDung, user=request.user)
 
-    # Kiểm tra role có phải beneficiary không
     if nguoi_dung.role != 'beneficiary':
         return render(request, 'error.html', {'message': 'Bạn không có quyền truy cập trang này.'})
 
     beneficiary = get_object_or_404(Beneficiary, user=nguoi_dung)
 
-    assistance_requests = AssistanceRequest.objects.filter(
-        beneficiary=beneficiary
-    ).order_by('-created_at')
     q = request.GET.get('q', '')
     status = request.GET.get('status', '')
     priority = request.GET.get('priority', '')
     receive_status = request.GET.get('receive_status', '')
 
-    assistance_requests = AssistanceRequest.objects.all()
+    # Annotate has_completed_event
+    completed_event_subquery = Event.objects.filter(
+        assistance_request=OuterRef('pk'),
+        status='completed'
+    )
+
+    assistance_requests = AssistanceRequest.objects.filter(
+        beneficiary=beneficiary
+    ).annotate(
+        has_completed_event=Exists(completed_event_subquery)
+    )
 
     if q:
         assistance_requests = assistance_requests.filter(
             Q(title__icontains=q) |
-            Q(place__icontains=q)  # nếu bạn có trường place
+            Q(place__icontains=q)
         )
 
     if status:
@@ -101,42 +107,57 @@ def support_status(request):
     if priority:
         assistance_requests = assistance_requests.filter(priority=priority)
 
-    if receive_status:
+    # if receive_status:
+    #     assistance_requests = assistance_requests.filter(receiving_status=receive_status)
+    if receive_status == 'N/A':
+        assistance_requests = assistance_requests.filter(receiving_status__isnull=True)
+    elif receive_status:
         assistance_requests = assistance_requests.filter(receiving_status=receive_status)
-    
-    assistance_requests = assistance_requests.order_by('-created_at')
-    
+        assistance_requests = assistance_requests.order_by('-created_at')
+
     context = {
         'assistance_requests': assistance_requests,
     }
     return render(request, 'beneficiary/support-status.html', context)
 
-
 @role_required('beneficiary')
 def update_user_status(request, request_id):
+    nguoi_dung = get_object_or_404(NguoiDung, user=request.user)
+    beneficiary = get_object_or_404(Beneficiary, user=nguoi_dung)
     assistance_request = get_object_or_404(AssistanceRequest, id=request_id)
+
+    # Kiểm tra request có thuộc beneficiary này không
+    if assistance_request.beneficiary != beneficiary:
+        return render(request, 'error.html', {'message': 'Bạn không có quyền thay đổi yêu cầu này.'})
 
     if request.method == "POST":
         new_status = request.POST.get("receiving_status")
 
-        if assistance_request.status == 'completed':
-            # completed thì cho phép chọn waiting / received
-            if new_status in ['waiting', 'received']:
-                assistance_request.receiving_status = new_status
-
-        elif assistance_request.status == 'approved':
-            # approved thì tự động set sang waiting (bỏ theo form)
-            assistance_request.receiving_status = 'waiting'
-
-        elif assistance_request.status == 'pending':
-            # pending thì luôn giữ null
+        # Logic mới theo yêu cầu
+        if assistance_request.status in ['pending', 'rejected']:
+            # Pending/Rejected => receiving_status = NULL (không cho phép thay đổi)
             assistance_request.receiving_status = None
+            
+        elif assistance_request.status == 'approved':
+            # Kiểm tra có event hoàn thành không
+            has_completed_event = Event.objects.filter(
+                assistance_request=assistance_request,
+                status='completed'
+            ).exists()
+            
+            if has_completed_event:
+                # Approved + có event completed => cho phép chọn waiting/received
+                if new_status in ['waiting', 'received']:
+                    assistance_request.receiving_status = new_status
+                else:
+                    assistance_request.receiving_status = 'waiting'  # default
+            else:
+                # Approved + chưa có event completed => fix cứng là waiting
+                assistance_request.receiving_status = 'waiting'
 
         assistance_request.save()
-
+    
     return redirect(request.META.get('HTTP_REFERER'))
-
-
 
 @role_required('beneficiary')    
 def assistance_request_detail(request, pk):

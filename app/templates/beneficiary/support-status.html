@@ -66,6 +66,7 @@
 
             <select name="receive_status" class="form-select">
                 <option value="">User Status</option>
+                <option value="N/A" {% if request.GET.receive_status == 'None' %}selected{% endif %}>N/A</option>
                 <option value="waiting" {% if request.GET.receive_status == 'waiting' %}selected{% endif %}>Waiting</option>
                 <option value="received" {% if request.GET.receive_status == 'received' %}selected{% endif %}>Received</option>
             </select>
@@ -98,22 +99,35 @@
                     <td>{{ request.get_priority_display }}</td>
                     <td>{{ request.get_status_display }}</td>
                     <td>
-                <form method="post" action="{% url 'update_user_status' request.id %}" class="mb-0">
-                    {% csrf_token %}
-                    <select name="receiving_status"
-                            class="form-control"
-                            onchange="this.form.submit()"
-                            {% if request.status != 'completed' %}disabled{% endif %}>
-
-                        <option value="waiting" {% if request.receiving_status == 'waiting' %}selected{% endif %}>
-                            Waiting
-                        </option>
-                        <option value="received" {% if request.receiving_status == 'received' %}selected{% endif %}>
-                            Received
-                        </option>
-                    </select>
-                </form>
-                </td>
+                        {% if request.status == 'pending' or request.status == 'rejected' %}
+                            <!-- Pending/Rejected => Hiển thị N/A, không cho thay đổi -->
+                            <span class="text-muted">N/A</span>
+                            
+                        {% elif request.status == 'approved' and request.has_completed_event %}
+                            <!-- Approved + có event completed => Cho phép chọn waiting/received -->
+                            <form method="post" action="{% url 'update_user_status' request.id %}">
+                                {% csrf_token %}
+                                <select name="receiving_status" class="form-select form-select-sm status-select">
+                                    <option value="waiting" {% if request.receiving_status == 'waiting' %}selected{% endif %}>Waiting</option>
+                                    <option value="received" {% if request.receiving_status == 'received' %}selected{% endif %}>Received</option>
+                                </select>
+                            </form>
+                        {% elif request.status == 'approved' and not request.has_completed_event %}
+                            <!-- Approved + chưa có event completed => Fix cứng là waiting -->
+                            <span class="badge bg-warning">Waiting</span>
+                            <small class="text-muted d-block">Event chưa hoàn thành</small>
+                        
+                        {% else %}
+                            <!-- Fallback case -->
+                            <span class="text-muted">
+                                {% if request.receiving_status %}
+                                    {{ request.get_receiving_status_display }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </td>
                     <td>{{ request.place }}</td>
                     <td>{{ request.start_date|date:"Y-m-d" }}</td>
                     <td>{{ request.end_date|date:"Y-m-d" }}</td>
@@ -130,4 +144,14 @@
         </table>
     </div>
 </div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    document.querySelectorAll('.status-select').forEach(function(select) {
+                                        select.addEventListener('change', function() {
+                                            this.form.submit();
+                                        });
+                                    });
+                                });
+                                </script>
+
 {% endblock %}

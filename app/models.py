@@ -112,7 +112,7 @@ class CharityOrgAssistanceRequestType(models.Model):
 class AssistanceRequest(models.Model):
     PRIORITY_CHOICES = [('low', 'Low'), ('medium', 'Medium'), ('high', 'High')]
     STATUS_CHOICES = [('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')]
-    RECEIVING_CHOICES = [ ('', 'None'), ('waiting', 'Waiting'), ('received', 'Received')]
+    RECEIVING_CHOICES = [('waiting', 'Waiting'), ('received', 'Received')]
 
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     charity_org = models.ForeignKey(CharityOrg, on_delete=models.SET_NULL, null=True, blank=True)
@@ -122,7 +122,7 @@ class AssistanceRequest(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    receiving_status = models.CharField(max_length=20, choices=RECEIVING_CHOICES,null=True, blank=True)
+    receiving_status = models.CharField(max_length=20, choices=RECEIVING_CHOICES,null=True, blank=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     update_by = models.ForeignKey(NguoiDung, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_requests')
     update_status_at = models.DateTimeField(null=True, blank=True)
@@ -132,7 +132,26 @@ class AssistanceRequest(models.Model):
 
     def __str__(self):
         return self.title
-
+    def save(self, *args, **kwargs):
+        """Tự động xử lý receiving_status theo business logic"""
+        # Logic cho bản ghi mới
+        if self.pk is None:
+            if self.status in ['pending', 'rejected']:
+                self.receiving_status = None
+            elif self.status == 'approved':
+                # Khi tạo mới approved request, mặc định là waiting
+                self.receiving_status = 'waiting'
+        
+        # Logic cho bản ghi đã tồn tại (cập nhật)
+        else:
+            if self.status in ['pending', 'rejected']:
+                self.receiving_status = None
+            elif self.status == 'approved':
+                # Nếu receiving_status là None và status chuyển thành approved
+                if self.receiving_status is None:
+                    self.receiving_status = 'waiting'
+                    
+        super().save(*args, **kwargs)
 
 # ==== Assistance Request Type Map Model ====
 class AssistanceRequestTypeMap(models.Model):
