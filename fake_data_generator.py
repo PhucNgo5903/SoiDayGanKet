@@ -224,80 +224,80 @@ def main():
     conn = sqlite3.connect("db.sqlite3")
     cursor = conn.cursor()
     
-    insert_users_and_nguoidung()
-    # Insert Volunteer
-    with open("vv_data_source/app_volunteer.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) == 2:
-                insert_volunteer(cursor, int(parts[0]), parts[1])
+    # insert_users_and_nguoidung()
+    # # Insert Volunteer
+    # with open("vv_data_source/app_volunteer.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         parts = line.strip().split("|")
+    #         if len(parts) == 2:
+    #             insert_volunteer(cursor, int(parts[0]), parts[1])
 
-    # Insert Beneficiary
-    with open("vv_data_source/app_beneficiary.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) == 2:
-                insert_beneficiary(cursor, int(parts[0]), parts[1])
+    # # Insert Beneficiary
+    # with open("vv_data_source/app_beneficiary.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         parts = line.strip().split("|")
+    #         if len(parts) == 2:
+    #             insert_beneficiary(cursor, int(parts[0]), parts[1])
 
-    # Insert CharityOrg
-    with open("vv_data_source/app_charityorg.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) == 3:
-                insert_charityorg(cursor, int(parts[0]), parts[1], parts[2])
-    insert_skill(cursor)
-    insert_assistance_types(cursor)
-    insert_volunteerskill_from_txt(cursor, "vv_data_source/app_volunteerskill.txt")
-    insert_skillassistancerequesttype_from_txt(cursor, "vv_data_source/app_skillassistancerequesttype.txt")
-    insert_charityorgassistancerequesttype_from_txt(cursor, "vv_data_source/app_charityorgassistancerequesttype.txt")
-        # Insert app_assistancerequest
-    with open("vv_data_source/app_assistancerequest.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            fields = line.strip().split("|")
-            if len(fields) != 15:
-                print(f"[SKIP] Dòng sai định dạng: {line}")
-                continue
+    # # Insert CharityOrg
+    # with open("vv_data_source/app_charityorg.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         parts = line.strip().split("|")
+    #         if len(parts) == 3:
+    #             insert_charityorg(cursor, int(parts[0]), parts[1], parts[2])
+    # insert_skill(cursor)
+    # insert_assistance_types(cursor)
+    # insert_volunteerskill_from_txt(cursor, "vv_data_source/app_volunteerskill.txt")
+    # insert_skillassistancerequesttype_from_txt(cursor, "vv_data_source/app_skillassistancerequesttype.txt")
+    # insert_charityorgassistancerequesttype_from_txt(cursor, "vv_data_source/app_charityorgassistancerequesttype.txt")
+    #     # Insert app_assistancerequest
+    # with open("vv_data_source/app_assistancerequest.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         fields = line.strip().split("|")
+    #         if len(fields) != 15:
+    #             print(f"[SKIP] Dòng sai định dạng: {line}")
+    #             continue
 
-            id = int(fields[0])
-            beneficiary_id = int(fields[1])
-            charity_org_id = int(fields[2]) if fields[2] else None
-            title = fields[3]
-            description = fields[4]
-            priority = fields[5]
-            start_date = fields[6]
-            end_date = fields[7]
-            status = fields[8]
-            receiving_status = fields[9]
-            update_by_id = int(fields[10]) if fields[10] else None
-            update_status_at = fields[11] if fields[11] else None
-            place = fields[12]
-            proof_url = fields[13]
-            admin_remark = fields[14]
+    #         id = int(fields[0])
+    #         beneficiary_id = int(fields[1])
+    #         charity_org_id = int(fields[2]) if fields[2] else None
+    #         title = fields[3]
+    #         description = fields[4]
+    #         priority = fields[5]
+    #         start_date = fields[6]
+    #         end_date = fields[7]
+    #         status = fields[8]
+    #         receiving_status = fields[9]
+    #         update_by_id = int(fields[10]) if fields[10] else None
+    #         update_status_at = fields[11] if fields[11] else None
+    #         place = fields[12]
+    #         proof_url = fields[13]
+    #         admin_remark = fields[14]
 
-            insert_assistancerequest(
-                cursor, id, beneficiary_id, charity_org_id, title, description,
-                priority, start_date, end_date, status, receiving_status,
-                update_by_id, update_status_at, place, proof_url, admin_remark
-            )
+    #         insert_assistancerequest(
+    #             cursor, id, beneficiary_id, charity_org_id, title, description,
+    #             priority, start_date, end_date, status, receiving_status,
+    #             update_by_id, update_status_at, place, proof_url, admin_remark
+    #         )
 
-    # Insert app_assistancerequesttypemap
-    with open("vv_data_source/app_assistancerequesttypemap.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) == 2:
-                assistancerequest_id = int(parts[0])
-                assistancerequesttype_id = int(parts[1])
-                insert_assistancerequesttypemap(cursor, assistancerequest_id, assistancerequesttype_id)
+    # # Insert app_assistancerequesttypemap
+    # with open("vv_data_source/app_assistancerequesttypemap.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         parts = line.strip().split("|")
+    #         if len(parts) == 2:
+    #             assistancerequest_id = int(parts[0])
+    #             assistancerequesttype_id = int(parts[1])
+    #             insert_assistancerequesttypemap(cursor, assistancerequest_id, assistancerequesttype_id)
 
-    # Insert app_assistancerequestimage
-    with open("vv_data_source/app_assistancerequestimage.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("|")
-            if len(parts) == 3:
-                id = int(parts[0])
-                assistancerequest_id = int(parts[1])
-                image_path = parts[2]
-                insert_assistancerequestimage(cursor, id, assistancerequest_id, image_path)
+    # # Insert app_assistancerequestimage
+    # with open("vv_data_source/app_assistancerequestimage.txt", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         parts = line.strip().split("|")
+    #         if len(parts) == 3:
+    #             id = int(parts[0])
+    #             assistancerequest_id = int(parts[1])
+    #             image_path = parts[2]
+    #             insert_assistancerequestimage(cursor, id, assistancerequest_id, image_path)
     # ===== Insert app_event =====
     with open('vv_data_source/app_event.txt', 'r', encoding='utf-8') as f:
         for line in f:
@@ -322,25 +322,25 @@ def main():
                              start_time, end_time, status, approved_by, approved_at, report_url,
                              confirmed_by, volunteers_number, reason)
 
-    # ===== Insert app_eventregistration =====
-    with open('vv_data_source/app_eventregistration.txt', 'r', encoding='utf-8') as f:
-        for line in f:
-            parts = line.strip().split('|')
-            if len(parts) == 9:
-                id = int(parts[0])
-                event_id = int(parts[1])
-                volunteer_id = int(parts[2])
-                status = parts[3]
-                registered_at = parts[4]
-                checked_in_at = parts[5] if parts[5] else None
-                checked_out_at = parts[6] if parts[6] else None
-                rating = int(parts[7]) if parts[7] else None
-                review = parts[8] if parts[8] else None
+    # # ===== Insert app_eventregistration =====
+    # with open('vv_data_source/app_eventregistration.txt', 'r', encoding='utf-8') as f:
+    #     for line in f:
+    #         parts = line.strip().split('|')
+    #         if len(parts) == 9:
+    #             id = int(parts[0])
+    #             event_id = int(parts[1])
+    #             volunteer_id = int(parts[2])
+    #             status = parts[3]
+    #             registered_at = parts[4]
+    #             checked_in_at = parts[5] if parts[5] else None
+    #             checked_out_at = parts[6] if parts[6] else None
+    #             rating = int(parts[7]) if parts[7] else None
+    #             review = parts[8] if parts[8] else None
 
-                insert_eventregistration(cursor, id, event_id, volunteer_id, status,
-                                         registered_at, checked_in_at, checked_out_at,
-                                         rating, review)
-    update_user_names(cursor)
+    #             insert_eventregistration(cursor, id, event_id, volunteer_id, status,
+    #                                      registered_at, checked_in_at, checked_out_at,
+    #                                      rating, review)
+    # update_user_names(cursor)
     conn.commit()
     conn.close()
     print("✅ Đã chèn dữ liệu thành công vào các bảng")
