@@ -109,28 +109,28 @@ class CharityOrgAssistanceRequestType(models.Model):
         return f"{self.charity_org.user.user.username} - {self.assistance_request_type.name}"
 
 
-# ==== Skill - Assistance Request Type Mapping Model ====
-class SkillAssistanceRequestType(models.Model):
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    assistance_request_type = models.ForeignKey(AssistanceRequestType, on_delete=models.CASCADE)
+# # ==== Skill - Assistance Request Type Mapping Model ====
+# class SkillAssistanceRequestType(models.Model):
+#     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+#     assistance_request_type = models.ForeignKey(AssistanceRequestType, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ('skill', 'assistance_request_type')
+#     class Meta:
+#         unique_together = ('skill', 'assistance_request_type')
 
-    def __str__(self):
-        return f"{self.skill.name} - {self.assistance_request_type.name}"
+#     def __str__(self):
+#         return f"{self.skill.name} - {self.assistance_request_type.name}"
 
 
-# ==== Charity Org - Assistance Request Type Mapping Model ====
-class CharityOrgAssistanceRequestType(models.Model):
-    charity_org = models.ForeignKey(CharityOrg, on_delete=models.CASCADE)
-    assistance_request_type = models.ForeignKey(AssistanceRequestType, on_delete=models.CASCADE)
+# # ==== Charity Org - Assistance Request Type Mapping Model ====
+# class CharityOrgAssistanceRequestType(models.Model):
+#     charity_org = models.ForeignKey(CharityOrg, on_delete=models.CASCADE)
+#     assistance_request_type = models.ForeignKey(AssistanceRequestType, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ('charity_org', 'assistance_request_type')
+#     class Meta:
+#         unique_together = ('charity_org', 'assistance_request_type')
 
-    def __str__(self):
-        return f"{self.charity_org.user.user.username} - {self.assistance_request_type.name}"
+#     def __str__(self):
+#         return f"{self.charity_org.user.user.username} - {self.assistance_request_type.name}"
 
 
 # ==== Assistance Request Model ====

@@ -20,7 +20,7 @@ urlpatterns = [
 
     path("login-admin/", views.login_admin, name="login_admin"),
     path("index-admin/", admin_views.index_admin, name="index_admin"),
-    
+    path("login-admin/", admin_views.logout, name="admin_logout"),
     #----------------------------------VOLUNTEER----------------------------------------
     path("login-volunteer/", views.login_volunteer.as_view(), name="login_volunteer"),
     path("signup-volunteer/", views.signup_volunteer.as_view(), name="signup_volunteer"),

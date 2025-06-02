@@ -54,7 +54,7 @@
       <div class="row">
         {% for event in completed_events %}
           <div class="col-md-4 mb-4">
-            <a href="{% url 'event_detail' event.id %}?from=home" class="card h-100 shadow-sm text-decoration-none text-dark">
+            <a href="{% url 'volunteer_event_detail' event.id %}?from=home" class="card h-100 shadow-sm text-decoration-none text-dark">
               {% with images=event.assistance_request.images.all %}
                 {% if images and images.0.image_url %}
                   <img src="{{ images.0.image_url }}" class="card-img-top" alt="{{ event.title }}">

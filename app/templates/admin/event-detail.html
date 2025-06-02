@@ -62,7 +62,7 @@
                     
                     {% if event.assistance_request %}
                     <p><strong>Corresponding assistance request:</strong> 
-                        <a>
+                        <a href="{% url 'assistance_request_detail' event.assistance_request.id %}" class="text-decoration-none">
                             {{ event.assistance_request.title }}
                         </a>
                     </p>
