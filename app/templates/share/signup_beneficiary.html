@@ -1,61 +1,98 @@
-{% extends "share/base.html" %}
-
+{% extends 'share/base.html' %}
+{% load static %}
 {% block main %}
-  <div class="container">
-    <h2>Đăng ký tài khoản Beneficiary</h2>
-    
-    <form method="POST">
-      {% csrf_token %}
-      
-      <div class="form-group">
-        <label for="id_user">Tên người dùng</label>
-        {{ form.username }}
-      </div>
-      
-      <div class="form-group">
-        <label for="id_password">Mật khẩu</label>
-        {{ form.password }}
-      </div>
+<section class="min-vh-100 gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-6">
+        <div class="card bg-dark text-white" style="border-radius: 1rem;">
+          <div class="card-body p-5">
 
-      <div class="form-group">
-        <label for="id_confirm_password">Xác nhận mật khẩu</label>
-        {{ form.confirm_password }}
+            <h2 class="fw-bold mb-2 text-uppercase text-center">Beneficiary Registration</h2>
+            <p class="text-white-50 mb-4 text-center">Please fill in the form below to create an account.</p>
+
+            <form method="POST" novalidate>
+              {% csrf_token %}
+
+              <div class="form-group mb-3">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                <small class="text-danger">{{ form.username.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                <small class="text-danger">{{ form.password.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.confirm_password.id_for_label }}">Confirm Password</label>
+                {{ form.confirm_password }}
+                <small class="text-danger">{{ form.confirm_password.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                <small class="text-danger">{{ form.email.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.dob.id_for_label }}">Date of Birth</label>
+                {{ form.dob }}
+                <small class="text-danger">{{ form.dob.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                {{ form.phone }}
+                <small class="text-danger">{{ form.phone.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.address.id_for_label }}">Address</label>
+                {{ form.address }}
+                <small class="text-danger">{{ form.address.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                <small class="text-danger">{{ form.description.errors|striptags }}</small>
+              </div>
+
+              <div class="form-group mb-4">
+                <label for="{{ form.gender.id_for_label }}">Gender</label>
+                {{ form.gender }}
+                <small class="text-danger">{{ form.gender.errors|striptags }}</small>
+              </div>
+
+              <button type="submit" class="btn btn-outline-light btn-lg w-100">Sign Up</button>
+            </form>
+
+            <div class="mt-4 text-center">
+              <p class="mb-0">Already have an account?
+                <a href="{% url 'login_beneficiary' %}" class="text-white-50 fw-bold">Login here</a>
+              </p>
+            </div>
+
+            {% if form.non_field_errors %}
+              {% for error in form.non_field_errors %}
+                <p class="alert alert-danger mt-3">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+
+            {% if messages %}
+              {% for message in messages %}
+                <p class="alert alert-{{ message.tags }} mt-3">{{ message }}</p>
+              {% endfor %}
+            {% endif %}
+
+          </div>
+        </div>
       </div>
-
-      <div class="form-group">
-        <label for="id_email">Email</label>
-        {{ form.email }}
-      </div>
-
-      <div class="form-group">
-        <label for="id_dob">Ngày sinh</label>
-        {{ form.dob }}
-      </div>
-
-      <div class="form-group">
-        <label for="id_phone">Số điện thoại</label>
-        {{ form.phone }}
-      </div>
-
-      <div class="form-group">
-        <label for="id_address">Địa chỉ</label>
-        {{ form.address }}
-      </div>
-
-      <div class="form-group">
-        <label for="id_description">Mô tả</label>
-        {{ form.description }}
-      </div>
-
-      <div class="form-group">
-        <label for="id_gender">Giới tính</label>
-        {{ form.gender }}
-      </div>
-
-      <button type="submit" class="btn btn-primary">Đăng ký</button>
-    </form>
-
-    <br>
-    <p>Đã có tài khoản? <a href="{% url 'login_beneficiary' %}">Đăng nhập tại đây</a></p>
+    </div>
   </div>
+</section>
 {% endblock main %}

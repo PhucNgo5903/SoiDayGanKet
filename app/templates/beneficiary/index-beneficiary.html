@@ -1,1 +1,258 @@
-<p> Huyen's homepage after login</p>
+{% extends 'beneficiary/base-beneficiary.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container-fluid p-4">
+    <!-- Welcome Banner -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-white p-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 fw-bold mb-3">
+                                <i class="fas fa-hand-holding-heart me-3"></i>
+                                Welcome, {{ request.user.first_name }}!
+                            </h1>
+                            <p class="lead mb-0">
+                                We're always ready to support you through difficult times. 
+                                Let us know how we can help you.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="fas fa-users display-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Action Button -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <a href="{% url 'send_request' %}" class="btn btn-lg px-5 py-4 shadow-lg" 
+               style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); 
+                      border: none; border-radius: 50px; color: white; font-size: 1.3rem; 
+                      text-decoration: none; transition: all 0.3s ease;
+                      box-shadow: 0 10px 30px rgba(238, 90, 36, 0.3);"
+               onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 40px rgba(238, 90, 36, 0.4)';"
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(238, 90, 36, 0.3)';">
+                <i class="fas fa-paper-plane me-3"></i>
+                SEND HELP REQUEST
+            </a>
+        </div>
+    </div>
+
+    <!-- Information Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-heart text-danger" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title text-primary fw-bold">Medical Support</h5>
+                    <p class="card-text text-muted">
+                        Receive support for medical expenses, medications and urgent healthcare needs.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-graduation-cap text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title text-primary fw-bold">Education Support</h5>
+                    <p class="card-text text-muted">
+                        Support for tuition fees, books and educational needs for children and students.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-home text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title text-primary fw-bold">Living Support</h5>
+                    <p class="card-text text-muted">
+                        Support for food, clothing and essential daily needs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);">
+                <div class="card-body text-white">
+                    <i class="fas fa-users display-4 mb-3"></i>
+                    <h3 class="fw-bold">1,250+</h3>
+                    <p class="mb-0">People Helped</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="background: linear-gradient(135deg, #55a3ff 0%, #003d82 100%);">
+                <div class="card-body text-white">
+                    <i class="fas fa-hand-holding-usd display-4 mb-3"></i>
+                    <h3 class="fw-bold">$5.2M</h3>
+                    <p class="mb-0">Total Donations</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);">
+                <div class="card-body text-white">
+                    <i class="fas fa-clipboard-check display-4 mb-3"></i>
+                    <h3 class="fw-bold">98%</h3>
+                    <p class="mb-0">Success Rate</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="background: linear-gradient(135deg, #e17055 0%, #d63031 100%);">
+                <div class="card-body text-white">
+                    <i class="fas fa-clock display-4 mb-3"></i>
+                    <h3 class="fw-bold">24/7</h3>
+                    <p class="mb-0">Support Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it works section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-4">
+                    <h3 class="text-center text-primary fw-bold mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        How It Works
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-4">
+                            <div class="step-item">
+                                <div class="step-number mb-3">
+                                    <span class="badge bg-primary rounded-circle p-3" style="font-size: 1.5rem;">1</span>
+                                </div>
+                                <h5 class="fw-bold text-primary">Submit Request</h5>
+                                <p class="text-muted">Fill out the form with detailed information about your situation that needs support</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="step-item">
+                                <div class="step-number mb-3">
+                                    <span class="badge bg-warning rounded-circle p-3" style="font-size: 1.5rem;">2</span>
+                                </div>
+                                <h5 class="fw-bold text-warning">Review & Approve</h5>
+                                <p class="text-muted">Our team will review and approve your request within 24-48 hours</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="step-item">
+                                <div class="step-number mb-3">
+                                    <span class="badge bg-success rounded-circle p-3" style="font-size: 1.5rem;">3</span>
+                                </div>
+                                <h5 class="fw-bold text-success">Receive Support</h5>
+                                <p class="text-muted">Receive support directly or through our trusted partners</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info border-0 shadow-sm" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="alert-heading text-primary fw-bold mb-2">
+                            <i class="fas fa-phone-alt me-2"></i>
+                            Need Immediate Support?
+                        </h5>
+                        <p class="mb-0 text-primary">
+                            Contact our hotline: <strong>1900-1234</strong> or email: <strong>support@helpcare.com</strong>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-headset text-primary" style="font-size: 3rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+.step-item {
+    position: relative;
+}
+
+.step-number {
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .step-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 30px;
+        right: -50%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, #007bff, transparent);
+    }
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.display-4 {
+    font-size: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .btn-lg {
+        font-size: 1.1rem !important;
+        padding: 1rem 2rem !important;
+    }
+}
+</style>
+{% endblock main %}

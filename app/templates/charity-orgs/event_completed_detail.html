@@ -1,0 +1,428 @@
+{% extends "charity-orgs/charity_base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">{{ event.title }}</h2>
+    <span class="badge bg-primary fs-6">Completed</span>
+  </div>
+
+  <!-- Thông tin tổng quan về sự kiện -->
+  <div class="row">
+    <div class="col-md-6">
+      {% if event.assistance_request and event.assistance_request.images.all %}
+      <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for img in event.assistance_request.images.all %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img
+              src="{{ img.image_url }}"
+              class="d-block w-100"
+              alt="Ảnh minh họa"
+              style="height: 300px; object-fit: cover;"
+              onerror="this.onerror=null;this.src='{% static 'img/no-image.png' %}'"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+      {% else %}
+      <img
+        src="{% static 'img/no-image.png' %}"
+        class="img-fluid"
+        alt="Không có ảnh"
+        style="height: 300px; width: 100%; object-fit: cover;"
+      />
+      {% endif %}
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Event Information</h5>
+
+          {% if event.assistance_request %}
+          <p><strong>Beneficiary:</strong> 
+            {{ event.assistance_request.beneficiary.user.user.first_name }}
+            {{ event.assistance_request.beneficiary.user.user.last_name }}
+          </p>
+          <p><strong>Location:</strong> {{ event.assistance_request.place }}</p>
+          {% endif %}
+          
+          <p><strong>Duration:</strong> 
+            {{ event.start_time|date:"d/m/Y H:i" }} - {{ event.end_time|date:"d/m/Y H:i" }}
+          </p>
+
+          <p><strong>Total Volunteers Participated:</strong> {{ total_rated|add:total_unrated }}</p>
+          <p><strong>Rated Volunteers:</strong> {{ total_rated }} Volunteers</p>
+          <p><strong>Unrated Volunteers:</strong> {{ total_unrated }} Volunteers</p>
+
+          {% if event.report_url %}
+          <p><strong>Report:</strong> 
+            <a href="{{ event.report_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+              <i class="fa fa-file-text"></i> View Report
+            </a>
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mô tả sự kiện -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Event Description</h5>
+          <p>{{ event.description|linebreaks }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danh sách TNV chưa đánh giá -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0">
+            <i class="fa fa-star-o"></i> 
+            Unrated Volunteers ({{ total_unrated }})
+          </h5>
+        </div>
+        <div class="card-body">
+          {% if unrated_volunteers %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Check-in</th>
+                  <th>Check-out</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reg in unrated_volunteers %}
+                <tr id="unrated-{{ reg.id }}">
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ reg.volunteer.user.user.get_full_name }}</td>
+                  <td>{{ reg.volunteer.user.user.email }}</td>
+                  <td>{{ reg.volunteer.user.phone }}</td>
+                  <td>
+                    {% if reg.checked_in_at %}
+                      {{ reg.checked_in_at|date:"H:i d/m" }}
+                    {% else %}
+                      <span class="text-muted">Chưa check-in</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if reg.checked_out_at %}
+                      {{ reg.checked_out_at|date:"H:i d/m" }}
+                    {% else %}
+                      <span class="text-muted">Chưa check-out</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" 
+                            onclick="openRatingModal({{ reg.id }}, '{{ reg.volunteer.user.user.get_full_name }}')">
+                      <i class="fa fa-star"></i> Rating
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="fa fa-check-circle fa-3x text-success mb-3"></i>
+            <h5>Great!</h5>
+            <p class="text-muted">You have rated all volunteers</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danh sách TNV đã đánh giá -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="fa fa-star"></i> 
+            Rated Volunteers ({{ total_rated }})
+          </h5>
+        </div>
+        <div class="card-body">
+          {% if rated_volunteers %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Rating</th>
+                  <th>Review</th>
+                  <th>Check-in/out</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reg in rated_volunteers %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ reg.volunteer.user.user.get_full_name }}</td>
+                  <td>{{ reg.volunteer.user.user.email }}</td>
+                  <td>{{ reg.volunteer.user.phone }}</td>
+                  <td>
+                    <span class="badge bg-primary fs-6">{{ reg.rating }}/10</span>
+                  </td>
+                  <td>{{ reg.review|default:"-" }}</td>
+                  <td>
+                    {% if reg.checked_in_at %}
+                      <div>IN: {{ reg.checked_in_at|date:"H:i d/m" }}</div>
+                    {% else %}
+                      <div class="text-muted">Chưa check-in</div>
+                    {% endif %}
+                    {% if reg.checked_out_at %}
+                      <div>OUT: {{ reg.checked_out_at|date:"H:i d/m" }}</div>
+                    {% else %}
+                      <div class="text-muted">Chưa check-out</div>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="fa fa-info-circle fa-3x text-muted mb-3"></i>
+            <h5>No volunteers have been rated yet</h5>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal đánh giá TNV -->
+  <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="ratingForm">
+            {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="ratingModalLabel">Rate Volunteer</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="registration_id" id="ratingRegistrationId">
+            <div class="mb-3">
+              <label for="volunteerName" class="form-label">Volunteer</label>
+              <input type="text" class="form-control" id="volunteerName" disabled>
+            </div>
+            <div class="mb-3">
+              <label for="ratingScore" class="form-label">Rating Score (1-10)</label>
+              <input type="number" class="form-control" id="ratingScore" name="rating" min="1" max="10" required>
+            </div>
+            <div class="mb-3">
+              <label for="ratingReview" class="form-label">Review</label>
+              <textarea class="form-control" id="ratingReview" name="review" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Rating</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script xử lý đánh giá -->
+<script>
+    // Cải thiện cách lấy CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Lấy CSRF token từ nhiều nguồn
+function getCSRFToken() {
+    // Thử từ cookie trước
+    let token = getCookie('csrftoken');
+    
+    // Nếu không có, thử từ meta tag
+    if (!token) {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            token = metaTag.getAttribute('content');
+        }
+    }
+    
+    // Nếu vẫn không có, thử từ input hidden
+    if (!token) {
+        const hiddenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (hiddenInput) {
+            token = hiddenInput.value;
+        }
+    }
+    
+    return token;
+}
+
+const csrftoken = getCSRFToken();
+
+function openRatingModal(registrationId, volunteerName) {
+    document.getElementById('ratingRegistrationId').value = registrationId;
+    document.getElementById('volunteerName').value = volunteerName;
+    document.getElementById('ratingScore').value = '';
+    document.getElementById('ratingReview').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('ratingModal'));
+    modal.show();
+}
+
+document.getElementById('ratingForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    // Disable button để tránh submit nhiều lần
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang lưu...';
+    
+    const registrationId = document.getElementById('ratingRegistrationId').value;
+    const rating = document.getElementById('ratingScore').value;
+    const review = document.getElementById('ratingReview').value;
+
+    // Validate dữ liệu trước khi gửi
+    if (!registrationId || !rating) {
+        toastr.error("Vui lòng điền đầy đủ thông tin");
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        return;
+    }
+
+    const ratingNum = parseInt(rating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 10) {
+        toastr.error("Điểm đánh giá phải từ 1 đến 10");
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        return;
+    }
+
+    // Kiểm tra CSRF token
+    if (!csrftoken) {
+        toastr.error("Lỗi bảo mật: Không tìm thấy CSRF token");
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        return;
+    }
+
+    const requestData = {
+        registration_id: parseInt(registrationId),
+        rating: ratingNum,
+        review: review.trim()
+    };
+
+    console.log('Sending data:', requestData); // Debug log
+
+    fetch("{% url 'rate_volunteer' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest' // Thêm header này
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        console.log('Response status:', response.status); // Debug log
+        
+        if (!response.ok) {
+            // Log thêm thông tin về lỗi
+            return response.text().then(text => {
+                console.error('Error response:', text);
+                throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data); // Debug log
+        
+        if (data.success) {
+            toastr.success(data.message || "Đánh giá đã được lưu!");
+            
+            // Xóa hàng khỏi bảng chưa đánh giá
+            const row = document.getElementById('unrated-' + registrationId);
+            if (row) {
+                row.remove();
+            }
+            
+            // Đóng modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('ratingModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Reload trang sau 1 giây
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+            
+        } else {
+            toastr.error(data.message || 'Có lỗi xảy ra khi lưu đánh giá');
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
+        toastr.error("Lỗi kết nối: " + err.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    });
+});
+
+// Thêm validation real-time cho input rating
+document.getElementById('ratingScore').addEventListener('input', function() {
+    const value = parseInt(this.value);
+    if (value < 1 || value > 10) {
+        this.classList.add('is-invalid');
+    } else {
+        this.classList.remove('is-invalid');
+    }
+});
+  </script>
+{% endblock %}

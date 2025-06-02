@@ -8,6 +8,9 @@ from django.contrib import messages
 from decouple import config
 from ..models import NguoiDung
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
+from ..models import AssistanceRequest, Event, Beneficiary
 
 from ..forms import (
     LoginForm, 
@@ -45,7 +48,7 @@ class login_volunteer(View):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('index_volunteer')
+            return redirect('volunteer_home')
         return render(request, 'share/login-volunteer.html', {'form': form})
 
 
@@ -117,6 +120,8 @@ class signup_charity_org(View):
 #     return render(request, 'share/login-admin.html')
 
 
+
+
 def login_admin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -131,6 +136,12 @@ def login_admin(request):
             # Kiểm tra user đã tồn tại chưa
             user = User.objects.filter(username=admin_username).first()
             if not user:
+                # Tạo mới User
+                user = User.objects.create_user(
+                    username=admin_username,
+                    password=admin_password,
+                    email=admin_email
+                )
                 # Tạo mới User
                 user = User.objects.create_user(
                     username=admin_username,
@@ -164,3 +175,112 @@ def login_admin(request):
             messages.error(request, "Sai thông tin đăng nhập.")
 
     return render(request, 'share/login-admin.html')
+
+def gallery_view(request):
+    """
+    View để hiển thị gallery các yêu cầu hỗ trợ đã hoàn thành
+    """
+    # Query các yêu cầu đã hoàn thành (approved và received)
+    completed_requests = AssistanceRequest.objects.filter(
+        status='approved',
+        receiving_status='received'
+    ).select_related(
+        'beneficiary__user__user',
+        'charity_org__user__user',
+        'update_by__user'
+    ).prefetch_related(
+        'images',
+        'assistancerequesttypemap_set__type'
+    ).order_by('-update_status_at')
+
+    # Lọc theo tham số từ URL (nếu có)
+    search_query = request.GET.get('search', '')
+    priority_filter = request.GET.get('priority', '')
+
+    if search_query:
+        completed_requests = completed_requests.filter(
+            Q(title__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+
+    if priority_filter:
+        completed_requests = completed_requests.filter(priority=priority_filter)
+
+    # Phân trang
+    paginator = Paginator(completed_requests, 12)  # 12 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Thống kê
+    total_completed = AssistanceRequest.objects.filter(
+        status='approved',
+        receiving_status='received'
+    ).count()
+
+    total_beneficiaries = Beneficiary.objects.filter(
+        assistancerequest__status='approved',
+        assistancerequest__receiving_status='received'
+    ).distinct().count()
+
+    total_events = Event.objects.filter(
+        status='completed'
+    ).count()
+
+    context = {
+        'completed_requests': page_obj,
+        'total_completed': total_completed,
+        'total_beneficiaries': total_beneficiaries,
+        'total_events': total_events,
+        'has_more': page_obj.has_next(),
+        'search_query': search_query,
+        'priority_filter': priority_filter,
+    }
+
+    return render(request, 'gallery.html', context)
+
+
+def gallery_api_view(request):
+    """
+    API endpoint để load thêm dữ liệu (AJAX)
+    """
+    from django.http import JsonResponse
+    from django.template.loader import render_to_string
+    
+    page = request.GET.get('page', 1)
+    search_query = request.GET.get('search', '')
+    priority_filter = request.GET.get('priority', '')
+
+    completed_requests = AssistanceRequest.objects.filter(
+        status='approved',
+        receiving_status='received'
+    ).select_related(
+        'beneficiary__user__user',
+        'charity_org__user__user'
+    ).prefetch_related(
+        'images',
+        'assistancerequesttypemap_set__type'
+    ).order_by('-update_status_at')
+
+    if search_query:
+        completed_requests = completed_requests.filter(
+            Q(title__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+
+    if priority_filter:
+        completed_requests = completed_requests.filter(priority=priority_filter)
+
+    paginator = Paginator(completed_requests, 12)
+    page_obj = paginator.get_page(page)
+
+    # Render HTML for the new items
+    html = render_to_string('gallery_items.html', {
+        'completed_requests': page_obj
+    })
+
+    return JsonResponse({
+        'html': html,
+        'has_more': page_obj.has_next(),
+        'page': page_obj.number,
+        'total_pages': paginator.num_pages
+    })

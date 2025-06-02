@@ -1,0 +1,123 @@
+{% extends "charity-orgs/charity_base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+  <h3 class="fw-bold text-center mb-4">Charity Organization Information</h3>
+
+  <div class="text-center mb-4">
+    <img src="{{ nguoidung.avatar_url }}" alt="Avatar" class="rounded-circle shadow-sm" width="120" height="120" style="object-fit: cover;">
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Change Avatar</label>
+      <input type="file" name="avatar_file" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Username</label>
+      <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Organization Name</label>
+        <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Website</label>
+        <input type="url" name="website" class="form-control" value="{{ charity_org.website }}">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Foundation Date</label>
+        <input type="date" name="dob" class="form-control" value="{{ nguoidung.dob|date:'Y-m-d' }}" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Phone Number</label>
+      <input type="text" name="phone" class="form-control" value="{{ nguoidung.phone }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Address</label>
+      <textarea name="address" class="form-control" required>{{ nguoidung.address }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Description</label>
+      <textarea name="description" class="form-control" rows="4">{{ nguoidung.description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Assistance Types</label>
+      <div>
+        {% for t in all_assist_types %}
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="assistance_types" value="{{ t.id }}"
+              {% if t in selected_assist_types %}checked{% endif %}>
+            <label class="form-check-label">{{ t.name }}</label>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary">Save Information</button>
+    </div>
+  </form>
+</div>
+
+<!-- Toastr CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+// Cấu hình toastr
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "300",
+    "timeOut": "1500", // 1.5 giây
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+
+// Hiển thị toastr nếu có message từ Django
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            toastr.success('{{ message }}');
+        {% elif message.tags == 'error' %}
+            toastr.error('{{ message }}');
+        {% elif message.tags == 'warning' %}
+            toastr.warning('{{ message }}');
+        {% elif message.tags == 'info' %}
+            toastr.info('{{ message }}');
+        {% else %}
+            toastr.success('{{ message }}');
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</script>
+{% endblock %}
