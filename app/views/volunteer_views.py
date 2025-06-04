@@ -157,11 +157,11 @@ def register_event(request, event_id):
 
     if EventRegistration.objects.filter(event=event, volunteer=volunteer).exists():
         messages.warning(request, "Bạn đã đăng ký sự kiện này.")
-        return redirect('event_detail', event_id=event.id)
+        return redirect('volunteer_event_detail', event_id=event.id)
 
     EventRegistration.objects.create(event=event, volunteer=volunteer, status='pending')
     messages.success(request, "Đăng ký thành công! Vui lòng chờ duyệt.")
-    return redirect('event_detail', event_id=event.id)
+    return redirect('volunteer_event_detail', event_id=event.id)
 
 # ==== Thống kê sự kiện đã tham gia ====
 @role_required('volunteer')

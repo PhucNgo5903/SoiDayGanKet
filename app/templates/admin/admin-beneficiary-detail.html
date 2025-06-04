@@ -103,7 +103,7 @@
                             </td>
                             <td>{{ request.created_at|date:"Y-m-d H:i" }}</td>
                             <td>
-                                <a href="#" 
+                                <a href="{% url 'assistance_request_detail' pk=request.id %}" 
                                    class="btn btn-sm btn-primary">
                                     View Details
                                 </a>

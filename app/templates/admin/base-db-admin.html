@@ -16,10 +16,7 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style-admin.css' %}">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 </head>
 
 <body class="bg-light bg-gradient">
@@ -78,7 +75,7 @@
                   </ul>  
             </li>
             <li>
-                <a href="#!">
+                <a href="{% url 'total_charity_orgs' %}">
                     <!--grid -->
                     <i id="icon" class="fa fa-info-circle" aria-hidden="true"></i>
                     <span class="links_name">Charity Organization</span>
@@ -86,15 +83,11 @@
             </li>
             <li>
                 
-                <a href="#" id="navbarDropdownvol" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="{% url 'total_volunteer' %}">
                     <i id="icon" class="fa fa-user-circle" aria-hidden="true"></i>
                     <span class="links_name">Volunteer</span>
-                    <i class="down-arrow fa-solid fa-angle-down"></i>
+                    <i class="links_name"></i>
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-dark " aria-labelledby="navbarDropdownvol">
-                    <li><a class="dropdown-item" href="#!">All Volunteer</a></li>
-                
-                   </ul>  
             </li>
             <li>
                 
@@ -119,7 +112,7 @@
             </li> {% endcomment %}
            
             <li>
-                <a href="#!">
+                <a href="{% url 'admin_logout' %}">
                     <!--logout -->
                     <i id="icon" class="fa fa-sign-out" aria-hidden="true"></i>
                     <span class="links_name">Logout</span>
@@ -133,3 +126,6 @@
         {% endblock main %}
     </div>   
     {% include 'admin/base-db-footer.html' %}         
+ 
+</body>
+</html>
