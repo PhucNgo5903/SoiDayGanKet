@@ -315,7 +315,7 @@ class EventCreationForm(forms.Form):
             if start < self.assistance_request.start_date or end > self.assistance_request.end_date:
                 raise forms.ValidationError(
                     f"Time must be within the assistance request period: "
-                    f"{self.assistance_request.start_date.strftime('%d/%m/%Y %H:%M')} đến "
+                    f"{self.assistance_request.start_date.strftime('%d/%m/%Y %H:%M')} to "
                     f"{self.assistance_request.end_date.strftime('%d/%m/%Y %H:%M')}."
                 )
                 
