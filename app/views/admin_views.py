@@ -22,12 +22,17 @@ def index_admin(request):
     total_volunteers = models.Volunteer.objects.count()
     total_pending_requests = models.AssistanceRequest.objects.filter(status='pending').count()
     total_accepted_requests = models.AssistanceRequest.objects.filter(status='approved').count()
-
+    total_event_requests = models.Event.objects.filter(status='pending').count()
+    total_approved_events = models.Event.objects.filter(status='approved').count()
+    total_completed_events = models.Event.objects.filter(status='completed').count()
     context = {
         'total_charity_orgs': total_charity_orgs,
         'total_volunteers': total_volunteers,
         'total_pending_requests': total_pending_requests,
         'total_accepted_requests': total_accepted_requests,
+        'total_event_requests': total_event_requests,
+        'total_approved_events': total_approved_events,
+        'total_completed_events': total_completed_events,
     }
     return render(request, "admin/index-admin.html", context)
 

@@ -115,7 +115,7 @@
                         {% elif request.status == 'approved' and not request.has_completed_event %}
                             <!-- Approved + chưa có event completed => Fix cứng là waiting -->
                             <span class="badge bg-warning">Waiting</span>
-                            <small class="text-muted d-block">Event chưa hoàn thành</small>
+                            <small class="text-muted d-block">This event hasn't completed</small>
                         
                         {% else %}
                             <!-- Fallback case -->
