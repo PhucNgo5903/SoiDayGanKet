@@ -24,11 +24,11 @@
       <p class="fs-5">{{ event.description }}</p>
 
       <ul class="list-unstyled fs-6">
-        <li><strong>Thời gian bắt đầu:</strong> {{ event.start_time|date:"d/m/Y H:i" }}</li>
-        <li><strong>Thời gian kết thúc:</strong> {{ event.end_time|date:"d/m/Y H:i" }}</li>
-        <li><strong>Địa điểm:</strong> {{ event.assistance_request.place }}</li>
+        <li><strong>Start Date and Time:</strong> {{ event.start_time|date:"d/m/Y H:i" }}</li>
+        <li><strong>End Date and Time:</strong> {{ event.end_time|date:"d/m/Y H:i" }}</li>
+        <li><strong>Place:</strong> {{ event.assistance_request.place }}</li>
         <li>
-          <strong>Số lượng tình nguyện viên:</strong> 
+          <strong>Volunteers Needed:</strong> 
           {{ approved_count|default:0 }} / {{ event.volunteers_number }}
         </li>
       </ul>
@@ -36,37 +36,37 @@
       <!-- Trạng thái tham gia -->
       {% if event_has_ended %}
         <div class="alert alert-secondary">
-          <strong>Sự kiện đã diễn ra.</strong>
+          <strong>This event has ended.</strong>
         </div>
 
       {% elif registration %}
         {% if registration.status == 'pending' %}
           <div class="alert alert-info">
-            Bạn đã đăng ký sự kiện này. <strong>Trạng thái:</strong> Chờ duyệt.
+            You have registered to this event. <strong>Status:</strong> Waiting for approval.
           </div>
         {% elif registration.status == 'approved' %}
           <div class="alert alert-success">
-            Bạn đã đăng ký sự kiện này. <strong>Trạng thái:</strong> Đã được duyệt.
+            You have registered to this event. <strong>Status:</strong> Approved.
           </div>
         {% elif registration.status == 'rejected' %}
           <div class="alert alert-warning">
-            Bạn đã đăng ký sự kiện này nhưng <strong>đã bị từ chối.</strong>
+            You have registered to this event. <strong>Status:</strong> Rejected.
           </div>
         {% elif registration.status == 'completed' %}
           <div class="alert alert-primary">
-            Bạn đã hoàn thành sự kiện này.
+            You have completed this event.
           </div>
         {% endif %}
 
       {% elif is_full %}
         <div class="alert alert-warning">
-          Sự kiện đã đủ số lượng tình nguyện viên.
+          This event is full. You cannot register at this time.
         </div>
 
       {% else %}
         <form method="post" action="{% url 'register_event' event.id %}">
           {% csrf_token %}
-          <button type="submit" class="btn btn-primary mb-3">Đăng ký tham gia</button>
+          <button type="submit" class="btn btn-primary mb-3">Register</button>
         </form>
       {% endif %}
 
