@@ -12,12 +12,12 @@
 
 3. **Install the required packages:**
    ```bash
-    pip install django
+    pip install -r requirements.txt
    ```
    
 5. **Run database migrations:**
     ```bash
-    python manage.py migrate
+    python manage.py migrate app
     ```
 
 6. **Create a superuser:**
