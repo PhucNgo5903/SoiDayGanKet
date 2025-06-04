@@ -22,6 +22,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
+                    <th>Title</th>
                     <th>Request type</th>
                     <th>Request time</th>
                     <th>Status</th>
@@ -38,6 +39,7 @@
                         {{ forloop.counter }}
                         {% endif %}
                     </td>
+                    <td>{{req.title}}</td>
                     <td>
                         {% for type_map in req.assistancerequesttypemap_set.all %}
                         {{ type_map.type.name }}{% if not forloop.last %}, {% endif %}

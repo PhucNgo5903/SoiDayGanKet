@@ -259,12 +259,12 @@ class EventRegisterForm(forms.Form):
 
 class EventCreationForm(forms.Form):
     volunteers_number = forms.IntegerField(
-        label="Số tình nguyện viên cần",
+        label="Volunteers Needed",
         min_value=1,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'required': True})
     )
     start_time = forms.DateTimeField(
-        label="Thời gian bắt đầu",
+        label="Start Date and Time",
         widget=forms.DateTimeInput(attrs={
             'class': 'form-control',
             'type': 'datetime-local',
@@ -273,7 +273,7 @@ class EventCreationForm(forms.Form):
         input_formats=['%Y-%m-%dT%H:%M']
     )
     end_time = forms.DateTimeField(
-        label="Thời gian kết thúc",
+        label="End Date and Time",
         widget=forms.DateTimeInput(attrs={
             'class': 'form-control',
             'type': 'datetime-local',
@@ -283,12 +283,12 @@ class EventCreationForm(forms.Form):
     )
     
     description = forms.CharField(
-        label="Mô tả sự kiện",
+        label="Event Description",
         required=False,
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'rows': 3,
-            'placeholder': 'Nhập mô tả ngắn gọn về sự kiện...'
+            'placeholder': 'Event Description (optional)'
         })
     )
 
@@ -306,15 +306,15 @@ class EventCreationForm(forms.Form):
             return
 
         if start < now:
-            self.add_error('start_time', "Thời gian bắt đầu phải ở tương lai.")
+            self.add_error('start_time', "Start time cannot be in the past.")
 
         if end <= start:
-            self.add_error('end_time', "Thời gian kết thúc phải sau thời gian bắt đầu.")
+            self.add_error('end_time', "End time must be after start time.")
 
         if self.assistance_request:
             if start < self.assistance_request.start_date or end > self.assistance_request.end_date:
                 raise forms.ValidationError(
-                    f"Thời gian phải nằm trong khoảng từ "
+                    f"Time must be within the assistance request period: "
                     f"{self.assistance_request.start_date.strftime('%d/%m/%Y %H:%M')} đến "
                     f"{self.assistance_request.end_date.strftime('%d/%m/%Y %H:%M')}."
                 )

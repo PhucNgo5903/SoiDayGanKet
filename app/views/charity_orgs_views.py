@@ -67,7 +67,7 @@ def create_event(request, req_id):
     try:
         charity_org = CharityOrg.objects.get(user=current_user)
     except CharityOrg.DoesNotExist:
-        return JsonResponse({'success': False, 'errors': ['Bạn không thuộc tổ chức từ thiện.']})
+        return JsonResponse({'success': False, 'errors': ['You are not authorized to create events for this charity organization.']})
 
     if request.method == 'POST':
         form = EventCreationForm(request.POST, assistance_request=assistance_request)
@@ -91,7 +91,7 @@ def create_event(request, req_id):
             assistance_request.charity_org = charity_org
             assistance_request.save()
 
-            return JsonResponse({'success': True, 'message': 'Đã tạo sự kiện thành công.'})
+            return JsonResponse({'success': True, 'message': 'Event created successfully!'})
         else:
             # Trả lỗi JSON
             errors = form.errors.get_json_data()
@@ -102,7 +102,7 @@ def create_event(request, req_id):
             return JsonResponse({'success': False, 'errors': error_messages})
 
     # Nếu không phải POST, trả về lỗi JSON
-    return JsonResponse({'success': False, 'errors': ['Yêu cầu không hợp lệ.']})
+    return JsonResponse({'success': False, 'errors': ['Request method not allowed.']})
 
 # Thông tin tổ chức từ thiện
 @role_required('charity')
@@ -147,7 +147,7 @@ def charity_profile_view(request):
                 assistance_request_type_id=id
             )
 
-        messages.success(request, "Cập nhật thông tin thành công.")
+        messages.success(request, "Update profile successfully!")
         return redirect('charity-profile')
 
     selected_assist_types = AssistanceRequestType.objects.filter(id__in=selected_types)
@@ -173,7 +173,7 @@ def events_list_by_status(request, status):
     
     # Kiểm tra status hợp lệ
     if status not in status_map:
-        return render(request, 'error.html', {'message': 'Trạng thái không hợp lệ'})
+        return render(request, 'error.html', {'message': 'Invalid status provided'})
     
     display_status = status_map[status]
 
@@ -182,7 +182,7 @@ def events_list_by_status(request, status):
         nguoi_dung = request.user.nguoidung
         charity_org = CharityOrg.objects.get(user=nguoi_dung)
     except (AttributeError, CharityOrg.DoesNotExist):
-        return render(request, 'error.html', {'message': 'Không tìm thấy tổ chức từ thiện của bạn'})
+        return render(request, 'error.html', {'message': 'Not authorized to view this page'})
 
     # Lọc sự kiện theo charity_org và status
     event_data = Event.objects.filter(
@@ -226,7 +226,7 @@ def charity_event_completed_detail(request, event_id):
         nguoi_dung = request.user.nguoidung
         charity_org = CharityOrg.objects.get(user=nguoi_dung)
     except CharityOrg.DoesNotExist:
-        return render(request, 'error.html', {'message': 'Không tìm thấy tổ chức từ thiện của bạn'})
+        return render(request, 'error.html', {'message': 'Not authorized to view this event'})
     
     event = get_object_or_404(Event, id=event_id, charity_org=charity_org, status='completed')
     
@@ -265,7 +265,7 @@ def charity_event_detail(request, event_id):
         nguoi_dung = request.user.nguoidung
         charity_org = CharityOrg.objects.get(user=nguoi_dung)
     except CharityOrg.DoesNotExist:
-        return render(request, 'error.html', {'message': 'Không tìm thấy tổ chức từ thiện của bạn'})
+        return render(request, 'error.html', {'message': 'Not authorized to view this event'})
     
     event = get_object_or_404(Event, id=event_id, charity_org=charity_org)
     
@@ -332,7 +332,7 @@ def get_volunteer_reviews(request, volunteer_id):
             reviews_data.append({
                 'event_title': review.event.title,
                 'rating': review.rating,
-                'review': review.review or "Không có nhận xét",
+                'review': review.review or "No review provided",
                 'date': review.checked_out_at.strftime('%d/%m/%Y') if review.checked_out_at else "N/A"
             })
         
@@ -369,7 +369,7 @@ def approve_volunteer_registration(request, registration_id):
             
             return JsonResponse({
                 'success': True,
-                'message': f'Đã chấp nhận đăng ký của {registration.volunteer.user.user.get_full_name()}'
+                'message': f'You have approved registration of {registration.volunteer.user.user.get_full_name()}'
             })
             
         except Exception as e:
@@ -459,7 +459,7 @@ def rate_volunteer(request):
             logger.error(f"CharityOrg not found for user: {request.user.username}")
             return JsonResponse({
                 'success': False,
-                'message': 'Không tìm thấy tổ chức từ thiện'
+                'message': 'Not authorized to rate volunteers for this charity organization'
             }, status=403)
         
         # Validate input data
@@ -467,7 +467,7 @@ def rate_volunteer(request):
         if not registration_id:
             return JsonResponse({
                 'success': False,
-                'message': 'Thiếu registration_id'
+                'message': 'Lack of registration_id'
             }, status=400)
         
         # Get rating and review from JSON data
@@ -478,12 +478,12 @@ def rate_volunteer(request):
         try:
             rating = int(rating)
             if not (1 <= rating <= 10):
-                raise ValueError("Rating phải từ 1 đến 10")
+                raise ValueError("Rating must be between 1 and 10")
         except (ValueError, TypeError) as e:
             logger.error(f"Invalid rating: {rating}, error: {str(e)}")
             return JsonResponse({
                 'success': False,
-                'message': 'Điểm đánh giá không hợp lệ (1-10)'
+                'message': 'Rating is not valid. It must be an integer between 1 and 10.'
             }, status=400)
         
         # Get registration với nhiều kiểm tra hơn
@@ -500,14 +500,14 @@ def rate_volunteer(request):
             logger.error(f"Registration not found: {registration_id} for charity: {charity_org.user.user.username}")
             return JsonResponse({
                 'success': False,
-                'message': 'Không tìm thấy đăng ký tình nguyện viên hoặc sự kiện chưa hoàn thành'
+                'message': 'Registration not found or not eligible for rating'
             }, status=404)
         
         # Kiểm tra xem đã đánh giá chưa
         if registration.rating is not None:
             return JsonResponse({
                 'success': False,
-                'message': 'Tình nguyện viên này đã được đánh giá rồi'
+                'message': 'You have already rated this volunteer'
             }, status=400)
         
         # Save rating
@@ -524,11 +524,11 @@ def rate_volunteer(request):
             if not volunteer_name.strip():
                 volunteer_name = registration.volunteer.user.user.username
         except AttributeError:
-            volunteer_name = "Tình nguyện viên"
+            volunteer_name = "Volunteer"
         
         return JsonResponse({
             'success': True,
-            'message': f'Đã đánh giá {volunteer_name}: {rating}/10'
+            'message': f'Rating updated successfully for {volunteer_name}: {rating}/10'
         })
         
     except Exception as e:
@@ -537,14 +537,14 @@ def rate_volunteer(request):
         
         return JsonResponse({
             'success': False,
-            'message': f'Có lỗi xảy ra: {str(e)}'
+            'message': f'Error has occurred: {str(e)}'
         }, status=500)
 
 # Kết thúc sự kiện và cập nhật trạng thái
 @role_required('charity')
 @require_http_methods(["POST"])
 def end_event(request, event_id):
-    """Kết thúc sự kiện và cập nhật trạng thái"""
+    """End an event and update its status"""
     try:
         # Lấy charity org từ user hiện tại
         nguoi_dung = request.user.nguoidung
@@ -562,7 +562,7 @@ def end_event(request, event_id):
         if 'report_file' not in request.FILES:
             return JsonResponse({
                 'success': False,
-                'message': 'Vui lòng tải lên file báo cáo'
+                'message': 'Please upload a report file'
             })
         
         report_file = request.FILES['report_file']
@@ -571,7 +571,7 @@ def end_event(request, event_id):
         if report_file.size > 10 * 1024 * 1024:
             return JsonResponse({
                 'success': False,
-                'message': 'Kích thước file không được vượt quá 10MB'
+                'message': 'File size must be less than 10MB'
             })
         
         # Kiểm tra định dạng file
@@ -581,7 +581,7 @@ def end_event(request, event_id):
         if file_extension not in allowed_extensions:
             return JsonResponse({
                 'success': False,
-                'message': 'Định dạng file không được hỗ trợ. Vui lòng tải lên file PDF, DOC, DOCX, JPG, JPEG hoặc PNG'
+                'message': 'This type of file is not supported. File type must be PDF, DOC, DOCX, JPG, JPEG or PNG'
             })
         
         # Tạo tên file unique
@@ -602,7 +602,7 @@ def end_event(request, event_id):
         except Exception as e:
             return JsonResponse({
                 'success': False,
-                'message': f'Lỗi khi lưu file: {str(e)}'
+                'message': f'Error while saving: {str(e)}'
             })
         
         # Cập nhật database trong transaction
@@ -628,7 +628,7 @@ def end_event(request, event_id):
         
         return JsonResponse({
             'success': True,
-            'message': f'Sự kiện đã được kết thúc thành công. Đã cập nhật trạng thái cho {updated_count} tình nguyện viên.'
+            'message': f'The event is ended successfully. Status has been updated for {updated_count} volunteers.'
         })
         
     except CharityOrg.DoesNotExist:

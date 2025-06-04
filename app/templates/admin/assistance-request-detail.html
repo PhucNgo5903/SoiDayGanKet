@@ -51,8 +51,8 @@
             </div>
 
             <!-- Nội dung chính -->
+            <p><strong>Title:</strong> {{ assistance_request.title|default:"(No title)" }}</p>
             <p><strong>Reason for support:</strong> {{ assistance_request.description }}</p>
-            <p><strong>Note:</strong> {{ assistance_request.note|default:"(No note)" }}</p>
             <hr>
             <div class="row">
                 <div class="col-md-6">

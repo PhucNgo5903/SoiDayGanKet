@@ -36,45 +36,45 @@
 
     <div class="col-md-6">
       <p>
-        <strong>Người nhận:</strong> {{ req.beneficiary.user.user.first_name }}
+        <strong>Receiver:</strong> {{ req.beneficiary.user.user.first_name }}
         {{ req.beneficiary.user.user.last_name }}
       </p>
-      <p><strong>Địa điểm:</strong> {{ req.place }}</p>
+      <p><strong>Place:</strong> {{ req.place }}</p>
       <p>
-        <strong>Thời gian:</strong> {{ req.start_date|date:"d/m/Y H:i" }} -
+        <strong>Date:</strong> {{ req.start_date|date:"d/m/Y H:i" }} -
         {{req.end_date|date:"d/m/Y H:i" }}
       </p>
-      <p><strong>Mức ưu tiên:</strong> {{ req.get_priority_display }}</p>
+      <p><strong>Priority:</strong> {{ req.get_priority_display }}</p>
       <p>
-        <strong>Trạng thái nhận:</strong> {{ req.get_receiving_status_display }}
+        <strong>Receive Status:</strong> {{ req.get_receiving_status_display }}
       </p>
       <p>
-        <strong>Loại hỗ trợ:</strong>
+        <strong>Request Type:</strong>
         {% for type_map in req.assistancerequesttypemap_set.all %}
         <span class="badge bg-info">{{ type_map.type.name }}</span>
         {% empty %}
-        <span>Không có</span>
+        <span>None</span>
         {% endfor %}
       </p>
-      <p><strong>Mô tả chi tiết:</strong></p>
+      <p><strong>Description:</strong></p>
       <p>{{ req.description|linebreaks }}</p>
-      <p><strong>Link minh chứng:</strong></p>
+      <p><strong>Proof Link:</strong></p>
       <p>{{req.proof_url}}</p>
-      <p><strong>Ghi chú quản trị viên:</strong></p>
+      <p><strong>Admin Remark:</strong></p>
       <p>{{ req.admin_remark }}</p>
     </div>
   </div>
 
   <div class="mt-4 d-flex justify-content-center gap-3">
     <a href="{% url 'index_charity' %}" class="btn btn-danger">
-      <i class="bi bi-x-circle"></i> Từ chối
+      <i class="bi bi-x-circle"></i> Reject
     </a>
     <button
       class="btn btn-success"
       data-bs-toggle="modal"
       data-bs-target="#createEventModal"
     >
-      <i class="bi bi-check-circle"></i> Đồng ý
+      <i class="bi bi-check-circle"></i> Approve
     </button>
   </div>
 </div>
@@ -95,7 +95,7 @@
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title" id="createEventModalLabel">
-            Tạo sự kiện hỗ trợ
+            Create Event for Assistance Request
           </h5>
           <button
             type="button"
@@ -106,18 +106,18 @@
         </div>
 
         <div class="modal-body">
-          <p><strong>Yêu cầu:</strong> {{ req.title }}</p>
+          <p><strong>Request:</strong> {{ req.title }}</p>
           <p>
-            <strong>Thời gian:</strong> {{ req.start_date|date:"d/m/Y H:i" }} đến
+            <strong>Date:</strong> {{ req.start_date|date:"d/m/Y H:i" }} đến
             {{req.end_date|date:"d/m/Y H:i" }}
           </p>
-          <p><strong>Địa điểm:</strong> {{ req.place }}</p>
+          <p><strong>Place:</strong> {{ req.place }}</p>
           <p>
-            <strong>Loại hỗ trợ:</strong>
+            <strong>Request Type:</strong>
             {% for type_map in req.assistancerequesttypemap_set.all %}
               <span class="badge bg-info">{{ type_map.type.name }}</span>
             {% empty %}
-              <span>Không có</span>
+              <span>None</span>
             {% endfor %}
           </p>
           <div class="form-group">
@@ -154,9 +154,9 @@
       </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Tạo</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Quay lại
+            Back
           </button>
         </div>
       </form>

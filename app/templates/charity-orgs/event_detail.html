@@ -352,7 +352,7 @@ function approveRegistration(registrationId) {
         }
       },
       error: function() {
-        toastr.error('Có lỗi xảy ra khi xử lý yêu cầu');
+        toastr.error('Error occurred while processing the request');
       }
     });
   }
@@ -376,7 +376,7 @@ function rejectRegistration(registrationId) {
         }
       },
       error: function() {
-        toastr.error('Có lỗi xảy ra khi xử lý yêu cầu');
+        toastr.error('Error occurred while processing the request');
       }
     });
   }
@@ -421,18 +421,18 @@ function viewVolunteerReviews(volunteerId) {
           });
           content += '</div>';
         } else {
-          content += '<div class="text-center text-muted"><p>Chưa có đánh giá nào</p></div>';
+          content += '<div class="text-center text-muted"><p>No rate description found</p></div>';
         }
         
         document.getElementById('reviewsContent').innerHTML = content;
       } else {
         document.getElementById('reviewsContent').innerHTML = 
-          '<div class="alert alert-danger">Có lỗi khi tải đánh giá</div>';
+          '<div class="alert alert-danger">Error occured when viewing evaluation</div>';
       }
     },
     error: function() {
       document.getElementById('reviewsContent').innerHTML = 
-        '<div class="alert alert-danger">Có lỗi khi tải đánh giá</div>';
+        '<div class="alert alert-danger">Error occured when viewing evaluation</div>';
     }
   });
 }
@@ -475,7 +475,7 @@ document.getElementById('endEventForm').addEventListener('submit', function(e) {
       }
     },
     error: function() {
-      toastr.error('Có lỗi xảy ra khi kết thúc sự kiện');
+      toastr.error('Error occurred while ending the event');
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalText;
     }
