@@ -184,7 +184,7 @@ def volunteer_profile(request):
     selected_skills = Skill.objects.filter(volunteerskill__volunteer=volunteer)
 
     if request.method == 'POST':
-        user.username = request.POST.get('username')
+        # user.username = request.POST.get('username')
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         user.email = request.POST.get('email')
