@@ -14,7 +14,10 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import logout
 from django.db.models import Q
 import uuid
-
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+import re
+from datetime import datetime
 
 # ==== Sidebar context ====
 def volunteer_sidebar_info(request):
@@ -156,11 +159,11 @@ def register_event(request, event_id):
     volunteer = get_object_or_404(Volunteer, user=request.user.nguoidung)
 
     if EventRegistration.objects.filter(event=event, volunteer=volunteer).exists():
-        messages.warning(request, "Bạn đã đăng ký sự kiện này.")
+        messages.warning(request, "You have already registered for this event.")
         return redirect('volunteer_event_detail', event_id=event.id)
 
     EventRegistration.objects.create(event=event, volunteer=volunteer, status='pending')
-    messages.success(request, "Đăng ký thành công! Vui lòng chờ duyệt.")
+    messages.success(request, "Registration successful! Please wait for approval.")
     return redirect('volunteer_event_detail', event_id=event.id)
 
 # ==== Thống kê sự kiện đã tham gia ====
@@ -187,11 +190,29 @@ def volunteer_profile(request):
         user.username = request.POST.get('username')
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
-        user.email = request.POST.get('email')
+        email = request.POST.get('email')
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Invalid email format.")
+            return redirect('volunteer_profile')
+        user.email = email
         user.save()
 
-        nguoidung.dob = request.POST.get('dob')
-        nguoidung.phone = request.POST.get('phone')
+        dob_str = request.POST.get('dob')
+        try:
+            nguoidung.dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid date of birth.")
+            return redirect('volunteer_profile')
+
+        phone = request.POST.get('phone')
+        if not re.fullmatch(r'\d{10}', phone):
+            messages.error(request, "Phone number must be exactly 10 digits.")
+            return redirect('volunteer_profile')
+
+        nguoidung.phone = phone
         nguoidung.address = request.POST.get('address')
         nguoidung.description = request.POST.get('description')
 
