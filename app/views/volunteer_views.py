@@ -13,6 +13,10 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import logout
 from django.db.models import Q
+from datetime import datetime
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+import re
 import uuid
 
 
@@ -184,14 +188,31 @@ def volunteer_profile(request):
     selected_skills = Skill.objects.filter(volunteerskill__volunteer=volunteer)
 
     if request.method == 'POST':
-        # user.username = request.POST.get('username')
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
-        user.email = request.POST.get('email')
+        email = request.POST.get('email')
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Invalid email format.")
+            return redirect('volunteer_profile')
+        user.email = email
         user.save()
 
-        nguoidung.dob = request.POST.get('dob')
-        nguoidung.phone = request.POST.get('phone')
+        dob_str = request.POST.get('dob')
+        try:
+            nguoidung.dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid date of birth.")
+            return redirect('volunteer_profile')
+
+        phone = request.POST.get('phone')
+        if not re.fullmatch(r'\d{10}', phone):
+            messages.error(request, "Phone number must be exactly 10 digits.")
+            return redirect('volunteer_profile')
+
+        nguoidung.phone = phone
         nguoidung.address = request.POST.get('address')
         nguoidung.description = request.POST.get('description')
 
