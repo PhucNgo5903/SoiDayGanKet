@@ -63,7 +63,8 @@ urlpatterns = [
     path("charity-orgs/rate-volunteer/", charity_orgs_views.rate_volunteer, name='rate_volunteer'),
     path("charity-orgs/event/<int:event_id>/end/", charity_orgs_views.end_event, name='end_event'),
     path("charity-orgs/logout/", charity_orgs_views.charity_logout, name='charity_logout'),
-
+    path("charity-orgs/volunteer/check-in/", charity_orgs_views.volunteer_check_in, name='volunteer_check_in'),
+    path("charity-orgs/volunteer/check-out/", charity_orgs_views.volunteer_check_out, name='volunteer_check_out'),
 
     path("new-assistance-request/", admin_views.new_assistance_request, name="new_assistance_request"),
     path("assistance-request-detail/<int:pk>", admin_views.assistance_request_detail, name="assistance_request_detail"),

@@ -21,6 +21,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
+                    <th>Title</th>
                     <th>Type</th>
                     <th>Representative</th>
                     <th>Contact</th>
@@ -33,6 +34,7 @@
                 {% for request in page_obj %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
+                    <td>{{request.title}}</td>
                     <td>
                         {% with type_map=request.assistancerequesttypemap_set.first %}
                         {{ type_map.type.name }}

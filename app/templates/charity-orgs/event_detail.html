@@ -11,7 +11,6 @@
   <!-- Thông tin chi tiết sự kiện -->
   <div class="row">
     <div class="col-md-6">
-      <!-- Hiển thị ảnh từ assistance request nếu có -->
       {% if event.assistance_request and event.assistance_request.images.all %}
       <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -48,7 +47,6 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Event Information</h5>
-          
           {% if event.assistance_request %}
           <p><strong>Beneficiary:</strong> 
             {{ event.assistance_request.beneficiary.user.user.first_name }}
@@ -56,13 +54,10 @@
           </p>
           <p><strong>Location:</strong> {{ event.assistance_request.place }}</p>
           {% endif %}
-
           <p><strong>Event Time:</strong> 
             {{ event.start_time|date:"d/m/Y H:i" }} - {{ event.end_time|date:"d/m/Y H:i" }}
           </p>
-          
           <p><strong>Required Volunteers:</strong> {{ event.volunteers_number }}</p>
-          
           <p><strong>Status:</strong> 
             {% if event.status == "pending" %}
               <span class="badge bg-warning text-dark">Pending</span>
@@ -74,7 +69,6 @@
               <span class="badge bg-primary">Completed</span>
             {% endif %}
           </p>
-          
           {% if event.assistance_request %}
           <p><strong>Assistance Types:</strong>
             {% for type_map in event.assistance_request.assistancerequesttypemap_set.all %}
@@ -84,9 +78,7 @@
             {% endfor %}
           </p>
           {% endif %}
-
           <p><strong>Created At:</strong> {{ event.created_at|date:"d/m/Y H:i" }}</p>
-
           {% if event.approved_by and event.approved_at %}
           <p><strong>Approved By:</strong> {{ event.approved_by.user.get_full_name }}</p>
           <p><strong>Approved At:</strong> {{ event.approved_at|date:"d/m/Y H:i" }}</p>
@@ -120,23 +112,21 @@
   </div>
   {% endif %}
 
-  <!-- Danh sách TNV cho sự kiện đã được chấp nhận -->
+  <!-- Danh sách TNV đã duyệt & check-in/out (gộp bảng) -->
   {% if event.status == "approved" %}
-  
-  <!-- TNV đã được chấp nhận -->
   <div class="row mt-4">
     <div class="col-12">
       <div class="card">
         <div class="card-header bg-success text-white">
           <h5 class="mb-0">
-            <i class="fa fa-check-circle"></i> 
+            <i class="fa fa-check-circle"></i>
             Approved Volunteers ({{ total_approved }})
           </h5>
         </div>
         <div class="card-body">
           {% if approved_volunteers %}
           <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-bordered table-hover">
               <thead class="table-dark">
                 <tr>
                   <th>No.</th>
@@ -144,16 +134,58 @@
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Registration Date</th>
+                  <th>Check In</th>
+                  <th>Check Out</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {% for reg in approved_volunteers %}
+                {% for registration in approved_volunteers %}
                 <tr>
-                  <td>{{ forloop.counter }}</td>
-                  <td>{{ reg.volunteer.user.user.get_full_name }}</td>
-                  <td>{{ reg.volunteer.user.user.email }}</td>
-                  <td>{{ reg.volunteer.user.phone }}</td>
-                  <td>{{ reg.registered_at|date:"d/m/Y" }}</td>
+                  <td class="text-center">{{ forloop.counter }}</td>
+                  <td>
+                    <strong>{{ registration.volunteer.user.user.first_name }} {{ registration.volunteer.user.user.last_name }}</strong>
+                  </td>
+                  <td>{{ registration.volunteer.user.user.email }}</td>
+                  <td>{{ registration.volunteer.user.phone }}</td>
+                  <td>{{ registration.registered_at|date:"d/m/Y" }}</td>
+                  <td class="text-center">
+                    {% if registration.checked_in_at %}
+                      <span class="badge bg-success">
+                        {{ registration.checked_in_at|date:"d/m H:i" }}
+                      </span>
+                    {% else %}
+                      <span class="badge bg-secondary">Not checked in</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if registration.checked_out_at %}
+                      <span class="badge bg-info">
+                        {{ registration.checked_out_at|date:"d/m H:i" }}
+                      </span>
+                    {% elif registration.checked_in_at %}
+                      <span class="badge bg-warning">In progress</span>
+                    {% else %}
+                      <span class="badge bg-secondary">-</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if not registration.checked_in_at %}
+                      <button class="btn btn-sm btn-success"
+                              onclick="openCheckInModal({{ registration.id }}, '{{ registration.volunteer.user.user.first_name }} {{ registration.volunteer.user.user.last_name }}')">
+                        <i class="fa fa-sign-in-alt"></i> Check In
+                      </button>
+                    {% elif not registration.checked_out_at %}
+                      <button class="btn btn-sm btn-warning"
+                              onclick="openCheckOutModal({{ registration.id }}, '{{ registration.volunteer.user.user.first_name }} {{ registration.volunteer.user.user.last_name }}')">
+                        <i class="fa fa-sign-out-alt"></i> Check Out
+                      </button>
+                    {% else %}
+                      <span class="badge bg-success">
+                        <i class="fa fa-check"></i> Completed
+                      </span>
+                    {% endif %}
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -169,6 +201,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
   <!-- TNV chờ duyệt -->
   <div class="row mt-4">
@@ -227,12 +260,12 @@
                     <div class="btn-group" role="group">
                       <button class="btn btn-sm btn-success" 
                               onclick="approveRegistration({{ reg.id }})"
-                              title="Chấp nhận" style="margin-right: 5px;">
+                              title="accept" style="margin-right: 5px;">
                         <i class="fa fa-check"></i>
                       </button>
                       <button class="btn btn-sm btn-danger" 
                               onclick="rejectRegistration({{ reg.id }})"
-                              title="Từ chối">
+                              title="reject">
                         <i class="fa fa-times"></i>
                       </button>
                     </div>
@@ -252,20 +285,17 @@
       </div>
     </div>
   </div>
-  {% endif %}
 
-  <!-- Nút quay lại và End Event -->
-  <div class="mt-4 text-center">
-    <a href="{% url 'charity_events_by_status' event.status %}" class="btn btn-secondary" style="margin-bottom: 20px; margin-right: 10px;">
-      <i class="fa fa-arrow-left"></i> Back to List
-    </a>
-    
-    {% if event.status == "approved" %}
-    <button type="button" class="btn btn-danger" style="margin-bottom: 20px;" onclick="showEndEventModal()">
-      <i class="fa fa-flag-checkered"></i> End Event
-    </button>
-    {% endif %}
-  </div>
+<!-- Nút quay lại và End Event -->
+<div class="mt-4 text-center">
+  <a href="{% url 'charity_events_by_status' event.status %}" class="btn btn-secondary" style="margin-bottom: 20px; margin-right: 10px;">
+    <i class="fa fa-arrow-left"></i> Back to List
+  </a>
+  {% if event.status == "approved" %}
+  <button type="button" class="btn btn-danger" style="margin-bottom: 20px;" onclick="showEndEventModal()">
+    <i class="fa fa-flag-checkered"></i> End Event
+  </button>
+  {% endif %}
 </div>
 
 <!-- Modal xem đánh giá tình nguyện viên -->
@@ -310,7 +340,6 @@
             <i class="fa fa-exclamation-triangle"></i>
             <strong>Warning:</strong> This action will mark the event as completed and cannot be undone.
           </div>
-          
           <div class="mb-3">
             <label for="reportFile" class="form-label">
               <i class="fa fa-file-upload"></i> Upload Event Report <span class="text-danger">*</span>
@@ -332,6 +361,73 @@
   </div>
 </div>
 
+<!-- Modal Check-in/Check-out -->
+<div class="modal fade" id="checkInModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="fa fa-sign-in-alt"></i> Check In Volunteer
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="checkInForm">
+          {% csrf_token %}
+          <input type="hidden" id="checkInRegistrationId" name="registration_id">
+          <div class="mb-3">
+            <label class="form-label"><strong>Volunteer:</strong></label>
+            <p id="checkInVolunteerName" class="form-control-plaintext"></p>
+          </div>
+          <div class="mb-3">
+            <label for="checkInDateTime" class="form-label">Check In Date & Time:</label>
+            <input type="datetime-local" class="form-control" id="checkInDateTime" name="checked_in_at" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="submitCheckIn()">
+          <i class="fa fa-check"></i> Check In
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="checkOutModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">
+          <i class="fa fa-sign-out-alt"></i> Check Out Volunteer
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="checkOutForm">
+          {% csrf_token %}
+          <input type="hidden" id="checkOutRegistrationId" name="registration_id">
+          <div class="mb-3">
+            <label class="form-label"><strong>Volunteer:</strong></label>
+            <p id="checkOutVolunteerName" class="form-control-plaintext"></p>
+          </div>
+          <div class="mb-3">
+            <label for="checkOutDateTime" class="form-label">Check Out Date & Time:</label>
+            <input type="datetime-local" class="form-control" id="checkOutDateTime" name="checked_out_at" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-warning" onclick="submitCheckOut()">
+          <i class="fa fa-sign-out-alt"></i> Check Out
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- JavaScript để xử lý AJAX -->
 <script>
 function approveRegistration(registrationId) {
@@ -345,14 +441,13 @@ function approveRegistration(registrationId) {
       success: function(response) {
         if (response.success) {
           toastr.success(response.message);
-          // Reload page để cập nhật danh sách
-          setTimeout(() => location.reload(), 1000);
+          setTimeout(() => location.reload(), 1500);
         } else {
           toastr.error(response.message);
         }
       },
       error: function() {
-        toastr.error('Error occurred while processing the request');
+        toastr.error('Error processing request');
       }
     });
   }
@@ -369,25 +464,21 @@ function rejectRegistration(registrationId) {
       success: function(response) {
         if (response.success) {
           toastr.success(response.message);
-          // Reload page để cập nhật danh sách
-          setTimeout(() => location.reload(), 1000);
+          setTimeout(() => location.reload(), 1500);
         } else {
           toastr.error(response.message);
         }
       },
       error: function() {
-        toastr.error('Error occurred while processing the request');
+        toastr.error('Error processing request');
       }
     });
   }
 }
 
 function viewVolunteerReviews(volunteerId) {
-  // Hiển thị modal và loading
   const modal = new bootstrap.Modal(document.getElementById('reviewsModal'));
   modal.show();
-  
-  // Gọi API để lấy đánh giá
   $.ajax({
     url: `/charity-orgs/volunteer-reviews/${volunteerId}/`,
     type: 'GET',
@@ -398,7 +489,6 @@ function viewVolunteerReviews(volunteerId) {
             <h6><i class="fa fa-user"></i> ${response.volunteer_name}</h6>
           </div>
         `;
-        
         if (response.reviews.length > 0) {
           content += '<div class="row">';
           response.reviews.forEach(function(review, index) {
@@ -421,18 +511,17 @@ function viewVolunteerReviews(volunteerId) {
           });
           content += '</div>';
         } else {
-          content += '<div class="text-center text-muted"><p>No rate description found</p></div>';
+          content += '<div class="text-center text-muted"><p>No reviews yet</p></div>';
         }
-        
         document.getElementById('reviewsContent').innerHTML = content;
       } else {
         document.getElementById('reviewsContent').innerHTML = 
-          '<div class="alert alert-danger">Error occured when viewing evaluation</div>';
+          '<div class="alert alert-danger">Error loading reviews</div>';
       }
     },
     error: function() {
       document.getElementById('reviewsContent').innerHTML = 
-        '<div class="alert alert-danger">Error occured when viewing evaluation</div>';
+        '<div class="alert alert-danger">Error loading reviews</div>';
     }
   });
 }
@@ -442,19 +531,14 @@ function showEndEventModal() {
   modal.show();
 }
 
-// Xử lý form End Event
 document.getElementById('endEventForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  
   const formData = new FormData(this);
   formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-  
-  // Disable submit button và hiển thị loading
   const submitBtn = this.querySelector('button[type="submit"]');
   const originalText = submitBtn.innerHTML;
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
-  
   $.ajax({
     url: "{% url 'end_event' event.id %}",
     type: 'POST',
@@ -464,7 +548,6 @@ document.getElementById('endEventForm').addEventListener('submit', function(e) {
     success: function(response) {
       if (response.success) {
         toastr.success(response.message);
-        // Redirect về trang danh sách completed events
         setTimeout(() => {
           window.location.href = "{% url 'charity_events_by_status' 'completed' %}";
         }, 1500);
@@ -475,11 +558,79 @@ document.getElementById('endEventForm').addEventListener('submit', function(e) {
       }
     },
     error: function() {
-      toastr.error('Error occurred while ending the event');
+      toastr.error('Error ending event');
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalText;
     }
   });
 });
+
+// Script check-in/check-out
+function setCurrentDateTime() {
+    const now = new Date();
+    const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    return localDateTime;
+}
+
+function openCheckInModal(registrationId, volunteerName) {
+    document.getElementById('checkInRegistrationId').value = registrationId;
+    document.getElementById('checkInVolunteerName').textContent = volunteerName;
+    document.getElementById('checkInDateTime').value = setCurrentDateTime();
+    new bootstrap.Modal(document.getElementById('checkInModal')).show();
+}
+
+function openCheckOutModal(registrationId, volunteerName) {
+    document.getElementById('checkOutRegistrationId').value = registrationId;
+    document.getElementById('checkOutVolunteerName').textContent = volunteerName;
+    document.getElementById('checkOutDateTime').value = setCurrentDateTime();
+    new bootstrap.Modal(document.getElementById('checkOutModal')).show();
+}
+
+function submitCheckIn() {
+    const formData = new FormData(document.getElementById('checkInForm'));
+    fetch('{% url "volunteer_check_in" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            toastr.success(data.message);
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            toastr.error(data.message);
+        }
+    })
+    .catch(error => {
+        toastr.error('An error occurred while processing the check-in.');
+    });
+}
+
+function submitCheckOut() {
+    const formData = new FormData(document.getElementById('checkOutForm'));
+    fetch('{% url "volunteer_check_out" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            toastr.success(data.message);
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            toastr.error(data.message);
+        }
+    })
+    .catch(error => {
+        toastr.error('An error occurred while processing the check-out.');
+    });
+}
 </script>
+
 {% endblock %}

@@ -13,6 +13,10 @@ from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import logout
 from django.db.models import Q
+from datetime import datetime
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+import re
 import uuid
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -187,7 +191,6 @@ def volunteer_profile(request):
     selected_skills = Skill.objects.filter(volunteerskill__volunteer=volunteer)
 
     if request.method == 'POST':
-        user.username = request.POST.get('username')
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         email = request.POST.get('email')

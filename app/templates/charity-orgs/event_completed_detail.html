@@ -125,14 +125,14 @@
                     {% if reg.checked_in_at %}
                       {{ reg.checked_in_at|date:"H:i d/m" }}
                     {% else %}
-                      <span class="text-muted">Chưa check-in</span>
+                      <span class="text-muted">Not checked in yet</span>
                     {% endif %}
                   </td>
                   <td>
                     {% if reg.checked_out_at %}
                       {{ reg.checked_out_at|date:"H:i d/m" }}
                     {% else %}
-                      <span class="text-muted">Chưa check-out</span>
+                      <span class="text-muted">Not checked out yet</span>
                     {% endif %}
                   </td>
                   <td>
@@ -198,12 +198,12 @@
                     {% if reg.checked_in_at %}
                       <div>IN: {{ reg.checked_in_at|date:"H:i d/m" }}</div>
                     {% else %}
-                      <div class="text-muted">Chưa check-in</div>
+                      <div class="text-muted">Not checked in yet</div>
                     {% endif %}
                     {% if reg.checked_out_at %}
                       <div>OUT: {{ reg.checked_out_at|date:"H:i d/m" }}</div>
                     {% else %}
-                      <div class="text-muted">Chưa check-out</div>
+                      <div class="text-muted">Not checked out yet</div>
                     {% endif %}
                   </td>
                 </tr>
@@ -327,7 +327,7 @@ document.getElementById('ratingForm').addEventListener('submit', function (e) {
 
     // Validate dữ liệu trước khi gửi
     if (!registrationId || !rating) {
-        toastr.error("Vui lòng điền đầy đủ thông tin");
+        toastr.error("Please fill in all required fields");
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
         return;
@@ -335,7 +335,7 @@ document.getElementById('ratingForm').addEventListener('submit', function (e) {
 
     const ratingNum = parseInt(rating);
     if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 10) {
-        toastr.error("Điểm đánh giá phải từ 1 đến 10");
+        toastr.error("Rating must be a number between 1 and 10");
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
         return;
@@ -343,7 +343,7 @@ document.getElementById('ratingForm').addEventListener('submit', function (e) {
 
     // Kiểm tra CSRF token
     if (!csrftoken) {
-        toastr.error("Lỗi bảo mật: Không tìm thấy CSRF token");
+        toastr.error("Security error: CSRF token not found");
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
         return;
@@ -382,7 +382,7 @@ document.getElementById('ratingForm').addEventListener('submit', function (e) {
         console.log('Response data:', data); // Debug log
         
         if (data.success) {
-            toastr.success(data.message || "Đánh giá đã được lưu!");
+            toastr.success(data.message || "Rating saved successfully");
             
             // Xóa hàng khỏi bảng chưa đánh giá
             const row = document.getElementById('unrated-' + registrationId);
@@ -402,7 +402,7 @@ document.getElementById('ratingForm').addEventListener('submit', function (e) {
             }, 1000);
             
         } else {
-            toastr.error(data.message || 'Có lỗi xảy ra khi lưu đánh giá');
+            toastr.error(data.message || 'Error saving rating');
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         }

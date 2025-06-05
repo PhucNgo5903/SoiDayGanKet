@@ -8,15 +8,16 @@ from django.utils import timezone
 from app.forms import EventCreationForm, CharityOrgProfileForm
 from django.http import JsonResponse
 from django.db import transaction
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_protect
 import json
 import os
 import uuid
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.db.models import Avg, Count
 from django.conf import settings
-
+from datetime import datetime
 
 @role_required('charity')
 def index_charity_org(request):
@@ -115,7 +116,7 @@ def charity_profile_view(request):
 
     if request.method == "POST":
         user = request.user
-        user.username = request.POST.get('username')
+        # user.username = request.POST.get('username')
         user.first_name = request.POST.get('first_name')
         user.last_name = ""  # optional
         user.email = request.POST.get('email')
@@ -258,14 +259,13 @@ def charity_event_completed_detail(request, event_id):
 @role_required('charity')
 def charity_event_detail(request, event_id):
     """Chi tiết sự kiện cho các trạng thái: pending, rejected, approved"""
-    from django.db.models import Avg, Count
     
     # Lấy sự kiện và kiểm tra quyền truy cập
     try:
         nguoi_dung = request.user.nguoidung
         charity_org = CharityOrg.objects.get(user=nguoi_dung)
     except CharityOrg.DoesNotExist:
-        return render(request, 'error.html', {'message': 'Not authorized to view this event'})
+        return render(request, 'error.html', {'message': 'Charity organization not found'})
     
     event = get_object_or_404(Event, id=event_id, charity_org=charity_org)
     
@@ -280,13 +280,13 @@ def charity_event_detail(request, event_id):
         approved_volunteers = EventRegistration.objects.filter(
             event=event, 
             status='approved'
-        ).select_related('volunteer__user__user')
+        ).select_related('volunteer__user__user').order_by('registered_at')
         
         # Lấy danh sách TNV đang chờ duyệt với thông tin đánh giá
         pending_volunteers = EventRegistration.objects.filter(
             event=event, 
             status='pending'
-        ).select_related('volunteer__user__user')
+        ).select_related('volunteer__user__user').order_by('registered_at')
         
         # Tính toán thông tin đánh giá cho từng TNV chờ duyệt
         for registration in pending_volunteers:
@@ -314,6 +314,79 @@ def charity_event_detail(request, event_id):
     
     return render(request, 'charity-orgs/event_detail.html', context)
 
+@role_required('charity')
+@require_POST
+def volunteer_check_in(request):
+    try:
+        registration_id = request.POST.get('registration_id')
+        checked_in_at_str = request.POST.get('checked_in_at')
+        if not registration_id or not checked_in_at_str:
+            return JsonResponse({'success': False, 'message': 'Missing required fields'})
+        registration = get_object_or_404(EventRegistration, id=registration_id)
+        nguoi_dung = request.user.nguoidung
+        charity_org = CharityOrg.objects.get(user=nguoi_dung)
+        if registration.event.charity_org != charity_org:
+            return JsonResponse({'success': False, 'message': 'Permission denied'})
+        if registration.status != 'approved':
+            return JsonResponse({'success': False, 'message': 'Volunteer must be approved first'})
+        if registration.checked_in_at:
+            return JsonResponse({'success': False, 'message': 'Volunteer already checked in'})
+        try:
+            checked_in_at = datetime.fromisoformat(checked_in_at_str.replace('T', ' '))
+            if timezone.is_naive(checked_in_at):
+                checked_in_at = timezone.make_aware(checked_in_at)
+        except ValueError:
+            return JsonResponse({'success': False, 'message': 'Invalid datetime format'})
+        # Kiểm tra thời gian check-in phải nằm trong thời gian sự kiện
+        event = registration.event
+        if checked_in_at < event.start_time or checked_in_at > event.end_time:
+            return JsonResponse({'success': False, 'message': 'Check-in time must be within event time'})
+        registration.checked_in_at = checked_in_at
+        registration.save()
+        return JsonResponse({'success': True, 'message': 'Volunteer checked in successfully', 'checked_in_at': registration.checked_in_at.strftime('%d/%m/%Y %H:%M')})
+    except CharityOrg.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Charity organization not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'An error occurred: {str(e)}'})
+
+@role_required('charity')
+@require_POST
+def volunteer_check_out(request):
+    try:
+        registration_id = request.POST.get('registration_id')
+        checked_out_at_str = request.POST.get('checked_out_at')
+        if not registration_id or not checked_out_at_str:
+            return JsonResponse({'success': False, 'message': 'Missing required fields'})
+        registration = get_object_or_404(EventRegistration, id=registration_id)
+        nguoi_dung = request.user.nguoidung
+        charity_org = CharityOrg.objects.get(user=nguoi_dung)
+        if registration.event.charity_org != charity_org:
+            return JsonResponse({'success': False, 'message': 'Permission denied'})
+        if registration.status != 'approved':
+            return JsonResponse({'success': False, 'message': 'Volunteer must be approved first'})
+        if not registration.checked_in_at:
+            return JsonResponse({'success': False, 'message': 'Volunteer must check in first'})
+        if registration.checked_out_at:
+            return JsonResponse({'success': False, 'message': 'Volunteer already checked out'})
+        try:
+            checked_out_at = datetime.fromisoformat(checked_out_at_str.replace('T', ' '))
+            if timezone.is_naive(checked_out_at):
+                checked_out_at = timezone.make_aware(checked_out_at)
+        except ValueError:
+            return JsonResponse({'success': False, 'message': 'Invalid datetime format'})
+        # Kiểm tra thời gian check-out phải nằm trong thời gian sự kiện
+        event = registration.event
+        if checked_out_at < event.start_time or checked_out_at > event.end_time:
+            return JsonResponse({'success': False, 'message': 'Check-out time must be within event time'})
+        if checked_out_at <= registration.checked_in_at:
+            return JsonResponse({'success': False, 'message': 'Check out time must be after check in time'})
+        registration.checked_out_at = checked_out_at
+        registration.save()
+        return JsonResponse({'success': True, 'message': 'Volunteer checked out successfully', 'checked_out_at': registration.checked_out_at.strftime('%d/%m/%Y %H:%M')})
+    except CharityOrg.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Charity organization not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'An error occurred: {str(e)}'})
 
 @role_required('charity')
 def get_volunteer_reviews(request, volunteer_id):
@@ -619,8 +692,7 @@ def end_event(request, event_id):
             )
             
             updated_count = approved_registrations.update(
-                status='completed',
-                checked_out_at=timezone.now()
+                status='completed'
             )
             
             # Log thông tin (optional)
