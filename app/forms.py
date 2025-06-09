@@ -113,7 +113,7 @@ class AssistanceRequestTypeForm(forms.Form):
         queryset=AssistanceRequestType.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label="Assistance Reques Type"
+        label="Assistance Request Type"
     )
 
 
@@ -194,7 +194,7 @@ class AssistanceRequestTypeForm(forms.Form):
         queryset=AssistanceRequestType.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label="Assistance Reques Type"
+        label="Assistance Request Type"
     )
 
 
